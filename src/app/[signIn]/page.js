@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import Dashboard from "../Components/Dashboard";
 
 
 export default function SignIn (){
@@ -10,6 +11,7 @@ export default function SignIn (){
     router.push('/dashboard')
   }
  return(
+
     <section className="bg-gray-50 dark:bg-gray-900">
     <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
       <a
