@@ -14,10 +14,10 @@ const columns = [
         name: 'Mobile #',
         selector: row => row.mobileNo,
     },
-    {
-        name: 'Vehicle #',
-        selector: row => row.vehicleNo,
-    },
+    // {
+    //     name: 'Vehicle #',
+    //     selector: row => row.vehicleNo,
+    // },
     {
         name: 'Joining Date',
         selector: row => row.joiningDate,
@@ -27,8 +27,8 @@ const columns = [
         selector: row => row.status,
         cell: row => (
             <select className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-1 px-2 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" data-te-select-init>
-            <option value="1">Active</option>
             <option value="2">InActive</option>
+            <option value="1">Active</option>
         </select>
         )
     },
@@ -38,8 +38,8 @@ const columns = [
         // width:"100px",
         cell:row =>(
             <div className="w-full flex   lg:w-full ">
-                        <button className="bg-blue-500 hover:bg-blue-700 text-white  p-1 rounded" type="submit">Edit Assigned</button>
-                        <button className="bg-green-500 hover:bg-blue-700 text-white ms-1 p-1 rounded" type="submit">Edit driver</button>
+                        <button className="bg-orange-500 hover:bg-blue-700 text-white  p-1 rounded" type="submit">Delete Permenant</button>
+                        {/* <button className="bg-green-500 hover:bg-blue-700 text-white ms-1 p-1 rounded" type="submit">Edit driver</button> */}
                     </div>
         )
     },
@@ -115,12 +115,12 @@ const data = [
         actions:""
     }
 ]
-export default function activeDriver(){
+export default function InactiveMember(){
     return(
         <Dashboard >
             <div className="z-0">    
              <DataTable
-             title="Active Driver List"
+             title="Active Member List"
             //  fixedHeader
             columns={columns}
             data={data}

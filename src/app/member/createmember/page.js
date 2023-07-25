@@ -1,10 +1,12 @@
 import Dashboard from "@/app/Components/Dashboard";
 import { FaUser } from "react-icons/fa";
-export default function createdriver() {
+export default function createMember() {
+    let time = ["9:00 AM" , "9:30 AM" , "10:00 AM" , "10:30 AM" , "11:00 AM"  , "11:30 AM" , "12:00 PM" , "12:30 PM" , "1:00 PM" , "1:30 PM" , "2:00 PM" , "2:30 PM" , "3:00 PM" , "3:30 PM" , "4:00 PM" , "4:30 PM" , "5:00 PM" ,"5:30 PM" , "6:00 PM" , "6:30 PM" , "7:00 PM" , "7:30 PM" , "8:00 PM" , "8:30 PM" ,"9:00 PM" , "9:30 PM" , "10:00 PM" , "10:30 PM" , "11:00 PM" , "11:30 PM" , "12:00 AM"]
+    let area = ["Baldia Town" , "Bin Qasim Town" ,"Gadap Town" , "Gulberg Town" , "Gulshan Town" , "Jamshed Town" , "Kiamari Town"  , "Korangi Town" ,"Liaquatabad Town" , "Lyari Town" , "Malir Town" , "New Karachi Town" ]
     return (
         <Dashboard>
             <br />
-            <h1 className="text-3xl border-b-2">Create Driver</h1>
+            <h1 className="text-3xl border-b-2">Create Member</h1>
             <br />
             <form className="w-full">
                 <div className="flex  flex-wrap -mx-3 mb-6">
@@ -65,7 +67,7 @@ export default function createdriver() {
                             placeholder="42***-*******-*"
                         />
                     </div>
-                    <div className="w-full  mt-2 lg:w-1/4 px-3">
+                    {/* <div className="w-full  mt-2 lg:w-1/4 px-3">
                         <label
                             className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
                             htmlFor="grid-last-name"
@@ -78,13 +80,13 @@ export default function createdriver() {
                             type="date"
                         // placeholder="42***-*******-*"
                         />
-                    </div>
+                    </div> */}
                     <div className="w-full  mt-2 lg:w-1/4 px-3">
                         <label
                             className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
                             htmlFor="grid-last-name"
                         >
-                            Mobile # 1*
+                            Mobile # *
                         </label>
                         <input
                             className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
@@ -98,6 +100,42 @@ export default function createdriver() {
                             className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
                             htmlFor="grid-last-name"
                         >
+                            PickUp
+                        </label>
+                        <select className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" data-te-select-init>
+                            <option  value="select">Select</option>
+                           {
+                            area.map((val , index)=>{
+                                return(
+                                    <option key={val} value={val}>{val}</option>
+                                )
+                            })
+                        }
+                        </select>
+                    </div>
+                    <div className="w-full  mt-2 lg:w-1/4 px-3">
+                        <label
+                            className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                            htmlFor="grid-last-name"
+                        >
+                            DROP OFF
+                        </label>
+                        <select className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" data-te-select-init>
+                            <option  value="select">Select</option>
+                           {
+                            area.map((val , index)=>{
+                                return(
+                                    <option key={val} value={val}>{val}</option>
+                                )
+                            })
+                        }
+                        </select>
+                    </div>
+                    {/* <div className="w-full  mt-2 lg:w-1/4 px-3">
+                        <label
+                            className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                            htmlFor="grid-last-name"
+                        >
                             Mobile # 2
                         </label>
                         <input
@@ -106,83 +144,98 @@ export default function createdriver() {
                             type="text"
                         // placeholder="42***-*******-*"
                         />
+                    </div> */}
+                    <div className="w-full  mt-2 lg:w-1/4 px-3">
+                        <label
+                            className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                            htmlFor="grid-last-name"
+                        >
+                            Morning Pickup Time
+                        </label>
+                        <select className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" data-te-select-init>
+                            <option  value="select">Select</option>
+                           {
+                            time.map((val , index)=>{
+                                return(
+                                    <option key={val} value={val}>{val}</option>
+                                )
+                            })
+                        }
+                        </select>
                     </div>
                     <div className="w-full  mt-2 lg:w-1/4 px-3">
                         <label
                             className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
                             htmlFor="grid-last-name"
                         >
-                            Vehicle #
+                            Evening DropOff Time
                         </label>
-                        <input
-                            className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                            id="grid-last-name"
-                            type="text"
-                        // placeholder="42***-*******-*"
-                        />
+                        <select className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" data-te-select-init>
+                            <option  value="select">Select</option>
+                           {
+                            time.map((val , index)=>{
+                                return(
+                                    <option key={val} value={val}>{val}</option>
+                                )
+                            })
+                        }
+                        </select>
                     </div>
                     <div className="w-full  mt-2 lg:w-1/4 px-3">
                         <label
                             className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
                             htmlFor="grid-last-name"
                         >
-                            License #
+                            Sat-Morning Pickup Time
                         </label>
-                        <input
-                            className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                            id="grid-last-name"
-                            type="text"
-                        // placeholder="42***-*******-*"
-                        />
+                        <select className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" data-te-select-init>
+                            <option  value="select">Select</option>
+                           {
+                            time.map((val , index)=>{
+                                return(
+                                    <option key={val} value={val}>{val}</option>
+                                )
+                            })
+                        }
+                        </select>
                     </div>
                     <div className="w-full  mt-2 lg:w-1/4 px-3">
                         <label
                             className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
                             htmlFor="grid-last-name"
                         >
-                            License Issue Date
+                            Sat-Evening DropOff Time
                         </label>
-                        <input
-                            className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                            id="grid-last-name"
-                            type="date"
-                        // placeholder="42***-*******-*"
-                        />
+                        <select className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" data-te-select-init>
+                            <option  value="select">Select</option>
+                           {
+                            time.map((val , index)=>{
+                                return(
+                                    <option key={val} value={val}>{val}</option>
+                                )
+                            })
+                        }
+                        </select>
                     </div>
                     <div className="w-full  mt-2 lg:w-1/4 px-3">
                         <label
                             className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
                             htmlFor="grid-last-name"
                         >
-                            License Expiry Date
+                            Day Off
                         </label>
-                        <input
-                            className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                            id="grid-last-name"
-                            type="date"
-                        // placeholder="42***-*******-*"
-                        />
+                        <select className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" data-te-select-init>
+                            <option  value="Sat">Sat Off</option>
+                            <option  value="Sat-Sun">Sat-Sun Off</option>
+                        </select>
                     </div>
+                   
                     <div className="w-full mt-2 lg:w-1/4 px-3">
                         <label
                             className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
                             htmlFor="grid-last-name"
                         >
-                            Joining Date
-                        </label>
-                        <input
-                            className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                            id="grid-last-name"
-                            type="date"
-                        // placeholder="42***-*******-*"
-                        />
-                    </div>
-                    <div className="w-full mt-2 lg:w-1/4 px-3">
-                        <label
-                            className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                            htmlFor="grid-last-name"
-                        >
-                            Salary
+                            Fees
                         </label>
                         <input
                             className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
@@ -196,12 +249,11 @@ export default function createdriver() {
                             className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
                             htmlFor="grid-last-name"
                         >
-                            Salary Type
+                            Fees Type
                         </label>
                         <select className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" data-te-select-init>
-                            <option value="1">Daily</option>
-                            <option value="2">Weekly</option>
-                            <option value="3">Monthly</option>
+                            <option value="1">Advance</option>
+                            <option value="2">Month End</option>
                         </select>
                     </div>
                     <div className="w-full mt-2 lg:w-1/4 px-3">

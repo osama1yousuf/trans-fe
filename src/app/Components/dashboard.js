@@ -86,7 +86,7 @@ const handletoggle = ()=>{
 }
   return (
     <>
-      <div className="sticky top-0 left-0 2xl:container 2xl:mx-auto">
+      <div className="sticky top-0 z-9 left-0 2xl:container 2xl:mx-auto">
         <div className="bg-white rounded shadow-lg py-4 px-6">
           <nav className="flex justify-between">
             <div className="flex items-center space-x-3 lg:pr-16 pr-6">
@@ -119,7 +119,6 @@ const handletoggle = ()=>{
           alt="logo"
         /> */}
           <ul className="space-y-2 pt-4 font-medium">
-
             {
               openTabs.map((val, index) => {
                 return (

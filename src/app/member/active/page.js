@@ -14,10 +14,10 @@ const columns = [
         name: 'Mobile #',
         selector: row => row.mobileNo,
     },
-    {
-        name: 'Vehicle #',
-        selector: row => row.vehicleNo,
-    },
+    // {
+    //     name: 'Vehicle #',
+    //     selector: row => row.vehicleNo,
+    // },
     {
         name: 'Joining Date',
         selector: row => row.joiningDate,
@@ -38,8 +38,8 @@ const columns = [
         // width:"100px",
         cell:row =>(
             <div className="w-full flex   lg:w-full ">
-                        <button className="bg-blue-500 hover:bg-blue-700 text-white  p-1 rounded" type="submit">Edit Assigned</button>
-                        <button className="bg-green-500 hover:bg-blue-700 text-white ms-1 p-1 rounded" type="submit">Edit driver</button>
+                        <button className="bg-green-500 hover:bg-blue-700 text-white  p-1 rounded" type="submit">Edit Detail</button>
+                        {/* <button className="bg-green-500 hover:bg-blue-700 text-white ms-1 p-1 rounded" type="submit">Edit driver</button> */}
                     </div>
         )
     },
@@ -115,12 +115,12 @@ const data = [
         actions:""
     }
 ]
-export default function activeDriver(){
+export default function ActiveMember(){
     return(
         <Dashboard >
             <div className="z-0">    
              <DataTable
-             title="Active Driver List"
+             title="Active Member List"
             //  fixedHeader
             columns={columns}
             data={data}
