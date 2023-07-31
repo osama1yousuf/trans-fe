@@ -1,8 +1,30 @@
-'use-client';
-
+'use client';
+import { usePathname, useRouter } from "next/navigation";
+import { Formik, Form, Field, ErrorMessage } from "formik"
+import * as Yup from 'yup';
 import Link from "next/link";
 
 export default function () {
+    const validateSignUpSchema = Yup.object().shape({
+        phoneNumber: Yup.string().length(11, "Phone Number Invalid").required("Phone Number required"),
+        password: Yup.string().min(8, "Password Length is greater than 8").required('Password is required'),
+        confirmPassword: Yup.string().min(8, "confirmPassword Length is greater than 8").required('confirmPassword is required').test('password-match', 'Passwords must match', function (value) {
+            return value == this.parent.password
+        }),
+    })
+    const initialValues = {
+        phoneNumber: '',
+        password: '',
+        confirmPassword: ''
+    };
+    const handleSubmit = (values, { setSubmitting }) => {
+        // setTimeout(() => {
+        // alert(JSON.stringify(values, null, 2));
+        console.log(values);
+        setSubmitting(false);
+        //   router.push("/dashboard")
+        // }, 400);
+    }
     return (
         <section className="bg-gray-50 dark:bg-gray-900">
             <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
@@ -22,97 +44,116 @@ export default function () {
                         <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
                             Create and account
                         </h1>
-                        <form className="space-y-4 md:space-y-6" action="#">
-                            <div>
-                                <label
-                                    htmlFor="email"
-                                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                                >
-                                    Your Phone Number
-                                </label>
-                                <input
-                                    type="tel"
-                                    name="PNo"
-                                    id="PNo"
-                                    className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                    placeholder="03**-*******"
-                                    required=""
-                                />
-                            </div>
-                            <div>
-                                <label
-                                    htmlFor="password"
-                                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                                >
-                                    Password
-                                </label>
-                                <input
-                                    type="password"
-                                    name="password"
-                                    id="password"
-                                    placeholder="••••••••"
-                                    className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                    required=""
-                                />
-                            </div>
-                            <div>
-                                <label
-                                    htmlFor="confirm-password"
-                                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                                >
-                                    Confirm password
-                                </label>
-                                <input
-                                    type="confirm-password"
-                                    name="confirm-password"
-                                    id="confirm-password"
-                                    placeholder="••••••••"
-                                    className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                    required=""
-                                />
-                            </div>
-                            <div className="flex items-start">
-                                <div className="flex items-center h-5">
-                                    <input
-                                        id="terms"
-                                        aria-describedby="terms"
-                                        type="checkbox"
-                                        className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-primary-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-primary-600 dark:ring-offset-gray-800"
-                                        required=""
-                                    />
-                                </div>
-                                <div className="ml-3 text-sm">
-                                    <label
-                                        htmlFor="terms"
-                                        className="font-light text-gray-500 dark:text-gray-300"
-                                    >
-                                        I accept the{" "}
-                                        <a
-                                        target="_blank"
-                                            className="font-medium text-primary-600 hover:underline dark:text-primary-500"
-                                            href="https://muhammaditransport.com/"
+                        <Formik
+                            initialValues={initialValues}
+                            validationSchema={validateSignUpSchema}
+                            onSubmit={handleSubmit}
+                        >
+                            {({ isSubmitting }) => (
+                                <Form className="space-y-4 md:space-y-6" action="#">
+                                    <div>
+                                        <label
+                                            htmlFor="phoneNumber"
+                                            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                                         >
-                                            Terms and Conditions
-                                        </a>
-                                    </label>
-                                </div>
-                            </div>
-                            <button
-                                type="submit"
-                                className="w-full text-white bg-red-700 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
-                            >
-                                Create an account
-                            </button>
-                            <p className="text-sm font-light text-gray-500 dark:text-gray-400">
-                                Already have an account?{" "}
-                                <Link
-                                    href="/"
-                                    className="font-medium text-primary-600 hover:underline dark:text-primary-500"
-                                >
-                                    Login here
-                                </Link>
-                            </p>
-                        </form>
+                                            Your Phone Number
+                                        </label>
+                                        <Field
+                                            type="text"
+                                            name="phoneNumber"
+                                            id="phoneNumber"
+                                            className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                            placeholder="03*********"
+                                        // required=""
+                                        />
+                                        {/* <ErrorMessage className="text-sm" name="phoneNumber" /> */}
+                                        <ErrorMessage name="phoneNumber">
+                                            {errorMsg => <span className="text-red-500 text-sm">{errorMsg}</span>}
+                                        </ErrorMessage>
+                                    </div>
+                                    <div>
+                                        <label
+                                            htmlFor="password"
+                                            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                                        >
+                                            Password
+                                        </label>
+                                        <Field
+                                            type="password"
+                                            name="password"
+                                            id="password"
+                                            placeholder="••••••••"
+                                            className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                        // required=""
+                                        />
+                                        <ErrorMessage name="password">
+                                            {errorMsg => <span className="text-red-500 text-sm">{errorMsg}</span>}
+                                        </ErrorMessage>
+                                    </div>
+                                    <div>
+                                        <label
+                                            htmlFor="confirmPassword"
+                                            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                                        >
+                                            Confirm Password
+                                        </label>
+                                        <Field
+                                            type="password"
+                                            name="confirmPassword"
+                                            id="confirmPassword"
+                                            placeholder="••••••••"
+                                            className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                        // required=""
+                                        />
+                                        <ErrorMessage name="confirmPassword">
+                                            {errorMsg => <span className="text-red-500 text-sm">{errorMsg}</span>}
+                                        </ErrorMessage>
+                                    </div>
+                                    <div className="flex items-start">
+                                        <div className="flex items-center h-5">
+                                            <input
+                                                id="terms"
+                                                aria-describedby="terms"
+                                                type="checkbox"
+                                                className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-primary-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-primary-600 dark:ring-offset-gray-800"
+                                                required=""
+                                            />
+                                        </div>
+                                        <div className="ml-3 text-sm">
+                                            <label
+                                                htmlFor="terms"
+                                                className="font-light text-gray-500 dark:text-gray-300"
+                                            >
+                                                I accept the{" "}
+                                                <a
+                                                    target="_blank"
+                                                    className="font-medium text-primary-600 hover:underline dark:text-primary-500"
+                                                    href="https://muhammaditransport.com/"
+                                                >
+                                                    Terms and Conditions
+                                                </a>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <button
+                                        type="submit"
+                                        disabled={isSubmitting}
+                                        className="w-full text-white bg-red-700 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+                                    >
+                                        Create an account
+                                    </button>
+                                    <p className="text-sm font-light text-gray-500 dark:text-gray-400">
+                                        Already have an account?{" "}
+                                        <Link
+                                            href="/"
+                                            className="font-medium text-primary-600 hover:underline dark:text-primary-500"
+                                        >
+                                            Login here
+                                        </Link>
+                                    </p>
+                                </Form>
+                            )}
+                        </Formik>
                     </div>
                 </div>
             </div>
