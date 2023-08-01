@@ -6,7 +6,6 @@ import { Formik, Form, Field, ErrorMessage } from "formik"
 import * as Yup from 'yup';
 export default function SignIn() {
   const pathname =usePathname()
-  console.log(pathname);
   const router = useRouter()
 
 
