@@ -1,6 +1,12 @@
+'use client'
+import { useEffect } from 'react'
+import Dashboard from './Components/Dashboard'
 import './globals.css'
+import 'react-toastify/dist/ReactToastify.css';
 import { Inter } from 'next/font/google'
 const inter = Inter({ subsets: ['latin'] })
+import { usePathname, useRouter } from 'next/navigation'
+import { ToastContainer } from 'react-toastify'
 
 export const metadata = {
   title: 'Create Next App',
@@ -8,9 +14,33 @@ export const metadata = {
 }
 
 export default function RootLayout({ children }) {
+  const pathname = usePathname()
+  const router = useRouter()
+  useEffect(() => {
+    if (pathname !== '/' && pathname !== '/signUp' && pathname !== '/member_signin' && pathname !== '/driver_signin' && pathname !== '/admin_signin') {
+      let token = localStorage.getItem('token')
+      console.log("token", token);
+      if (!token) {
+        router.push('/')
+      }
+    }
+  }, [])
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+
+      <body className={inter.className}>
+        <ToastContainer
+          position="top-center"
+          // autoClose={200}
+          // rtl={false}
+          // pauseOnFocusLoss={false}
+          // draggable={false}
+          theme="colored"
+        />
+        <Dashboard>
+          {children}
+        </Dashboard>
+      </body>
     </html>
   )
 }

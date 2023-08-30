@@ -5,7 +5,6 @@ function MyApp({ Component, pageProps }) {
   return (
     <div>
       {/* <Header /> */}
-      <Dashboard />
       <Component {...pageProps} />
     </div>
   );

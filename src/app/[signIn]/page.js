@@ -3,31 +3,61 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Formik, Form, Field, ErrorMessage } from "formik"
+import axios from "axios";
 import * as Yup from 'yup';
+import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
+import Textfield from "../Components/Textfield";
 export default function SignIn() {
+  let url = process.env.BASE_URL
   const pathname =usePathname()
   const router = useRouter()
 
+  const [userType , setUserType] = useState('')
+
+  useEffect(()=>{
+    if (pathname == "/member_signin") {
+      setUserType('member');
+    }else if (pathname == "/admin_signin") {
+      setUserType('superadmin');
+    }else if (pathname == "/driver_signin") {
+      setUserType('driver');
+    }
+  },[])
 
   const validateLoginSchema = Yup.object().shape({
-    phoneNumber: Yup.string().length(11, "Phone Number Invalid").required("Phone Number required"),
+    contactOne: Yup.string().length(11, "Phone Number Invalid").required("Phone Number required"),
     password: Yup.string().min(8, "Password Length is greater than 8").required('Password is required'),
   })
   const initialValues = {
-    phoneNumber: '',
+    contactOne: '',
     password: '',
   };
-  const handleSubmit = (values, { setSubmitting }) => {
-    // setTimeout(() => {
-      // alert(JSON.stringify(values, null, 2));
-      setSubmitting(false);
-      router.push("/dashboard")
-    // }, 400);
+  const handleSubmit = async (values, { setSubmitting }) => {
+    setSubmitting(false);
+    console.log(values);
+    try{
+    const responsne = await axios.post(`${url}/${userType}/login` , values)
+    console.log(responsne);
+    if (responsne.status == 201) {
+       localStorage.setItem('token' , responsne.data.token)
+       toast.success("Login successfully" , { autoClose : 1000 })
+       if (userType == 'superadmin') {
+         router.push('/admin/dashboard')
+       }else if (userType == 'member') {
+        router.push('/member/dashboard')
+       }else if (userType == 'driver') {
+        router.push('/driver/dashboard')
+       }
+    }
+    }catch(e){
+        console.log("error" , e);
+        toast.error(e.message, { autoClose : 1000 })
+    }
   }
   return (
-    (
-      pathname === "/Driver-Portal-SignIn" || pathname === "/Member-Portal-SignIn" || "/Admin-Portal-SignIn") ?
-     ( <section className="bg-gray-50 dark:bg-gray-900">
+     <section className="bg-gray-50 dark:bg-gray-900">
+      {console.log(userType)}
       <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
         <a
           href="#"
@@ -53,43 +83,10 @@ export default function SignIn() {
               {({ isSubmitting }) => (
                 <Form className="space-y-4 md:space-y-6" >
                   <div>
-                    <label
-                      htmlFor="phoneNumber"
-                      className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                    >
-                      Your Phone Number
-                    </label>
-                    <Field
-                      type="text"
-                      name="phoneNumber"
-                      id="phoneNumber"
-                      className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                      placeholder="03*********"
-                    // required=""
-                    />
-                    {/* <ErrorMessage className="text-sm" name="phoneNumber" /> */}
-                    <ErrorMessage name="phoneNumber">
-                      {errorMsg => <span className="text-red-500 text-sm">{errorMsg}</span>}
-                    </ErrorMessage>
+                    <Textfield name={"contactOne"} label={"Contact"} type={"text"}  />   
                   </div>
                   <div>
-                    <label
-                      htmlFor="password"
-                      className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                    >
-                      Password
-                    </label>
-                    <Field
-                      type="password"
-                      name="password"
-                      id="password"
-                      placeholder="••••••••"
-                      className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    // required=""
-                    />
-                    <ErrorMessage name="password">
-                      {errorMsg => <span className="text-red-500 text-sm">{errorMsg}</span>}
-                    </ErrorMessage>
+                    <Textfield name={"password"} label={"Password"} type={"password"} />
                   </div>
                   <div className="flex items-center justify-between">
                     <div className="flex items-start">
@@ -124,7 +121,9 @@ export default function SignIn() {
                   >
                     Sign in
                   </button>
-                  <p className="text-sm font-light text-gray-500 dark:text-gray-400">
+                { 
+                  pathname.includes('/admin') &&
+                <p className="text-sm font-light text-gray-500 dark:text-gray-400">
                     Don’t have an account yet?{" "}
                     <Link
                       href='/signUp'
@@ -133,12 +132,13 @@ export default function SignIn() {
                       Sign up
                     </Link>
                   </p>
+                  }
                 </Form>
               )}
             </Formik>
           </div>
         </div>
       </div>
-    </section>) : null
+    </section>
   )
 }
