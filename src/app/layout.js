@@ -1,5 +1,5 @@
 'use client'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import Dashboard from './Components/Dashboard'
 import './globals.css'
 import 'react-toastify/dist/ReactToastify.css';
@@ -16,6 +16,73 @@ export const metadata = {
 export default function RootLayout({ children }) {
   const pathname = usePathname()
   const router = useRouter()
+   const [sideBarValue , setSideBarValue] = useState([])
+  let adminTab =  [
+    {
+      name: "Dashboard",
+      url: "/admin/dashboard",
+      active: false,
+
+    },
+    {
+      name: "Driver",
+      url: "driver",
+      active: false,
+      Content: [
+        {
+          name: "Create Driver",
+          endpoints: 'admin/createdriver'
+        }, {
+          name: "Active Driver",
+          endpoints: 'admin/activedriver'
+        },
+        {
+          name: "InActive Driver",
+          endpoints: 'admin/inactivedriver'
+        }
+      ]
+    }, {
+      name: "Member",
+      url: "member",
+      active: false,
+      Content: [
+        {
+          name: "Create Member",
+          endpoints: 'admin/createmember'
+        }, {
+          name: "Active Member",
+          endpoints: 'admin/activemember'
+        },
+        {
+          name: "InActive Member",
+          endpoints: 'admin/inactivemember'
+        }
+      ]
+    }
+    ,
+    {
+      name: "Location",
+      url: "admin/location",
+      active: false,
+    },
+  ]
+  let memberTab =  [
+    {
+      name: "Dashboard",
+      url: "/member/dashboard",
+      active: false,
+
+    }
+  ]
+  let driverTab =  [
+    {
+      name: "Dashboard",
+      url: "/driver/dashboard",
+      active: false,
+
+    }
+  ]
+  
   useEffect(() => {
     if (pathname !== '/' && pathname !== '/signUp' && pathname !== '/member_signin' && pathname !== '/driver_signin' && pathname !== '/admin_signin') {
       let token = localStorage.getItem('token')
@@ -24,6 +91,14 @@ export default function RootLayout({ children }) {
         router.push('/')
       }
     }
+    if (pathname.includes('/driver')) {
+      setSideBarValue(driverTab)
+     }else if (pathname.includes('/member')) {
+      setSideBarValue(memberTab)
+     }else if(pathname.includes('/admin')){
+      setSideBarValue(adminTab)
+     }
+
   }, [])
   return (
     <html lang="en">
@@ -37,7 +112,7 @@ export default function RootLayout({ children }) {
           // draggable={false}
           theme="colored"
         />
-        <Dashboard>
+        <Dashboard sideBarValue={sideBarValue}>
           {children}
         </Dashboard>
       </body>

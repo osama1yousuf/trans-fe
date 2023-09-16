@@ -259,14 +259,16 @@ useEffect(()=>{
         driverId : driverDetail._id,
         assignObject : allData
      }
-     try{
-        let response = axiosInstance.post('/assignment/assign', finalObj)
-         toast.success(response.message)
-         router.push('/admin/activedriver')
-         
-     }catch(e){
-        toast.error(e.message)
-     }     
+     if (check) {
+         try{
+            let response = axiosInstance.post('/assignment/assign', finalObj)
+             toast.success(response.message)
+             router.push('/admin/activedriver')
+             
+         }catch(e){
+            toast.error(e.message)
+         }     
+     }
     }
 
     const handleTravelType = (pi,ci,e)=>{
