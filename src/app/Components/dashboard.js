@@ -6,11 +6,75 @@ import { usePathname } from "next/navigation";
 import Textfield from "./Textfield";
 import axiosInstance from "@/interceptor/axios_inteceptor";
 import { toast } from "react-toastify";
-export default function Dashboard({ children , sideBarValue }) {
+export default function Dashboard({ children }) {
 
-  
+  let adminTab =  [
+    {
+      name: "Dashboard",
+      url: "/admin/dashboard",
+      active: false,
+
+    },
+    {
+      name: "Driver",
+      url: "driver",
+      active: false,
+      Content: [
+        {
+          name: "Create Driver",
+          endpoints: 'admin/createdriver'
+        }, {
+          name: "Active Driver",
+          endpoints: 'admin/activedriver'
+        },
+        {
+          name: "InActive Driver",
+          endpoints: 'admin/inactivedriver'
+        }
+      ]
+    }, {
+      name: "Member",
+      url: "member",
+      active: false,
+      Content: [
+        {
+          name: "Create Member",
+          endpoints: 'admin/createmember'
+        }, {
+          name: "Active Member",
+          endpoints: 'admin/activemember'
+        },
+        {
+          name: "InActive Member",
+          endpoints: 'admin/inactivemember'
+        }
+      ]
+    }
+    ,
+    {
+      name: "Location",
+      url: "admin/location",
+      active: false,
+    },
+  ]
+  let memberTab =  [
+    {
+      name: "Dashboard",
+      url: "/member/dashboard",
+      active: false,
+
+    }
+  ]
+  let driverTab =  [
+    {
+      name: "Dashboard",
+      url: "/driver/dashboard",
+      active: false,
+
+    }
+  ]
   const pathname = usePathname()
-  const [openTabs, setOpenTabs] = useState(sideBarValue)
+  const [openTabs, setOpenTabs] = useState([])
   const [showModal, setShowModal] = React.useState(false);
   const [locationName, setLocationName] = React.useState('');
   const [activeTab, setActiveTab] = useState('Dashboard')
@@ -58,7 +122,13 @@ export default function Dashboard({ children , sideBarValue }) {
     setSideBar(!sideBar)
   }
   useEffect(()=>{
-   
+     if (pathname.includes('/driver')) {
+      setOpenTabs(driverTab)
+     }else if (pathname.includes('/member')) {
+      setOpenTabs(memberTab)
+     }else if(pathname.includes('/admin')){
+      setOpenTabs(adminTab)
+     }
   },[])
 
   const handleLocation = async ()=>{
@@ -162,7 +232,7 @@ export default function Dashboard({ children , sideBarValue }) {
           id="sidebar-multi-level-sidebar"
           className={`fixed top-18 left-0 z-40 w-64 h-screen transition-transform ${sideBar ? "-translate-x-full" : "translate-x-0"}  `}
         >
-          <div className="h-full px-3 py-4 overflow-y-auto bg-gray-50 dark:bg-gray-800">
+          <div className="h-full px-3 py-4 overflow-y-auto bg-white">
 
             {/* <img
           className="w-26 h-12 mr-2"

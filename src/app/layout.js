@@ -112,6 +112,7 @@ export default function RootLayout({ children }) {
           // draggable={false}
           theme="colored"
         />
+        {console.log("sideBarValue" , sideBarValue)}
         <Dashboard sideBarValue={sideBarValue}>
           {children}
         </Dashboard>
