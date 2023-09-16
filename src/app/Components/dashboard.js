@@ -179,8 +179,8 @@ export default function Dashboard({ children }) {
                 </div>
                 {/*body*/}
                 <div className="relative p-6 flex-auto">
-                <label  className="block mb-2 text-xs font-sm text-gray-700 dark:text-white" for="">Name</label>
-               <input type="text" value={locationName} onChange={(e)=> setLocationName(e.target.value)}    className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-xs rounded-md focus:ring-primary-600 focus:border-primary-600 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                <label  className="block mb-2 text-xs font-sm text-gray-700 :text-white" for="">Name</label>
+               <input type="text" value={locationName} onChange={(e)=> setLocationName(e.target.value)}    className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-xs rounded-md focus:ring-primary-600 focus:border-primary-600 block w-full p-2 :bg-gray-700 :border-gray-600 :placeholder-gray-400 :text-white :focus:ring-blue-500 :focus:border-blue-500"
                  placeholder="Location" />
                 </div>
                 {/*footer*/}
@@ -249,10 +249,10 @@ export default function Dashboard({ children }) {
                         onClick={(e) => handleClick(val)}
                         key={index}
                         type="button"
-                        className={`flex items-center w-full p-1 text-sm ${activeTab == val.name ? "bg-gray-100" : "hover:bg-gray-100"}  text-black transition duration-75 rounded-lg group  dark:text-black dark:hover:bg-gray-700`}
+                        className={`flex items-center w-full p-1 text-sm ${activeTab == val.name ? "bg-gray-100" : "hover:bg-gray-100"}  text-black transition duration-75 rounded-lg group  :text-black :hover:bg-gray-700`}
                       >
                         <svg
-                          className="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
+                          className="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 group-hover:text-gray-900 :text-gray-400 :group-hover:text-white"
                           aria-hidden="true"
                           xmlns="http://www.w3.org/2000/svg"
                           fill="currentColor"
@@ -288,7 +288,7 @@ export default function Dashboard({ children }) {
                             <li key={i} onClick={(v) => handleActive(e.name)}>
                               <Link
                                 href={`${`/${e.endpoints}`}`}
-                                className={`flex items-center w-full p-1 text-sm text-black transition ${activeTab == e.name ? "bg-gray-100" : "hover:bg-gray-100"} duration-75 rounded-lg pl-8 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700`}
+                                className={`flex items-center w-full p-1 text-sm text-black transition ${activeTab == e.name ? "bg-gray-100" : "hover:bg-gray-100"} duration-75 rounded-lg pl-8 group hover:bg-gray-100 :text-white :hover:bg-gray-700`}
                               >
                                 {e.name}
                               </Link>
