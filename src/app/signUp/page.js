@@ -102,9 +102,8 @@ export default function () {
                                     <div className="lg:max-w-lg w-full mt-2 md:w-[32%]">
                                         <Textfield name={"confirmPassword"} label={"Confirm Password"} type={"password"} />
                                     </div>
-                                    <div className="w-[25%]  m-auto sm:m-0 sm:ml-auto mt-6 text-center">
+                                    <div className=" sm:m-0 sm:ml-auto mt-4 text-center">
                                         <button
-
                                             type="submit"
                                             disabled={isSubmitting}
                                             className="w-full text-white bg-[#811630] hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
