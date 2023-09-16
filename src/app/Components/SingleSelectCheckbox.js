@@ -49,7 +49,7 @@ useEffect(()=>{
             onFocus={handleBlur}
                 className="border border-gray-300 text-gray-900 sm:text-xs rounded-md focus:ring-primary-600 focus:border-primary-600 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
             />
-            <div className={`border-2 px-10 bg-white absolute ${!showDropdown && 'hidden'}`} >
+            <div style={{maxHeight:"150px"}} className={`border-2 overflow-y-scroll px-10 bg-white absolute z-4 max-h-xl ${!showDropdown && 'hidden'}`} >
             { 
                 fakeUserData.map((val, index) => {
                     return (
@@ -70,7 +70,7 @@ useEffect(()=>{
                                 }
                                 
                             />
-                            {val.name}-{val.location}-{val.time}-{val.Type}
+                            {val.name}
                         </div>
                     )
                 })

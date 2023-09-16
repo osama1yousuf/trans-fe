@@ -20,29 +20,29 @@ useEffect(()=>{
         const element = sections[index];
         if (index != i) {
             // let days = [...assignDays]
-            setAssignDays(prevval => prevval.concat(element.selctedDays))
+            setAssignDays(prevval => prevval.concat(element.selectedDays))
         }
     }
-})
+},[])
 
     return (<>
-        <div className="border rounded p-2 cursor-pointer"  ref={selectRef}>
-            <div onClick={() => setShowDropdown(!showDropdown)} className="flex items-center my-1">
+        <div className="border rounded p-2 cursor-pointer flex flex-wrap"  ref={selectRef}>
+            {/* <div onClick={() => setShowDropdown(!showDropdown)} className="flex items-center my-1">
                 Select Option
-            </div>
+            </div> */}
             {intialDays.map(option => (
                 <div
                     key={option}
-                    className={`items-center my-1 ${assignDays.includes(option.name) && "opacity-50 pointer-events-none" } ${!showDropdown ? 'hidden' : "flex"} `}
+                    className={`items-center m-2 ${assignDays.includes(option.name) && "opacity-50 pointer-events-none" }  `}
                     onClick={(e) => handleDaysChange(i, option)}
                 >
                     <input
                         type="checkbox"
-                        className="mr-2"
+                        className="m-1"
                         checked={option.active}
                         readOnly
                     />
-                    {option.name}
+                    {option.value}
                 </div>
             ))}
         </div>
