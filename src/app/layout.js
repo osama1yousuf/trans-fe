@@ -14,9 +14,6 @@ export const metadata = {
 }
 
 export default function RootLayout({ children }) {
-  const pathname = usePathname()
-  const router = useRouter()
-   const [sideBarValue , setSideBarValue] = useState([])
   let adminTab =  [
     {
       name: "Dashboard",
@@ -82,24 +79,84 @@ export default function RootLayout({ children }) {
 
     }
   ]
-  
-  useEffect(() => {
-    if (pathname !== '/' && pathname !== '/signUp' && pathname !== '/member_signin' && pathname !== '/driver_signin' && pathname !== '/admin_signin') {
-      let token = localStorage.getItem('token')
-      console.log("token", token);
-      if (!token) {
-        router.push('/')
+  const pathname = usePathname()
+  const [openTabs, setOpenTabs] = useState([])
+  const [locationName, setLocationName] = useState('');
+  const [activeTab, setActiveTab] = useState('Dashboard')
+  const [sideBar, setSideBar] = useState(true)
+
+  const handleActive = (e) => {
+    for (let i = 0; i < openTabs.length; i++) {
+      const element = openTabs[i];
+      // console.log("element");
+      if (element.Content) {
+        // console.log("element" , element.Content);
+        let found = element.Content.find((val) => val.name === e)
+        if (found) {
+          console.log("found", found.name);
+          setActiveTab(e)
+          setSideBar(!sideBar)
+        }
       }
     }
-    if (pathname.includes('/driver')) {
-      setSideBarValue(driverTab)
+  }
+  const handleClick = (e) => {
+    console.log(e);
+    if (e.name !== "Location") {
+      let result = openTabs.find((v) => v.name == e.name)
+      if (result && !e.Content) {
+        setActiveTab(e.name)
+        setSideBar(!sideBar)
+      }
+      setOpenTabs(prevTabs => {
+        const updatedTabs = prevTabs.map(tab => {
+          if (tab.name === e.name) {
+            return {
+              ...tab,
+              active: !tab.active
+            };
+          }
+          return tab;
+        });
+  
+        return updatedTabs;
+      });
+    }else{
+      setShowModal(!showModal)
+    }
+  };
+  const handletoggle = () => {
+    setSideBar(!sideBar)
+  }
+  useEffect(()=>{
+     if (pathname.includes('/driver')) {
+      setOpenTabs(driverTab)
      }else if (pathname.includes('/member')) {
-      setSideBarValue(memberTab)
+      setOpenTabs(memberTab)
      }else if(pathname.includes('/admin')){
-      setSideBarValue(adminTab)
+      setOpenTabs(adminTab)
      }
+  },[])
 
-  }, [])
+  const handleLocation = async ()=>{
+    console.log("object" , locationName);
+    if(locationName != ''){
+      try{
+        let body = {
+          location : locationName
+        }
+       let response = await  axiosInstance.post('/locations' , body)
+       toast.success("Location added sucessfully")
+       setLocationName('')
+       setShowModal(false)
+      }catch(e){
+        console.log(e.message);
+        toast.error(e.message)
+      }
+    }else{
+      setShowModal(false)
+    }
+  }
   return (
     <html lang="en">
 
@@ -112,8 +169,7 @@ export default function RootLayout({ children }) {
           // draggable={false}
           theme="colored"
         />
-        {console.log("sideBarValue" , sideBarValue)}
-        <Dashboard sideBarValue={sideBarValue}>
+        <Dashboard handleLocation={handleLocation} handleClick={handleClick} handletoggle={handletoggle} pathname={pathname} openTabs={openTabs} locationName={locationName} activeTab={activeTab} sideBar={sideBar} handleActive={handleActive} >
           {children}
         </Dashboard>
       </body>

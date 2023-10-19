@@ -6,150 +6,10 @@ import { usePathname } from "next/navigation";
 import Textfield from "./Textfield";
 import axiosInstance from "@/interceptor/axios_inteceptor";
 import { toast } from "react-toastify";
-export default function Dashboard({ children }) {
-
-  let adminTab =  [
-    {
-      name: "Dashboard",
-      url: "/admin/dashboard",
-      active: false,
-
-    },
-    {
-      name: "Driver",
-      url: "driver",
-      active: false,
-      Content: [
-        {
-          name: "Create Driver",
-          endpoints: 'admin/createdriver'
-        }, {
-          name: "Active Driver",
-          endpoints: 'admin/activedriver'
-        },
-        {
-          name: "InActive Driver",
-          endpoints: 'admin/inactivedriver'
-        }
-      ]
-    }, {
-      name: "Member",
-      url: "member",
-      active: false,
-      Content: [
-        {
-          name: "Create Member",
-          endpoints: 'admin/createmember'
-        }, {
-          name: "Active Member",
-          endpoints: 'admin/activemember'
-        },
-        {
-          name: "InActive Member",
-          endpoints: 'admin/inactivemember'
-        }
-      ]
-    }
-    ,
-    {
-      name: "Location",
-      url: "admin/location",
-      active: false,
-    },
-  ]
-  let memberTab =  [
-    {
-      name: "Dashboard",
-      url: "/member/dashboard",
-      active: false,
-
-    }
-  ]
-  let driverTab =  [
-    {
-      name: "Dashboard",
-      url: "/driver/dashboard",
-      active: false,
-
-    }
-  ]
-  const pathname = usePathname()
-  const [openTabs, setOpenTabs] = useState([])
+export default function Dashboard({ children , handleClick , handletoggle  , pathname  ,handleLocation, openTabs ,locationName , activeTab , sideBar , handleActive }) {
   const [showModal, setShowModal] = React.useState(false);
-  const [locationName, setLocationName] = React.useState('');
-  const [activeTab, setActiveTab] = useState('Dashboard')
-  const [sideBar, setSideBar] = useState(true)
 
-  const handleActive = (e) => {
-    for (let i = 0; i < openTabs.length; i++) {
-      const element = openTabs[i];
-      // console.log("element");
-      if (element.Content) {
-        // console.log("element" , element.Content);
-        let found = element.Content.find((val) => val.name === e)
-        if (found) {
-          console.log("found", found.name);
-          setActiveTab(e)
-        }
-      }
-    }
-  }
-  const handleClick = (e) => {
-    console.log(e);
-    if (e.name == "Location") {
-      setShowModal(!showModal)
-    }else{
-      let result = openTabs.find((v) => v.name == e.name)
-      if (result && !e.Content) {
-        setActiveTab(e.name)
-      }
-      setOpenTabs(prevTabs => {
-        const updatedTabs = prevTabs.map(tab => {
-          if (tab.name === e.name) {
-            return {
-              ...tab,
-              active: !tab.active
-            };
-          }
-          return tab;
-        });
-  
-        return updatedTabs;
-      });
-    }
-  };
-  const handletoggle = () => {
-    setSideBar(!sideBar)
-  }
-  useEffect(()=>{
-     if (pathname.includes('/driver')) {
-      setOpenTabs(driverTab)
-     }else if (pathname.includes('/member')) {
-      setOpenTabs(memberTab)
-     }else if(pathname.includes('/admin')){
-      setOpenTabs(adminTab)
-     }
-  },[])
 
-  const handleLocation = async ()=>{
-    console.log("object" , locationName);
-    if(locationName != ''){
-      try{
-        let body = {
-          location : locationName
-        }
-       let response = await  axiosInstance.post('/locations' , body)
-       toast.success("Location added sucessfully")
-       setLocationName('')
-       setShowModal(false)
-      }catch(e){
-        console.log(e.message);
-        toast.error(e.message)
-      }
-    }else{
-      setShowModal(false)
-    }
-  }
   return (
     <>
       {pathname !== '/' && pathname !== '/signUp' && pathname !== '/member_signin' && pathname !== '/driver_signin' && pathname !== '/admin_signin' ? <>
@@ -209,7 +69,7 @@ export default function Dashboard({ children }) {
  
         <div className="sticky top-0 z-40 left-0 2xl:container 2xl:mx-auto">
           <div className="bg-white rounded shadow-lg py-4 px-6">
-            <nav className="flex justify-between">
+            <nav className="flex ">
               <div className="flex items-center space-x-3 lg:pr-16 pr-6">
 
 
@@ -224,6 +84,10 @@ export default function Dashboard({ children }) {
                   }
                 </div>
                 {/* <h2 className="font-normal text-2xl leading-6 text-gray-800">OvonRueden</h2> */}
+              </div>
+              <div>
+                <h1 className="text-xl font-extrabold">Muhammadi Transport Service</h1>
+                <h2 className="text-md font-bold">Muhammadi Transport Service</h2>
               </div>
             </nav>
           </div>

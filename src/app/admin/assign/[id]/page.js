@@ -3,10 +3,11 @@
 import { useEffect, useState } from "react"
 import CustomMultiSelectInput from "@/app/Components/MultiSeclectInput"
 import { toast } from "react-toastify"
-import { BsFillArchiveFill } from "react-icons/bs";
 import SingleSelectCheckbox from "@/app/Components/SingleSelectCheckbox"
 import axiosInstance from "@/interceptor/axios_inteceptor";
 import { usePathname, useRouter } from "next/navigation";
+import { BsXCircle } from "react-icons/bs";
+
 export default function Editassign() {
     const router = useRouter()
     const pathname =usePathname()
@@ -46,7 +47,11 @@ export default function Editassign() {
             ]
         }
     ])
-    const [intialDays, setIntialDays] = useState([{ name: "mon", value: "Monday", active: false }, { name: "tue", value: "Tuesday", active: false }, { name: "wed",value : 'Wednesday', active: false }, { name: "thu", value: "Thursday" , active: false }, { name: "fri", value:"Friday" , active: false }, { name: "sat", value: 'saturday' , active: false }, { name: "sun", value:"Sunday" ,  active: false }])
+    const [intialDays, setIntialDays] = useState([{ name: "mon", value: "Monday", active: false }, 
+    { name: "tue", value: "Tuesday", active: false },
+     { name: "wed",value : 'Wednesday', active: false }, 
+     { name: "thu", value: "Thursday" , active: false }, 
+     { name: "fri", value:"Friday" , active: false }, { name: "sat", value: 'Saturday' , active: false }, { name: "sun", value:"Sunday" ,  active: false }])
 
     const handleClick = () => {
         let found = intialDays.find((val) => val.active != true)
@@ -273,6 +278,7 @@ useEffect(()=>{
 
     const handleTravelType = (pi,ci,e)=>{
         let val = [...sections]
+        console.log("e.target.value" , e.target.value);
         if (e.target.value && val[pi].data[ci]) {
             val[pi].data[ci].Type = e.target.value
         }
@@ -301,17 +307,17 @@ useEffect(()=>{
                                 <div className="flex justify-between aligin-items-center  bg-white">
                                     <div>
                                         <label
-                                            className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                                            className="tracking-wide text-sm  mb-2"
                                             htmlFor="grid-last-name"
                                         >
-                                            Selcet Days Assign Again below Member
+                                            Select Days
                                         </label>
                                         <CustomMultiSelectInput
                                             intialDays={intialDays} sections={sections} handleDaysChange={handleDaysChange} i={i}
                                         />
                                     </div>
                                     <div className="" >
-                                        <BsFillArchiveFill size={25} className="text-red-800 cursor-pointer" onClick={() => deleteSection(i)} />
+                                        <BsXCircle size={25} className="text-red-800 cursor-pointer" onClick={() => deleteSection(i)} />
                                     </div>
                                 </div>
                             </div>
@@ -364,10 +370,10 @@ useEffect(()=>{
                                                         <td className="px-6 py-4">{newVal.pickUplocation ? newVal.pickUplocation :"-"}</td>
                                                         <td className="px-6 py-4">{newVal.dropOfflocation ? newVal.dropOfflocation : '-'}</td>
                                                         <td className="px-6 py-4">
-                                                            <select onChange={(e)=>handleTravelType(i , index , e)}  value={newVal.type}>
-                                                              <option value="bothSide">bothSide</option>
-                                                              <option value="pickUp">pickUp</option>
-                                                              <option value="dropOff">dropOff</option>
+                                                            <select className="w-24 border p-1" onChange={(e)=>handleTravelType(i , index , e)}  value={newVal.Type}>
+                                                             { newVal.Type == "bothSide" && <option value="bothSide">bothSide</option>}
+                                                             { newVal.Type == ("bothSide" || "pickUp") && <option value="pickUp">pickUp</option> }
+                                                             { newVal.Type == ("bothSide" || "dropOff") && <option value="dropOff">dropOff</option>}
                                                             </select>
                                                         </td>
                                                         <td className="px-6 py-4">

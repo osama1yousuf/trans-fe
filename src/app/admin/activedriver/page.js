@@ -1,6 +1,7 @@
 'use client'
 import { useRouter } from 'next/navigation';
-import Dashboard from "@/app/Components/Dashboard"
+import { BiEdit } from "react-icons/bi";
+import { BsPersonPlusFill } from "react-icons/bs";
 import DataTable from 'react-data-table-component';
 import { useEffect, useState } from 'react';
 import axiosInstance from '@/interceptor/axios_inteceptor';
@@ -10,6 +11,22 @@ export default function activeDriver(){
     const router = useRouter();
     const [data , setData] = useState([])
     const columns = [
+        {
+            name: 'Actions',
+            selector: row => row,
+            // width:"100px",
+            cell:row =>(
+                <div className="w-full flex  gap-1 lg:w-full ">
+                    
+                            <span title="Edit Driver Detail">
+                            <button onClick={(e)=> editDriver(row)} className="bg-green-500 hover:bg-blue-700 text-white ms-1 p-1 rounded" ><BiEdit/></button>
+                            </span>
+                            <span title="Edit Driver Assignment">
+                            <button onClick={(e)=> handleEditAssign(row) } className="bg-blue-500 hover:bg-blue-700 text-white  p-1 rounded" ><BsPersonPlusFill/></button>
+                            </span>
+                        </div>
+            )
+        },
           {
             name: 'Name',
             selector: row => row.firstName,
@@ -36,21 +53,13 @@ export default function activeDriver(){
             </select>
             )
         },
-        {
-            name: 'Actions',
-            selector: row => row,
-            // width:"100px",
-            cell:row =>(
-                <div className="w-full flex   lg:w-full ">
-                            <button onClick={(e)=> handleEditAssign(row) } className="bg-blue-500 hover:bg-blue-700 text-white  p-1 rounded" type="submit">Edit Assign</button>
-                            <button className="bg-green-500 hover:bg-blue-700 text-white ms-1 p-1 rounded" type="submit">Edit driver</button>
-                        </div>
-            )
-        },
+        
     ];
     
    
-
+  const editDriver =  (e)=>{
+    router.push(`/admin/editdriver/${e._id}`)
+  } 
     const  handleEditAssign =(e)=>{
     router.push(`/admin/assign/${e._id}`);
     }

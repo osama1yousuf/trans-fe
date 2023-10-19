@@ -8,7 +8,9 @@ import * as Yup from 'yup';
 import axios from "axios";
 import axiosInstance from "@/interceptor/axios_inteceptor";
 import { toast } from "react-toastify";
-export default function createdriver() {
+import { useEffect, useState } from "react";
+export default function editdriver() {
+    const pathname = usePathname()
     const router = useRouter()
     const validateDriverSchema = Yup.object().shape({
         firstName: Yup.string().required("First name required"),
@@ -32,32 +34,6 @@ export default function createdriver() {
         salaryType: Yup.string().oneOf(['advance', 'monthEnd'], 'Invalid option selected').required('Please select an option'),
         comment: Yup.string(),
     });
-
-    const initialValues = {
-        //Personaldetails
-        firstName: '',
-        lastName: '',
-        dateOfBirth: '',
-        cnicNo: "",
-        cnicExpiry: "",
-        contactOne: "",
-        contactTwo: "",
-        password: "",
-        address: "",
-        //vehicleInfo
-        vehicleName: "",
-        model: "",
-        vehicleNo: "",
-        make: "",
-        //license info
-        licenseNo: "",
-        licenseIssue: "",
-        licenseExpiry: "",
-        joiningDate: "",
-        salary: "",
-        salaryType: "",
-        comments: ""
-    };
     const handleSubmit = async (values, { setSubmitting }) => {
         setSubmitting(false);
         // console.log(values);
@@ -92,20 +68,82 @@ export default function createdriver() {
             console.log(body);
             const responsne = await axiosInstance.post('/driver', body)
             console.log("responsne", responsne);
-            toast.success("Driver created successfully", { autoClose: 1000 })
+            toast.success("Driver updated successfully", { autoClose: 1000 })
             router.push('/admin/activedriver')
         } catch (e) {
             console.log("error", e.response.data.message[0]);
             toast.error(e.response.data.message[0], { autoClose: 1000 })
         }
     }
+    const [ initialValues , setInitialValues ]= useState({
+        //Personaldetails
+        firstName: '',
+        lastName: '',
+        dateOfBirth: '',
+        cnicNo: "",
+        cnicExpiry: "",
+        contactOne: "",
+        contactTwo: "",
+        password: "",
+        address: "",
+        //vehicleInfo
+        vehicleName: "",
+        model: "",
+        vehicleNo: "",
+        make: "",
+        //license info
+        licenseNo: "",
+        licenseIssue: "",
+        licenseExpiry: "",
+        joiningDate: "",
+        salary: "",
+        salaryType: "",
+        comments: ""
+    });
+  
+    useEffect(()=>{
+        (async function ()  {
+            try {
+              let id = pathname.replace('/admin/editdriver/', '');
+              const response = await axiosInstance.get(`/driver/${id}`);
+              let data = response.data;
+               console.log("data211", data);
+              setInitialValues({
+                // Update initial values here
+                firstName: data.firstName,
+                lastName: data.lastName,
+                dateOfBirth: data.dateOfBirth,
+                cnicNo: data.cnicNo,
+                cnicExpiry: data.cnicExpiry,
+                contactOne: data.contactOne,
+                contactTwo: data.contactTwo,
+                password: data.password,
+                address: data.address,
+                vehicleName: data.vehicleInfo.vehicleName,
+                model: data.vehicleInfo.model,
+                vehicleNo: data.vehicleInfo.vehicleNo,
+                make: data.vehicleInfo.make,
+                licenseNo: data.licenseInfo.licenseNo,
+                licenseIssue: data.licenseInfo.licenseIssue,
+                licenseExpiry: data.licenseInfo.licenseExpiry,
+                joiningDate: data.joiningDate,
+                salary: data.salaryInfo[data.salaryInfo.length - 1].salary,
+                salaryType: data.salaryInfo[data.salaryInfo.length - 1].salaryType,
+                comments: ''
+              });
+            } catch (error) {
+              console.error('Error fetching data:', error);
+            }
+          })();
+    },[])
     return (
-        // <Dashboard>
         <>
+        {console.log("initialValues" , initialValues)}
             <br />
-            <h1 className="text-3xl border-b-2">Create Driver</h1>
+            <h1 className="text-3xl border-b-2">Edit Driver Detail</h1>
             <br />
             <Formik
+              enableReinitialize
                 initialValues={initialValues}
                 validationSchema={validateDriverSchema}
                 onSubmit={handleSubmit}
@@ -183,7 +221,7 @@ export default function createdriver() {
                                         className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                                         id="cnicNo"
                                         name="cnicNo"
-                                        type="number"
+                                        type="text"
                                         placeholder="42***********"
                                     />
                                     <ErrorMessage name="cnicNo">
@@ -280,7 +318,7 @@ export default function createdriver() {
                                         {errorMsg => <span className="text-red-500 text-sm">{errorMsg}</span>}
                                     </ErrorMessage>
                                 </div>
-                                <div className="w-full mt-2 lg:w-3/4 px-3">
+                                <div className="w-full mt-2 lg:w-2/4 px-3">
                                     <label
                                         className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
                                         htmlFor="address"
