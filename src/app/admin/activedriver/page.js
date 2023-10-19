@@ -77,8 +77,7 @@ export default function activeDriver(){
         let body = {
             status: row.status == 'active' ? 'inActive' : 'active'
         }
-        console.log(row);
-        console.log(body);
+       
         try {
             let response = await axiosInstance.put(`/driver/status/${row._id}`, body)
             console.log("response", response);
@@ -98,7 +97,7 @@ export default function activeDriver(){
         // <Dashboard >
             <div className="z-0">    
              <DataTable
-             title="Active Driver List"
+            //  title="Active Driver List"
             //  fixedHeader
             columns={columns}
             data={data}

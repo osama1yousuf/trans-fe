@@ -12,6 +12,31 @@ import { useEffect, useState } from "react";
 export default function editdriver() {
     const pathname = usePathname()
     const router = useRouter()
+    const [ initialValues , setInitialValues ]= useState({
+        //Personaldetails
+        firstName: '',
+        lastName: '',
+        dateOfBirth: '',
+        cnicNo: "",
+        cnicExpiry: "",
+        contactOne: "",
+        contactTwo: "",
+        // password: "",
+        address: "",
+        //vehicleInfo
+        vehicleName: "",
+        model: "",
+        vehicleNo: "",
+        make: "",
+        //license info
+        licenseNo: "",
+        licenseIssue: "",
+        licenseExpiry: "",
+        joiningDate: "",
+        salary: "",
+        salaryType: "",
+        comments: ""
+    });
     const validateDriverSchema = Yup.object().shape({
         firstName: Yup.string().required("First name required"),
         lastName: Yup.string().required("Last name required"),
@@ -20,7 +45,7 @@ export default function editdriver() {
         cnicExpiry: Yup.date().required("Nic expiry date is required"),
         contactOne: Yup.string().length(11, "Phone Number Invalid").required("Phone Number required"),
         contactTwo: Yup.string().length(11, "Phone Number Invalid"),
-        password: Yup.string().min(8, "Password Length is greater than 8").required("Password is required"),
+        // password: Yup.string().min(8, "Password Length is greater than 8").required("Password is required"),
         address: Yup.string().required("Address is Required"),
         vehicleName: Yup.string().required("Vehicle name required"),
         model: Yup.string().required("Vehicle model required"),
@@ -34,8 +59,10 @@ export default function editdriver() {
         salaryType: Yup.string().oneOf(['advance', 'monthEnd'], 'Invalid option selected').required('Please select an option'),
         comment: Yup.string(),
     });
+    
     const handleSubmit = async (values, { setSubmitting }) => {
         setSubmitting(false);
+        let id = pathname.replace('/admin/editdriver/', '');
         // console.log(values);
         let body = {
             firstName: values.firstName,
@@ -45,7 +72,7 @@ export default function editdriver() {
             cnicExpiry: values.cnicExpiry,
             contactOne: values.contactOne,
             contactTwo: values.contactTwo,
-            password: values.password,
+            // password: values.password,
             address: values.address,
             joiningDate: values.joiningDate,
             licenseInfo: {
@@ -66,7 +93,7 @@ export default function editdriver() {
         }
         try {
             console.log(body);
-            const responsne = await axiosInstance.post('/driver', body)
+            const responsne = await axiosInstance.put(`/driver/${id}`, body)
             console.log("responsne", responsne);
             toast.success("Driver updated successfully", { autoClose: 1000 })
             router.push('/admin/activedriver')
@@ -75,31 +102,7 @@ export default function editdriver() {
             toast.error(e.response.data.message[0], { autoClose: 1000 })
         }
     }
-    const [ initialValues , setInitialValues ]= useState({
-        //Personaldetails
-        firstName: '',
-        lastName: '',
-        dateOfBirth: '',
-        cnicNo: "",
-        cnicExpiry: "",
-        contactOne: "",
-        contactTwo: "",
-        password: "",
-        address: "",
-        //vehicleInfo
-        vehicleName: "",
-        model: "",
-        vehicleNo: "",
-        make: "",
-        //license info
-        licenseNo: "",
-        licenseIssue: "",
-        licenseExpiry: "",
-        joiningDate: "",
-        salary: "",
-        salaryType: "",
-        comments: ""
-    });
+   
   
     useEffect(()=>{
         (async function ()  {
@@ -112,12 +115,12 @@ export default function editdriver() {
                 // Update initial values here
                 firstName: data.firstName,
                 lastName: data.lastName,
-                dateOfBirth: data.dateOfBirth,
+                dateOfBirth: new Date(data.dateOfBirth).toISOString().split('T')[0],
                 cnicNo: data.cnicNo,
-                cnicExpiry: data.cnicExpiry,
+                cnicExpiry:new Date(data.cnicExpiry).toISOString().split('T')[0],
                 contactOne: data.contactOne,
                 contactTwo: data.contactTwo,
-                password: data.password,
+                // password: data.password,
                 address: data.address,
                 vehicleName: data.vehicleInfo.vehicleName,
                 model: data.vehicleInfo.model,
@@ -138,10 +141,10 @@ export default function editdriver() {
     },[])
     return (
         <>
-        {console.log("initialValues" , initialValues)}
-            <br />
-            <h1 className="text-3xl border-b-2">Edit Driver Detail</h1>
-            <br />
+        {/* {console.log("initialValues" , initialValues)} */}
+            {/* <br /> */}
+            {/* <h1 className="text-3xl border-b-2">Edit Driver Detail</h1> */}
+            {/* <br /> */}
             <Formik
               enableReinitialize
                 initialValues={initialValues}
@@ -150,6 +153,9 @@ export default function editdriver() {
             >
                 {({ isSubmitting }) => (
                     <Form className="w-full">
+                        <div className="w-full flex  m-1 lg:w-full px-3">
+                                <button type="submit" disabled={isSubmitting} className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded" >SAVE</button>
+                            </div>
                         <div className="flex  flex-wrap -mx-3 mb-6">
                             {/* <div> */}
                             <label className="text-sm m-2">Personal Info</label>
@@ -300,7 +306,7 @@ export default function editdriver() {
                                         {errorMsg => <span className="text-red-500 text-sm">{errorMsg}</span>}
                                     </ErrorMessage>
                                 </div>
-                                <div className="w-full mt-2 lg:w-1/4 px-3">
+                                {/* <div className="w-full mt-2 lg:w-1/4 px-3">
                                     <label
                                         className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
                                         htmlFor="password"
@@ -317,7 +323,7 @@ export default function editdriver() {
                                     <ErrorMessage name="password">
                                         {errorMsg => <span className="text-red-500 text-sm">{errorMsg}</span>}
                                     </ErrorMessage>
-                                </div>
+                                </div> */}
                                 <div className="w-full mt-2 lg:w-2/4 px-3">
                                     <label
                                         className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
@@ -533,9 +539,7 @@ export default function editdriver() {
                                 // placeholder="42***-*******-*"
                                 />
                             </div>
-                            <div className="w-full flex justify-center aligin-center m-4 lg:w-full px-3">
-                                <button type="submit" disabled={isSubmitting} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" >SAVE</button>
-                            </div>
+                            
                         </div>
 
                     </Form>

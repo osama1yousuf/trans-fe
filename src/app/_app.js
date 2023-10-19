@@ -1,11 +1,14 @@
+'use client';
 import { App } from "next/app";
-import Header from "../components/Header";
-import Dashboard from "./Components/Dashboard";
+import Loader from "./Components/Loader";
+import { useState } from "react";
 function MyApp({ Component, pageProps }) {
+  const [loading, setLoading] = useState(true);
   return (
     <div>
       {/* <Header /> */}
-      <Component {...pageProps} />
+      {loading ? <Loader /> : null}
+      <Component setLoading={setLoading} {...pageProps} />
     </div>
   );
 }

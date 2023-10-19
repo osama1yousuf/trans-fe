@@ -102,9 +102,10 @@ export default function createdriver() {
     return (
         // <Dashboard>
         <>
-            <br />
-            <h1 className="text-3xl border-b-2">Create Driver</h1>
-            <br />
+            {/* <br /> */}
+            {/* <h1 className="text-3xl border-b-2">Create Driver</h1> */}
+            {/* <br /> */}
+
             <Formik
                 initialValues={initialValues}
                 validationSchema={validateDriverSchema}
@@ -112,6 +113,9 @@ export default function createdriver() {
             >
                 {({ isSubmitting }) => (
                     <Form className="w-full">
+                        <div className="w-full flex m-1 lg:w-full px-3">
+                            <button type="submit" disabled={isSubmitting} className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded" >SAVE</button>
+                        </div>
                         <div className="flex  flex-wrap -mx-3 mb-6">
                             {/* <div> */}
                             <label className="text-sm m-2">Personal Info</label>
@@ -495,9 +499,7 @@ export default function createdriver() {
                                 // placeholder="42***-*******-*"
                                 />
                             </div>
-                            <div className="w-full flex justify-center aligin-center m-4 lg:w-full px-3">
-                                <button type="submit" disabled={isSubmitting} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" >SAVE</button>
-                            </div>
+
                         </div>
 
                     </Form>

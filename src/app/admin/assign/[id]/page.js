@@ -286,19 +286,22 @@ useEffect(()=>{
     return (
         <div>
             {console.log("driverDetail" , sections)}
-            <div className="flex">
+            <div className="flex sticky flex-col">
                 <div className="w-1/2">
-                    <h1 className="text-2xl">Driver Name : {driverDetail?.firstName}</h1>
-                    <br />
+                    <h1 className="text-xl">Driver Name : {driverDetail?.firstName}</h1>
+                    {/* <br /> */}
                     <h1>Vehicle Name : {driverDetail?.vehicleInfo?.vehicleName}</h1>
                     <h1>Vehicle No : {driverDetail?.vehicleInfo?.vehicleNo}</h1>
-                </div>
-                <div className="w-1/2">
-                    <div className="w-full flex mt-10  lg:w-full ">
-                        <button onClick={() => handleClick()} className="bg-green-500 hover:bg-blue-700 text-white  px-8 py-2 rounded" type="submit">Add New Day</button>
+                </div>    
+            <div className="flex  mx-2">
+                <button className="bg-green-600 text-white rounded px-3 py-1" onClick={handleFormSubmit} >Save</button>
+            </div>
+            </div>
+            <div className="w-1/2">
+                    <div className="w-full flex justify-center mt-10  lg:w-full ">
+                        <button onClick={() => handleClick()} className="bg-green-500 hover:bg-blue-700 text-white text-sm px-4 py-1 rounded" type="submit">Add New Day</button>
                     </div>
                 </div>
-            </div>
             {
                 sections.map((val, i) => {
                     return (
@@ -371,9 +374,9 @@ useEffect(()=>{
                                                         <td className="px-6 py-4">{newVal.dropOfflocation ? newVal.dropOfflocation : '-'}</td>
                                                         <td className="px-6 py-4">
                                                             <select className="w-24 border p-1" onChange={(e)=>handleTravelType(i , index , e)}  value={newVal.Type}>
-                                                             { newVal.Type == "bothSide" && <option value="bothSide">bothSide</option>}
-                                                             { newVal.Type == ("bothSide" || "pickUp") && <option value="pickUp">pickUp</option> }
-                                                             { newVal.Type == ("bothSide" || "dropOff") && <option value="dropOff">dropOff</option>}
+                                                             { newVal.Type == "bothSide" && <option value="bothSide">BothSide</option>}
+                                                             { newVal.Type == ("bothSide" || "pickUp") && <option value="pickUp">PickUp</option> }
+                                                             { newVal.Type == ("bothSide" || "dropOff") && <option value="dropOff">DropOff</option>}
                                                             </select>
                                                         </td>
                                                         <td className="px-6 py-4">
@@ -396,9 +399,7 @@ useEffect(()=>{
                     )
                 })
             }
-            <div className="flex justify-end mx-2">
-                <button className="bg-green-600 text-white rounded px-3 py-1" onClick={handleFormSubmit} >Save</button>
-            </div>
+        
         </div>
 
     )

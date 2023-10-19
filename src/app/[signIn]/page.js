@@ -44,10 +44,13 @@ export default function SignIn() {
        toast.success("Login successfully" , { autoClose : 1000 })
        if (userType == 'superadmin') {
          router.push('/admin/dashboard')
+         localStorage.setItem("userType" , "superadmin")
        }else if (userType == 'member') {
         router.push('/member/dashboard')
+        localStorage.setItem("userType" , "member")
        }else if (userType == 'driver') {
         router.push('/driver/dashboard')
+        localStorage.setItem("userType" , "driver")
        }
     }
     }catch(e){

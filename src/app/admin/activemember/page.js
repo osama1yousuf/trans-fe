@@ -90,7 +90,7 @@ export default function ActiveMember() {
         // <Dashboard >
         <div className="z-0">
             <DataTable
-                title="Active Member List"
+                // title="Active Member List"
                 //  fixedHeader
                 columns={columns}
                 data={data}

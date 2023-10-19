@@ -19,13 +19,14 @@ export default function SingleSelectCheckbox({ fakeUserData, handleMemberChange,
     }
     useEffect(() => {
         // console.log(sections);
+        let data = []
         for (let i = 0; i < sections.length; i++) {
             const element = sections[i];
-            let data = []
             for (let i = 0; i < element.data.length; i++) {
                 const val = element.data[i];
                 let found = data.find((e) => e.id == val.id && e.checked)
                 if (!found) {
+                    console.log("val.name" , val.name)
                     if (val.name) {
                         data.push(val)
                     }
@@ -43,6 +44,7 @@ export default function SingleSelectCheckbox({ fakeUserData, handleMemberChange,
 
     return (
         <div ref={selectRef}>
+            {console.log("assignMember" , assignMember)}
             <div
                 onClick={handleBlur}
                 style={{width:"120px"}}
