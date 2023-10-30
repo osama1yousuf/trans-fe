@@ -2,7 +2,10 @@
 
 import React from "react";
 
-const Loader = () => {
+const Loader = ({show}) => {
+  if (!show) {
+    return null
+  }
   return (
     <div className="loader">
       {/* Add your loading animation or message here */}

@@ -221,7 +221,7 @@ export default function Dashboard({ children }) {
             <div className="opacity-25 fixed inset-0 z-40 bg-black"></div>
           </>
         ) : null}
-        <div className="sticky top-0 z-40 left-0 2xl:container 2xl:mx-auto">
+        <div className="sticky top-0 z-40 left-0 w-full">
           <div className="bg-white rounded shadow-lg py-4 px-6">
             <nav className="flex justify-between">
               <div className="flex items-center space-x-3 lg:pr-16 pr-6">

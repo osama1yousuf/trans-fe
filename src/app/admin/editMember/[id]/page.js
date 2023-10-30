@@ -18,7 +18,7 @@ export default function createMember() {
         // password: Yup.string().min(8, "Password length is greater than 8").required("Password is required"),
         residentialAddress: Yup.string().required("Address is required"),
         joinDate: Yup.date().required("Join date is required"),
-        cnicNo: Yup.string().length(13, "Nic value is greater than 13").required("Nic # is required"),
+        cnicNo: Yup.string().length(13, "Nic value is greater than 13").required("CNIC # is required"),
         contactOne: Yup.string().length(11, "Phone Number Invalid").required("Phone Number required"),
         contactTwo: Yup.string().length(11, "Phone Number Invalid"),
         // file: Yup.mixed().required('File is required'),

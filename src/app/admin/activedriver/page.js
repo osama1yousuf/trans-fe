@@ -3,9 +3,10 @@ import { useRouter } from 'next/navigation';
 import { BiEdit } from "react-icons/bi";
 import { BsPersonPlusFill } from "react-icons/bs";
 import DataTable from 'react-data-table-component';
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import axiosInstance from '@/interceptor/axios_inteceptor';
 import { toast } from 'react-toastify';
+import Loader from '@/app/Components/Loader';
 
 export default function activeDriver(){
     const router = useRouter();
@@ -96,6 +97,7 @@ export default function activeDriver(){
     return(
         // <Dashboard >
             <div className="z-0">    
+            <Suspense fallback={<Loader/>} />
              <DataTable
             //  title="Active Driver List"
             //  fixedHeader

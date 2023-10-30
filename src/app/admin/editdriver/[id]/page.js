@@ -41,7 +41,7 @@ export default function editdriver() {
         firstName: Yup.string().required("First name required"),
         lastName: Yup.string().required("Last name required"),
         dateOfBirth: Yup.date().required("Date of Birth is Required"),
-        cnicNo: Yup.string().length(13, "Nic value is greater than 13").required("Nic # is required"),
+        cnicNo: Yup.string().length(13, "Nic value is greater than 13").required("CNIC # is required"),
         cnicExpiry: Yup.date().required("Nic expiry date is required"),
         contactOne: Yup.string().length(11, "Phone Number Invalid").required("Phone Number required"),
         contactTwo: Yup.string().length(11, "Phone Number Invalid"),
@@ -108,6 +108,7 @@ export default function editdriver() {
         (async function ()  {
             try {
               let id = pathname.replace('/admin/editdriver/', '');
+              console.log("id" , id)
               const response = await axiosInstance.get(`/driver/${id}`);
               let data = response.data;
                console.log("data211", data);
@@ -130,8 +131,8 @@ export default function editdriver() {
                 licenseIssue: data.licenseInfo.licenseIssue,
                 licenseExpiry: data.licenseInfo.licenseExpiry,
                 joiningDate: data.joiningDate,
-                salary: data.salaryInfo[data.salaryInfo.length - 1].salary,
-                salaryType: data.salaryInfo[data.salaryInfo.length - 1].salaryType,
+                salary: data?.salaryInfo?.salary,
+                salaryType: data?.salaryInfo?.salaryType,
                 comments: ''
               });
             } catch (error) {

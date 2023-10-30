@@ -1,12 +1,13 @@
 'use client'
 import { useEffect, useState } from 'react'
-import Dashboard from './Components/Dashboard'
+// import Dashboard from './Components/Dashboard'
 import './globals.css'
 import 'react-toastify/dist/ReactToastify.css';
 import { Inter } from 'next/font/google'
 const inter = Inter({ subsets: ['latin'] })
 import { usePathname, useRouter } from 'next/navigation'
 import { ToastContainer } from 'react-toastify'
+import Dashboard from './Components/dashboard';
 
 export const metadata = {
   title: 'Create Next App',
