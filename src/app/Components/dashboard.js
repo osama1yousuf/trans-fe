@@ -58,6 +58,11 @@ export default function Dashboard({ children }) {
       url: "admin/location",
       active: false,
     },
+    {
+      name: "Payment",
+      url: "admin/payment",
+      active: false,
+    },
   ]
   let memberTab = [
     {
