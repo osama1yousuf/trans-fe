@@ -4,40 +4,41 @@ import DataTable from "react-data-table-component";
 import Loader from "@/app/Components/Loader";
 import { useEffect } from "react";
 import axiosInstance from "@/interceptor/axios_inteceptor";
+import ChallanModal from "@/app/Components/ChallanModal";
 
 const Payment = () => {
+  const [selectedRow, setSelectedRow] = useState(null);
   const [filterValue, setFilterValues] = useState({
     startDate: null,
     endDate: null,
     paymentStatus: null,
     challanType: "CUSTOMER",
-    search : null ,
+    search: null,
   });
+  const [challanModal , setChallanModal] = useState(false)
   const [data, setData] = useState([]);
   const columns = [
-    //   {
-    //       name: 'Actions',
-    //       selector: row => row,
-    //       // width:"100px",
-    //       cell:row =>(
-    //           <div className="w-full flex  gap-1 lg:w-full ">
-
-    //                       <span title="Edit Driver Detail">
-    //                       <button onClick={(e)=> editDriver(row)} className="bg-green-500 hover:bg-blue-700 text-white ms-1 p-1 rounded" ><BiEdit/></button>
-    //                       </span>
-    //                       <span title="Edit Driver Assignment">
-    //                       <button onClick={(e)=> handleEditAssign(row) } className="bg-blue-500 hover:bg-blue-700 text-white  p-1 rounded" ><BsPersonPlusFill/></button>
-    //                       </span>
-    //                   </div>
-    //       )
-    //   },
+    {
+      name: '',
+      ignoreRowClick: true,
+      allowOverflow: true,
+      button: false,
+      width:"50px",
+      cell: row => (
+        <div>
+          <input type="checkbox" checked={row?._id === selectedRow?._id} onChange={() => setSelectedRow(row)} />
+        </div>
+      ),
+      head: () => null, 
+    },
     {
       name: "Chalan Id",
       selector: (row) => row._id,
     },
     {
       name: "Name",
-      selector: (row) => row.firstName,
+      selector: (row) =>
+        `${row.customerData.firstName} ${row.customerData.lastName}`,
     },
     {
       name: "Amount",
@@ -49,19 +50,26 @@ const Payment = () => {
     },
   ];
   const getChallanList = async () => {
-    
     let url =
-    "/challan/get" +
-    (filterValue.challanType !== null ? `?type=${filterValue.challanType}` : "") +
-    (filterValue.paymentStatus !== null ? `&status=${filterValue.paymentStatus}` : "") +
-    (filterValue.startDate !== null ? `&fromDate=${filterValue.startDate}T00:00:00.000Z` : "") +
-    (filterValue.endDate !== null ? `&toDate=${filterValue.endDate}T23:59:59.000Z` : "");
-    (filterValue.search !== null ? `&status=${filterValue.search}` : "") 
+      "/challan/get" +
+      (filterValue.challanType !== null && filterValue.challanType !== "All"
+        ? `?type=${filterValue.challanType}`
+        : "") +
+      (filterValue.paymentStatus !== null && filterValue.paymentStatus !== "All"
+        ? `&status=${filterValue.paymentStatus}`
+        : "") +
+      (filterValue.startDate !== null
+        ? `&fromDate=${filterValue.startDate}T00:00:00.000Z`
+        : "") +
+      (filterValue.endDate !== null
+        ? `&toDate=${filterValue.endDate}T23:59:59.000Z`
+        : "");
+    filterValue.search !== null ? `&status=${filterValue.search}` : "";
     try {
       let response = await axiosInstance.get(url);
       if (response.status === 200) {
         console.log(response);
-        setData(response?.data);
+        setData(response?.data?.data);
       }
     } catch (error) {
       console.log("error", error);
@@ -70,29 +78,29 @@ const Payment = () => {
   };
   useEffect(() => {
     getChallanList();
-    console.log("work");
   }, [filterValue]);
-
+const handlePayNow =(val)=>{
+  console.log("val", val)
+}
   return (
     <div>
+      <ChallanModal challanModal={challanModal} selectedRow={selectedRow} setChallanModal={setChallanModal} handlePayNow={handlePayNow} />
       <div className="w-full flex justify-between lg:w-full  px-1">
         <h2 className="mb-1 text-xl font-bold leading-tight tracking-tight py-1 px-2 m-2 text-gray-900 md:text-2xl dark:text-white">
           Filters
         </h2>
         <div>
           <button
-            //   type="submit"
-            //   disabled={isSubmitting}
+            onClick={()=>{
+              if (selectedRow && selectedRow?._id) {
+                setChallanModal(true)
+              }
+            }}
             className="bg-green-500 m-2 hover:bg-green-700 text-white font-bold py-1 px-3 rounded"
           >
-            Receive Payment
-          </button>
-          <button
-            //   type="submit"
-            //   disabled={isSubmitting}
-            className="bg-green-500 m-2 hover:bg-green-700 text-white font-bold py-1 px-3 rounded"
-          >
-            Pay Payment
+            {filterValue.challanType === "CUSTOMER"
+              ? "Receive Payment"
+              : "Pay Payment"}
           </button>
         </div>
       </div>
@@ -151,7 +159,7 @@ const Payment = () => {
           >
             <option>All</option>
             <option value="DRIVER">Driver</option>
-            <option value="CUSTOMER">Member</option>
+            <option value="CUSTOMER">Customer</option>
           </select>
         </div>
       </div>
@@ -159,7 +167,7 @@ const Payment = () => {
         <Suspense fallback={<Loader />} />
         <DataTable
           title="Challan List"
-          //  fixedHeader
+          
           columns={columns}
           data={data}
         />
