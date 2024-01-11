@@ -60,10 +60,28 @@ export default function Dashboard({ children }) {
       active: false,
     },
     {
-      name: "Payment",
-      url: "admin/payment",
+      name: "Financial",
+      url: "financial",
       active: false,
-    },
+      Content: [
+        {
+          name: "Challan / PaySlip",
+          endpoints: "admin/challan",
+          // active: false,
+        },
+        {
+          name: "Collection",
+          endpoints: "admin/collection",
+          // active: false,
+        },
+        {
+          name: "Payment",
+          endpoints: "admin/payment",
+          // active: false,
+        },
+        
+      ]
+    }
   ];
   let memberTab = [
     {

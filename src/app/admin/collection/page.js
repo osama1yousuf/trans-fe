@@ -6,13 +6,13 @@ import { useEffect } from "react";
 import axiosInstance from "@/interceptor/axios_inteceptor";
 import ChallanModal from "@/app/Components/ChallanModal";
 
-const Payment = () => {
+const Collection = () => {
   const [selectedRow, setSelectedRow] = useState(null);
   const [filterValue, setFilterValues] = useState({
     startDate: null,
     endDate: null,
     paymentStatus: null,
-    challanType: "DRIVER",
+    challanType: "CUSTOMER",
     search: null,
   });
   const [challanModal , setChallanModal] = useState(false)
@@ -177,4 +177,4 @@ const handlePayNow =(val)=>{
   );
 };
 
-export default Payment;
+export default Collection;
