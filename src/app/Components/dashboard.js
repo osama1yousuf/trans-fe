@@ -169,6 +169,7 @@ export default function Dashboard({ children }) {
     }
   };
   useEffect(() => {
+    console.log("pathname" , pathname)
     let initialTabs = [];
     if (localStorage.getItem("token")) {
       let userType = localStorage.getItem("userType");

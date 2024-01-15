@@ -2,7 +2,9 @@
 import React, { Suspense, useState } from "react";
 import DataTable from "react-data-table-component";
 import Loader from "@/app/Components/Loader";
+import { FcCancel } from "react-icons/fc";
 import { useEffect } from "react";
+import { toast } from "react-toastify";
 import axiosInstance from "@/interceptor/axios_inteceptor";
 import ChallanModal from "@/app/Components/ChallanModal";
 
@@ -15,21 +17,25 @@ const Collection = () => {
     challanType: "CUSTOMER",
     search: null,
   });
-  const [challanModal , setChallanModal] = useState(false)
+  const [challanModal, setChallanModal] = useState(false);
   const [data, setData] = useState([]);
   const columns = [
     {
-      name: '',
+      name: "",
       ignoreRowClick: true,
       allowOverflow: true,
       button: false,
-      width:"50px",
-      cell: row => (
+      width: "50px",
+      cell: (row) => (
         <div>
-          <input type="checkbox" checked={row?._id === selectedRow?._id} onChange={() => setSelectedRow(row)} />
+          <input
+            type="checkbox"
+            checked={row?._id === selectedRow?._id}
+            onChange={() => setSelectedRow(row)}
+          />
         </div>
       ),
-      head: () => null, 
+      head: () => null,
     },
     {
       name: "Chalan Id",
@@ -48,15 +54,71 @@ const Collection = () => {
       name: "Challan Type",
       selector: (row) => row.challanType,
     },
+    {
+      name: "Acion",
+      selector: (row) => row.action,
+      cell: (row) => (
+        <>
+          {row.challanStatus === "UN_PAID" && (
+            <span title="Void Challan">
+              <button
+                onClick={(e) => voidChallan(row)}
+                className="bg-gray-100 hover:bg-blue-700 text-white  p-1 rounded"
+              >
+                <FcCancel size={"22px"} />
+              </button>
+              {/* <button className="bg-green-500 hover:bg-blue-700 text-white ms-1 p-1 rounded" type="submit">Edit driver</button> */}
+            </span>
+          )}
+        </>
+      ),
+    },
   ];
+
+  const voidChallan = async (e) => {
+    try {
+      const confirmed = await new Promise((resolve) => {
+        toast.info("Are you sure?", {
+          autoClose: false,
+          onClose: resolve,
+          closeOnClick: false,
+          draggable: false,
+          closeButton: false,
+          position: toast.POSITION.BOTTOM_CENTER,
+          render: ({ closeToast }) => (
+            <div>
+              <span>Are you sure?</span>
+              <button onClick={() => resolve(true)}>Confirm</button>
+              <button onClick={() => resolve(false)}>Cancel</button>
+            </div>
+          ),
+        });
+      });
+  
+      if (confirmed) {
+        // Proceed with the action
+        // Uncomment the following lines to execute the API call and display success toast:
+        // let response = await axiosInstance.put(`/challan/status/void/${e?._id}`);
+        // console.log("response", response);
+        // toast.success("Challan Void Successfully");
+      } else {
+        // Handle cancellation or show a message
+      }
+  
+      getChallanList();
+    } catch (error) {
+      console.log(error);
+      toast.error(error?.message);
+    }
+  };
   const getChallanList = async () => {
     let url =
       "/challan/get" +
       (filterValue.challanType !== null && filterValue.challanType !== "All"
-        ? `?type=${filterValue.challanType}`
+        ? `?challanType=${filterValue.challanType}`
         : "") +
       (filterValue.paymentStatus !== null && filterValue.paymentStatus !== "All"
-        ? `&status=${filterValue.paymentStatus}`
+        ? `&challanStatus=${filterValue.paymentStatus}`
         : "") +
       (filterValue.startDate !== null
         ? `&fromDate=${filterValue.startDate}T00:00:00.000Z`
@@ -79,32 +141,35 @@ const Collection = () => {
   useEffect(() => {
     getChallanList();
   }, [filterValue]);
-const handlePayNow =(val)=>{
-  console.log("val", val)
-}
+  const handlePayNow = (val) => {
+    console.log("val", val);
+  };
   return (
     <div>
-      <ChallanModal challanModal={challanModal} selectedRow={selectedRow} setChallanModal={setChallanModal} handlePayNow={handlePayNow} />
+      <ChallanModal
+        challanModal={challanModal}
+        selectedRow={selectedRow}
+        setChallanModal={setChallanModal}
+        handlePayNow={handlePayNow}
+      />
       <div className="w-full flex justify-between lg:w-full  px-1">
         <h2 className="mb-1 text-xl font-bold leading-tight tracking-tight py-1 px-2 m-2 text-gray-900 md:text-2xl dark:text-white">
           Filters
         </h2>
         <div>
           <button
-            onClick={()=>{
+            onClick={() => {
               if (selectedRow && selectedRow?._id) {
-                setChallanModal(true)
+                setChallanModal(true);
               }
             }}
             className="bg-green-500 m-2 hover:bg-green-700 text-white font-bold py-1 px-3 rounded"
           >
-            {filterValue.challanType === "CUSTOMER"
-              ? "Collection"
-              : "Payment"}
+            {filterValue.challanType === "CUSTOMER" ? "Collection" : "Payment"}
           </button>
         </div>
       </div>
-       
+
       <div className="flex justify-between">
         <div className="w-full m-2">
           <label className="text-xs px-2">Start Date</label>
@@ -113,7 +178,7 @@ const handlePayNow =(val)=>{
             value={filterValue.startDate}
             className="appearance-none block w-full  border border-gray-200 rounded  leading-tight focus:outline-none py-1 px-2 m-2 focus:bg-white focus:border-gray-500"
             onChange={(e) => {
-              setSelectedRow(null)
+              setSelectedRow(null);
               setFilterValues({ ...filterValue, startDate: e.target.value });
             }}
           />
@@ -125,7 +190,7 @@ const handlePayNow =(val)=>{
             value={filterValue.endDate}
             className="appearance-none block w-full  border border-gray-200 rounded  leading-tight focus:outline-none py-1 px-2 m-2 focus:bg-white focus:border-gray-500"
             onChange={(e) => {
-              setSelectedRow(null)
+              setSelectedRow(null);
               setFilterValues({ ...filterValue, endDate: e.target.value });
             }}
           />
@@ -135,7 +200,7 @@ const handlePayNow =(val)=>{
           <select
             value={filterValue.paymentStatus}
             onChange={(e) => {
-              setSelectedRow(null)
+              setSelectedRow(null);
               setFilterValues({
                 ...filterValue,
                 paymentStatus: e.target.value,
@@ -166,12 +231,7 @@ const handlePayNow =(val)=>{
       </div>
       <div className="z-0">
         <Suspense fallback={<Loader />} />
-        <DataTable
-          title="Challan List"
-          
-          columns={columns}
-          data={data}
-        />
+        <DataTable title="Challan List" columns={columns} data={data} />
       </div>
     </div>
   );

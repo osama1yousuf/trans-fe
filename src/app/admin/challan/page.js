@@ -2,30 +2,26 @@
 import React, { Suspense, useState } from "react";
 import DataTable from "react-data-table-component";
 import Loader from "@/app/Components/Loader";
+import { toast } from "react-toastify";
 import { useEffect } from "react";
 import axiosInstance from "@/interceptor/axios_inteceptor";
-import ChallanModal from "@/app/Components/ChallanModal";
 
 const Challan = () => {
-  const [selectedRow, setSelectedRow] = useState(null);
   const [filterValue, setFilterValues] = useState({
-    startDate: null,
-    endDate: null,
-    paymentStatus: null,
     challanType: "CUSTOMER",
-    search: null,
+    challanDate: null,
   });
-  const [challanModal, setChallanModal] = useState(false);
+
   const [data, setData] = useState([]);
   const columns = [
     {
       name: "Chalan Id",
-      selector: (row) => row._id,
+      selector: (row) => row.challanNo,
     },
     {
       name: "Name",
       selector: (row) =>
-        `${row.customerData.firstName} ${row.customerData.lastName}`,
+        `${row.customerId.firstName} ${row.customerId.lastName}`,
     },
     {
       name: "Amount",
@@ -36,39 +32,33 @@ const Challan = () => {
       selector: (row) => row.challanType,
     },
   ];
-  const getChallanList = async () => {
-    let url =
-      "/challan/get" +
-      (filterValue.challanType !== null && filterValue.challanType !== "All"
-        ? `?type=${filterValue.challanType}`
-        : "") +
-      (filterValue.paymentStatus !== null && filterValue.paymentStatus !== "All"
-        ? `&status=${filterValue.paymentStatus}`
-        : "") +
-      (filterValue.startDate !== null
-        ? `&fromDate=${filterValue.startDate}T00:00:00.000Z`
-        : "") +
-      (filterValue.endDate !== null
-        ? `&toDate=${filterValue.endDate}T23:59:59.000Z`
-        : "");
-    filterValue.search !== null ? `&status=${filterValue.search}` : "";
-    try {
-      let response = await axiosInstance.get(url);
-      if (response.status === 200) {
-        console.log(response);
+  const generateChallan = async () => {
+    if (filterValue.challanDate && filterValue.challanType) {
+      try {
+        toast.loading("Generating Challan");
+        let response = await axiosInstance.post("/challan/all/generate", {
+          ...filterValue,
+          challanDate: filterValue.challanDate + "-01T00:09:19.733Z",
+        });
+        console.log("response", response);
+        toast.dismiss()
         setData(response?.data?.data);
+  
+        // Display success toast without immediate dismissal
+        toast.success( response?.data?.message || "Challan Generated Successfully");
+  
+      } catch (error) {
+        console.log("error while generating challan", error);
+        // Delay dismissal slightly to ensure error toast visibility
+        toast.dismiss(); // Delay for 2 seconds
+        toast.error(error?.response?.data?.message);
       }
-    } catch (error) {
-      console.log("error", error);
-      setData([]);
+    } else {
+      toast.info("Please fill required fields");
     }
   };
-  useEffect(() => {
-    getChallanList();
-  }, [filterValue]);
-  const handlePayNow = (val) => {
-    console.log("val", val);
-  };
+  
+
   return (
     <div>
       <div className="w-full flex justify-between align-bottom lg:w-full  px-1">
@@ -81,8 +71,7 @@ const Challan = () => {
             <select
               value={filterValue.challanType}
               onChange={(e) => {
-                console.log("e.target.value", e.target.value);
-                setSelectedRow(null);
+                setData([])
                 setFilterValues({
                   ...filterValue,
                   challanType: e.target.value,
@@ -101,22 +90,20 @@ const Challan = () => {
               value={filterValue.startDate}
               className="appearance-none block w-full  border border-gray-200 rounded  leading-tight focus:outline-none py-1 px-2 m-2 focus:bg-white focus:border-gray-500"
               onChange={(e) => {
-                setSelectedRow(null);
-                setFilterValues({ ...filterValue, startDate: e.target.value });
+                setFilterValues({
+                  ...filterValue,
+                  challanDate: e.target.value,
+                });
               }}
             />
           </div>
         </div>
         <div>
           <button
-            onClick={() => {
-              if (selectedRow && selectedRow?._id) {
-                setChallanModal(true);
-              }
-            }}
+            onClick={generateChallan}
             className="bg-green-500 m-2 hover:bg-green-700 text-white font-bold py-1 px-3 rounded"
           >
-            Generate Challan
+           {filterValue.challanType === "DRIVER" ? "Genrate PaySlip" :    "Generate Challan" }
           </button>
         </div>
       </div>
@@ -182,7 +169,7 @@ const Challan = () => {
       </div> */}
       <div className="z-0">
         <Suspense fallback={<Loader />} />
-        <DataTable title="Challan List" columns={columns} data={data} />
+        <DataTable title={filterValue.challanType === "DRIVER" ? "PaySlip List" : "Challan List"} columns={columns} data={data} />
       </div>
     </div>
   );
