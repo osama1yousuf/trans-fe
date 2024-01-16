@@ -1,64 +1,131 @@
-// "use client"
+"use client";
 // import Dashboard from "../Components/Dashboard"
+import { useEffect, useState } from "react";
 import { BarChart } from "@/app/Components/BarChart";
 import { PieChart } from "@/app/Components/PieChart";
 import StatisticsCard from "@/app/Components/statisticsCard";
+import axiosInstance from "@/interceptor/axios_inteceptor";
 
 export default function dashboard() {
+  const [feePeriod, setFeePeriod] = useState(
+    new Date().getFullYear() + "-" + new Date().getMonth() + 1
+  );
+  const [analytics, setAnalytics] = useState(null);
+
+  const getChallanDataByPeriod = async () => {
+    try {
+      let response = await axiosInstance.get(`/superadmin/analytics`);
+      console.log("response", response);
+      setAnalytics(response?.data);
+    } catch (error) {
+      console.log("error", error);
+    }
+  };
+  useEffect(() => {
+    getChallanDataByPeriod();
+  }, []);
   return (
     <>
       <div className="flex items-center flex-wrap">
         {/* driver Stats */}
-        <div className="text-center sm:w-3/12 p-2">
-          <h3 className="text-xl font-semibold">Driver</h3>
-          <div className="">
-            <StatisticsCard name={"Total"} value={50} />
-            <StatisticsCard name={"Active"} value={30} />
-            <StatisticsCard name={"In Active"} value={20} />
+        <div className="sm:w-1/2 text-center">
+          <h3 className="text-xl font-semibold mb-1">Driver</h3>
+          <div className="flex">
+            <div className="text-center sm:w-4/12 p-2">
+              <div className="border border-gray-300 p-3 rounded-lg shadow-md">
+                <StatisticsCard
+                  name={"Total"}
+                  value={analytics?.totalDriversCount || 0}
+                />
+                <StatisticsCard
+                  name={"Active"}
+                  value={analytics?.activeDriverCount || 0}
+                />
+                <StatisticsCard
+                  name={"In Active"}
+                  value={analytics?.inActiveDriverCount || 0}
+                />
+              </div>
+            </div>
+            <div className="text-center sm:w-8/12 p-2">
+              <div className="border border-gray-300 p-3 rounded-lg shadow-md">
+                <StatisticsCard
+                  name={"Total PaySlip"}
+                  value={50}
+                  showAmount={true}
+                  amount={"40000"}
+                />
+                <StatisticsCard
+                  name={"Paid PaySlip"}
+                  value={30}
+                  showAmount={true}
+                  amount={"25000"}
+                />
+                <StatisticsCard
+                  name={"Unpaid PaySlip"}
+                  value={20}
+                  showAmount={true}
+                  amount={"15000"}
+                />
+              </div>
+            </div>
           </div>
         </div>
+
         {/* member stats */}
-        <div className="text-center sm:w-3/12 p-2">
-          <h3 className="text-xl font-semibold">Member</h3>
-          <div className="">
-            <StatisticsCard name={"Total"} value={50} />
-            <StatisticsCard name={"Active"} value={30} />
-            <StatisticsCard name={"In Active"} value={20} />
+        <div className="sm:w-1/2 text-center">
+          <h3 className="text-xl font-semibold mb-1">Member</h3>
+          <input
+              type="month"
+              value={feePeriod}
+              className="appearance-none block w-full  border border-gray-200 rounded  leading-tight focus:outline-none py-1 px-2 m-2 focus:bg-white focus:border-gray-500"
+              onChange={(e) => {
+                setFeePeriod(e.target.value);
+              }}
+            />
+          <div className="flex">
+            <div className="text-center sm:w-4/12 p-2">
+              <div className="border border-gray-300 p-3 rounded-lg shadow-md">
+                <StatisticsCard
+                  name={"Total"}
+                  value={analytics?.totalCustomersCount || 0}
+                />
+                <StatisticsCard
+                  name={"Active"}
+                  value={analytics?.activeCustomerCount || 0}
+                />
+                <StatisticsCard
+                  name={"In Active"}
+                  value={analytics?.inActiveCustomerCount || 0}
+                />
+              </div>
+            </div>
+            <div className="text-center sm:w-8/12 p-2">
+              <div className="border border-gray-300 p-3 rounded-lg shadow-md">
+                <StatisticsCard
+                  name={"Total Challan"}
+                  value={50}
+                  showAmount={true}
+                  amount={"40000"}
+                />
+                <StatisticsCard
+                  name={"Paid Challan"}
+                  value={30}
+                  showAmount={true}
+                  amount={"25000"}
+                />
+                <StatisticsCard
+                  name={"Unpaid Challan"}
+                  value={20}
+                  showAmount={true}
+                  amount={"15000"}
+                />
+              </div>
+            </div>
           </div>
         </div>
+
         {/* challan Stats */}
-        <div className="text-center sm:w-6/12 p-2">
-          <h3 className="text-xl font-semibold flex justify-center items-center">
-            Challan{" "}
-            <p className="text-sm font-light ml-2">
-              Fee Period (
-              {new Date().toLocaleString("en-US", { month: "long" }) +
-                " " +
-                new Date().getFullYear()}
-              )
-            </p>{" "}
-          </h3>
-          <div className="">
-            <StatisticsCard
-              name={"Total Challan"}
-              value={50}
-              showAmount={true}
-              amount={"RS40000"}
-            />
-            <StatisticsCard
-              name={"Paid Challan"}
-              value={30}
-              showAmount={true}
-              amount={"RS25000"}
-            />
-            <StatisticsCard
-              name={"Unpaid Challan"}
-              value={20}
-              showAmount={true}
-              amount={"RS15000"}
-            />
-          </div>
-        </div>
       </div>
       <div className="flex items-center flex-wrap">
         {/* challan Stats */}
