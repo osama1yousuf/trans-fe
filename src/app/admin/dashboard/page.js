@@ -12,7 +12,7 @@ export default function dashboard() {
   );
   const [analytics, setAnalytics] = useState(null);
 
-  const getChallanDataByPeriod = async () => {
+  const getChallan = async () => {
     try {
       let response = await axiosInstance.get(`/superadmin/analytics`);
       console.log("response", response);
@@ -21,9 +21,22 @@ export default function dashboard() {
       console.log("error", error);
     }
   };
+  const getChallanDataByPeriod = async () =>{
+    try {
+      let response = await axiosInstance.get(`/superadmin/analytics/challans?date=${feePeriod}`);
+      console.log("response", response);
+      setAnalytics(response?.data);
+    } catch (error) {
+      console.log("error", error);
+    }
+  }
   useEffect(() => {
-    getChallanDataByPeriod();
+    getChallan();
+    
   }, []);
+  useEffect(()=>{
+    getChallanDataByPeriod()
+  },[])
   return (
     <>
       <div className="flex items-center flex-wrap">
@@ -74,15 +87,17 @@ export default function dashboard() {
 
         {/* member stats */}
         <div className="sm:w-1/2 text-center">
-          <h3 className="text-xl font-semibold mb-1">Member</h3>
+          <div className="flex justify-between items-center">
+          <h3 className="text-xl font-semibold mb-1 sm:w-1/3">Member</h3>
           <input
               type="month"
               value={feePeriod}
-              className="appearance-none block w-full  border border-gray-200 rounded  leading-tight focus:outline-none py-1 px-2 m-2 focus:bg-white focus:border-gray-500"
+              className="appearance-none sm:w-1/3 block w-full  border border-gray-200 rounded  leading-tight focus:outline-none py-1 px-2 mb-1 focus:bg-white focus:border-gray-500"
               onChange={(e) => {
                 setFeePeriod(e.target.value);
               }}
             />
+            </div>
           <div className="flex">
             <div className="text-center sm:w-4/12 p-2">
               <div className="border border-gray-300 p-3 rounded-lg shadow-md">
@@ -129,7 +144,7 @@ export default function dashboard() {
       </div>
       <div className="flex items-center flex-wrap">
         {/* challan Stats */}
-        <div className="sm:w-1/2 text-center">
+        {/* <div className="sm:w-1/2 text-center">
           <h3 className="text-xl font-semibold">Challan</h3>
           <div className="">
             <StatisticsCard name={"Total Challan"} value={50} />
@@ -137,12 +152,12 @@ export default function dashboard() {
             <StatisticsCard name={"Paid Challan"} value={30} />
             <StatisticsCard name={"Unpaid Challan"} value={20} />
           </div>
-        </div>
-        <div className="flex-col text-center w-full sm:w-1/2 px-20 pt-0">
+        </div> */}
+        <div className="flex-col text-center w-full sm:w-1/3 px-20 pt-0">
           <h3 className="text-xl font-semibold flex justify-center items-center">
             Last 12 Month
           </h3>
-          <div className="flex justify-between">
+          <div className="flex justify-between border border-gray-300 p-3 rounded-lg shadow-md">
             <PieChart />
           </div>
         </div>
@@ -154,7 +169,7 @@ export default function dashboard() {
           <h3 className="text-xl font-semibold flex justify-center items-center">
             Last 12 Month
           </h3>
-          <div className="flex justify-between">
+          <div className="flex justify-between border border-gray-300 p-3 rounded-lg shadow-md">
             <BarChart />
           </div>
         </div>
@@ -164,7 +179,7 @@ export default function dashboard() {
           <h3 className="text-xl font-semibold flex justify-center items-center">
             Last 6 Month
           </h3>
-          <div className="flex justify-between">
+          <div className="flex justify-between border border-gray-300 p-3 rounded-lg shadow-md">
             <BarChart />
           </div>
         </div>
