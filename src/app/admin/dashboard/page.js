@@ -11,6 +11,7 @@ export default function dashboard() {
     new Date().getFullYear() + "-" + new Date().getMonth() + 1
   );
   const [analytics, setAnalytics] = useState(null);
+  const [analyticsByPeriod, setAnalyticsByPeriod] = useState(null);
 
   const getChallan = async () => {
     try {
@@ -24,19 +25,17 @@ export default function dashboard() {
   const getChallanDataByPeriod = async () =>{
     try {
       let response = await axiosInstance.get(`/superadmin/analytics/challans?date=${feePeriod}`);
-      console.log("response", response);
-      setAnalytics(response?.data);
+      setAnalyticsByPeriod(response?.data);
     } catch (error) {
       console.log("error", error);
     }
   }
   useEffect(() => {
     getChallan();
-    
   }, []);
   useEffect(()=>{
     getChallanDataByPeriod()
-  },[])
+  },[feePeriod])
   return (
     <>
       <div className="flex items-center flex-wrap">
@@ -64,21 +63,21 @@ export default function dashboard() {
               <div className="border border-gray-300 p-3 rounded-lg shadow-md">
                 <StatisticsCard
                   name={"Total PaySlip"}
-                  value={50}
+                  value={analyticsByPeriod?.driverTotalChallansCount || 0}
                   showAmount={true}
-                  amount={"40000"}
+                  amount={analyticsByPeriod?.driverTotalChallansAmount || 0}
                 />
                 <StatisticsCard
                   name={"Paid PaySlip"}
-                  value={30}
+                  value={analyticsByPeriod?.driverPaidChallansCount || 0}
                   showAmount={true}
-                  amount={"25000"}
+                  amount={analyticsByPeriod?.driverPaidChallansAmount || 0}
                 />
                 <StatisticsCard
                   name={"Unpaid PaySlip"}
-                  value={20}
+                  value={analyticsByPeriod?.driverUnPaidChallansCount || 0}
                   showAmount={true}
-                  amount={"15000"}
+                  amount={analyticsByPeriod?.driverUnPaidChallansAmount || 0}
                 />
               </div>
             </div>
@@ -119,21 +118,21 @@ export default function dashboard() {
               <div className="border border-gray-300 p-3 rounded-lg shadow-md">
                 <StatisticsCard
                   name={"Total Challan"}
-                  value={50}
+                  value={analyticsByPeriod?.customerTotalChallansCount || 0}
                   showAmount={true}
-                  amount={"40000"}
+                  amount={analyticsByPeriod?.customerTotalChallansAmount || 0}
                 />
                 <StatisticsCard
                   name={"Paid Challan"}
-                  value={30}
+                  value={analyticsByPeriod?.customerPaidChallansCount || 0}
                   showAmount={true}
-                  amount={"25000"}
+                  amount={analyticsByPeriod?.customerPaidChallansAmount || 0}
                 />
                 <StatisticsCard
                   name={"Unpaid Challan"}
-                  value={20}
+                  value={analyticsByPeriod?.customerUnPaidChallansCount || 0}
                   showAmount={true}
-                  amount={"15000"}
+                  amount={analyticsByPeriod?.customerUnPaidChallansAmount || 0}
                 />
               </div>
             </div>
@@ -167,20 +166,20 @@ export default function dashboard() {
         {/* challan Stats - Last 12 Month */}
         <div className="flex-col text-center w-full sm:w-1/2 p-4">
           <h3 className="text-xl font-semibold flex justify-center items-center">
-            Last 12 Month
+            Customer
           </h3>
           <div className="flex justify-between border border-gray-300 p-3 rounded-lg shadow-md">
-            <BarChart />
+            <BarChart secondLabel={"Collection"} firstLabel={"Challan"} firstData={analytics?.paymentCountsArray?.challanCountsArray | []} secondData={analytics?.customer?.challanCountsArray | []} />
           </div>
         </div>
 
         {/* challan Stats - Last 6 Month */}
         <div className="flex-col text-center w-full sm:w-1/2 p-4">
           <h3 className="text-xl font-semibold flex justify-center items-center">
-            Last 6 Month
+            Driver
           </h3>
           <div className="flex justify-between border border-gray-300 p-3 rounded-lg shadow-md">
-            <BarChart />
+            <BarChart secondLabel={"Payment"} firstLabel={"Slips"} firstData={analytics?.driver?.challanCountsArray | []} secondData={analytics?.driver?.challanCountsArray | []} />
           </div>
         </div>
       </div>

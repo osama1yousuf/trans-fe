@@ -9,7 +9,7 @@ import axiosInstance from "@/interceptor/axios_inteceptor";
 import ChallanModal from "@/app/Components/ChallanModal";
 
 const Collection = () => {
-  const [selectedRow, setSelectedRow] = useState(null);
+  const [selectedRow, setSelectedRow] = useState([]);
   const [filterValue, setFilterValues] = useState({
     startDate: null,
     endDate: null,
@@ -20,26 +20,26 @@ const Collection = () => {
   const [challanModal, setChallanModal] = useState(false);
   const [data, setData] = useState([]);
   const columns = [
-    {
-      name: "",
-      ignoreRowClick: true,
-      allowOverflow: true,
-      button: false,
-      width: "50px",
-      cell: (row) => (
-        <div>
-          <input
-            type="checkbox"
-            checked={row?._id === selectedRow?._id}
-            onChange={() => setSelectedRow(row)}
-          />
-        </div>
-      ),
-      head: () => null,
-    },
+    // {
+    //   name: "",
+    //   ignoreRowClick: true,
+    //   allowOverflow: true,
+    //   button: false,
+    //   width: "50px",
+    //   cell: (row) => (
+    //     <div>
+    //       <input
+    //         type="checkbox"
+    //         checked={row?._id === selectedRow?._id}
+    //         onChange={() => setSelectedRow(row)}
+    //       />
+    //     </div>
+    //   ),
+    //   head: () => null,
+    // },
     {
       name: "Chalan Id",
-      selector: (row) => row._id,
+      selector: (row) => row?.challanNo,
     },
     {
       name: "Name",
@@ -51,8 +51,8 @@ const Collection = () => {
       selector: (row) => row.amount,
     },
     {
-      name: "Challan Type",
-      selector: (row) => row.challanType,
+      name: "Fee Period",
+      selector: (row) => row.feePeriod,
     },
     {
       name: "Acion",
@@ -94,17 +94,7 @@ const Collection = () => {
           ),
         });
       });
-  
-      if (confirmed) {
-        // Proceed with the action
-        // Uncomment the following lines to execute the API call and display success toast:
-        // let response = await axiosInstance.put(`/challan/status/void/${e?._id}`);
-        // console.log("response", response);
-        // toast.success("Challan Void Successfully");
-      } else {
-        // Handle cancellation or show a message
-      }
-  
+
       getChallanList();
     } catch (error) {
       console.log(error);
@@ -125,8 +115,8 @@ const Collection = () => {
         : "") +
       (filterValue.endDate !== null
         ? `&toDate=${filterValue.endDate}T23:59:59.000Z`
-        : "");
-    filterValue.search !== null ? `&status=${filterValue.search}` : "";
+        : "") +
+      (filterValue.search !== null ? `&search=${filterValue.search}` : "");
     try {
       let response = await axiosInstance.get(url);
       if (response.status === 200) {
@@ -159,8 +149,10 @@ const Collection = () => {
         <div>
           <button
             onClick={() => {
-              if (selectedRow && selectedRow?._id) {
+              if (selectedRow.length > 0) {
                 setChallanModal(true);
+              }else{
+                toast.info("Please select atleast 1 challan")
               }
             }}
             className="bg-green-500 m-2 hover:bg-green-700 text-white font-bold py-1 px-3 rounded"
@@ -231,7 +223,31 @@ const Collection = () => {
       </div>
       <div className="z-0">
         <Suspense fallback={<Loader />} />
-        <DataTable title="Challan List" columns={columns} data={data} />
+        <div className="flex flex-wrap justify-between">
+          <h2>Challan List</h2>
+          <input
+            id="remember"
+            aria-describedby="remember"
+            type="text"
+            className="border border-gray-300 p-1 rounded bg-gray-50 focus:ring-3 focus:ring-primary-300 :bg-gray-700 :border-gray-600 :focus:ring-primary-600 :ring-offset-gray-800"
+            placeholder="Search Name"
+            onChange={(e) => {
+              setFilterValues({
+                ...filterValue,
+                search: e.target.value,
+              });
+            }}
+          />
+        </div>
+        <DataTable
+          selectableRows
+          onSelectedRowsChange={(e) => {
+            console.log(e)
+            setSelectedRow(e.selectedRows);
+          }}
+          columns={columns}
+          data={data}
+        />
       </div>
     </div>
   );

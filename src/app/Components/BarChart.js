@@ -33,24 +33,40 @@ export const options = {
   },
 };
 
-const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
+function getLast12MonthNames() {
+  const months = [];
+  const currentDate = new Date();
 
-export const data = {
-  labels,
-  datasets: [
-    {
-      label: 'Dataset 1',
-      data: [200 , 500 , 600 , 100 , 1200 , 3000, 430],
-      backgroundColor: 'rgba(255, 99, 132, 0.5)',
-    },
-    {
-      label: 'Dataset 2',
-      data: [400 , 520 , 120 , 1200 , 200 , 300, 730],
-      backgroundColor: 'rgba(53, 162, 235, 0.5)',
-    },
-  ],
-};
+  for (let i = 0; i < 12; i++) {
+    const month = currentDate.getMonth() - i;
+    const year = currentDate.getFullYear();
+    const newDate = new Date(year, month, 1);
+    const monthName = newDate.toLocaleString('default', { month: 'short' });
+    months.unshift(monthName);
+  }
 
-export function BarChart() {
+  return months;
+}
+
+const labels = getLast12MonthNames();
+
+
+
+export function BarChart({firstLabel , SecondLabel , firstData , secondData}) {
+   const data = {
+    labels,
+    datasets: [
+      {
+        label: firstLabel,
+        data: firstData,
+        backgroundColor: 'rgba(255, 99, 132, 0.5)',
+      },
+      {
+        label: SecondLabel,
+        data: secondData,
+        backgroundColor: 'rgba(53, 162, 235, 0.5)',
+      },
+    ],
+  };
   return <Bar options={options} data={data} />;
 }

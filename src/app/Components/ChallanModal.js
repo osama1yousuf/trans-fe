@@ -9,70 +9,13 @@ const ChallanModal = ({
   setChallanModal,
   handlePayNow,
 }) => {
-    const [selectableRows, setSelectableRows] = useState(false);
-    const [selectedRows, setSelectedRows] = useState([]);  
-  const data = [
-    {
-      _id: "658965794064e8e323c84098",
-      customerId: "6505d392161559c532c1a56f",
-      driverId: null,
-      challanType: "CUSTOMER",
-      amount: 15000,
-      feesStatus: "UN_PAID",
-      createdAt: "2023-12-25T11:20:25.681Z",
-      updatedAt: "2023-12-25T11:20:25.681Z",
-      __v: 0,
-      customerData: {
-        _id: "6505d392161559c532c1a56f",
-        firstName: "Faizan",
-        lastName: "Abdullah",
-        contactOne: "03220000001",
-        contactTwo: "",
-        cnicNo: "4210100000001",
-        password:
-          "$2b$10$3ZdkdSvbkH3RTL4u8Nl3bef7y6fpmfUO88oSnZkIyaprxd/x9OHiW",
-        status: [
-          {
-            joinDate: "2023-09-16T00:00:00.000Z",
-            endDate: "",
-          },
-        ],
-        currentStatus: "active",
-        location: {
-          residentialAddress: "KHI",
-          pickUpAddress: "New Karachi",
-          dropOffAddress: "Shahrah-e-Faisal",
-          dropType: "bothSide",
-        },
-        timings: {
-          pickUpTime: "9:00 AM",
-          dropOffTime: "10:00 AM",
-          saturdayTimings: {
-            pickUpTime: "9:00 AM",
-            dropOffTime: "10:00 AM",
-          },
-          sundayTimings: {
-            pickUpTime: "9:00 AM",
-            dropOffTime: "9:00 AM",
-          },
-        },
-        fees: {
-          feesType: "advance",
-          fees: "15000",
-          from: "2023-09-16T00:00:00.000Z",
-          To: null,
-        },
-        comments: "",
-        createdAt: "2023-09-16T16:10:58.874Z",
-        updatedAt: "2023-10-24T17:48:55.622Z",
-        __v: 0,
-      },
-    },
-  ];
+    // const [selectableRows, setSelectableRows] = useState(false);
+    // const [selectedRows, setSelectedRows] = useState([]);  
+ 
   const columns = [
     {
       name: "Chalan Id",
-      selector: (row) => row._id,
+      selector: (row) => row.challanNo,
     },
     {
       name: "Name",
@@ -114,43 +57,41 @@ const ChallanModal = ({
                   </button>
                 </div>
                 {/*body*/}
-                <div className="relative p-6 flex-auto">
+                <div className="relative px-6 py-2 flex-auto">
                   <div className="flex justify-between">
                     <h3
-                      class="text-base font-semibold leading-6 text-gray-900"
+                      class="text-base font-light leading-2 text-gray-900"
                       id="modal-title"
                     >
-                      First Name : {selectedRow?.customerData?.firstName}
+                      First Name : {selectedRow[0]?.customerData?.firstName}
                     </h3>
                     <h3
-                      class="text-base font-semibold leading-6 text-gray-900"
+                      class="text-base font-light leading-2 text-gray-900"
                       id="modal-title"
                     >
-                      Last Name : {selectedRow?.customerData?.lastName}
+                      Last Name : {selectedRow[0]?.customerData?.lastName}
                     </h3>
                   </div>
                   <div className="flex justify-between">
                     <h3
-                      class="text-base font-semibold leading-6 text-gray-900"
+                      class="text-base font-light leading-2 text-gray-900"
                       id="modal-title"
                     >
-                      CNIC : {selectedRow?.customerData?.cnicNo}
+                      CNIC : {selectedRow[0]?.customerData?.cnicNo}
                     </h3>
                     <h3
-                      class="text-base font-semibold leading-6 text-gray-900"
+                      class="text-base font-light leading-2 text-gray-900"
                       id="modal-title"
                     >
-                      Contact : {selectedRow?.customerData?.contactOne}
+                      Contact : {selectedRow[0]?.customerData?.contactOne}
                     </h3>
                   </div>
                   <div className="z-0">
                     <Suspense fallback={<Loader />} />
                     <DataTable
-                      title="Challan List"
+                      // title="Challan List"
                       columns={columns}
-                      data={data}
-                      selectableRows={selectableRows}
-                      onSelectedRowsChange={({ selectedRows }) => setSelectedRows(selectedRows)}
+                      data={selectedRow}
               
                     />
                   </div>
