@@ -192,6 +192,7 @@ export default function ActiveMember() {
       {" "}
       <div className="z-0">
         <DataTable
+fixedHeader
           // title="Active Member List"
           //  fixedHeader
           columns={columns}

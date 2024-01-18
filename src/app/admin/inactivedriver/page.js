@@ -84,6 +84,7 @@ export default function InactiveDriver(){
         // <Dashboard >
             <div className="z-0">    
              <DataTable
+fixedHeader
              title="InActive Driver List"
             //  fixedHeader
             columns={columns}

@@ -190,7 +190,7 @@ const Challan = () => {
                     </select>
                   </div>
                   <div className="w-full">
-                    <label className="text-xs px-2">Fee Period</label>
+                    <label className="text-xs px-2">Period</label>
                     <input
                       type="month"
                       value={generateBulk.feePeriod}
@@ -218,7 +218,7 @@ const Challan = () => {
                     type="button"
                     onClick={generateChallan}
                   >
-                    Done
+                    Generate
                   </button>
                 </div>
               </div>
@@ -230,7 +230,7 @@ const Challan = () => {
       <div className="w-full align-bottom lg:w-full">
         {/* filter and generate button */}
         <div className="flex flex-wrap justify-between">
-          <h2 className="text-md font-semibold leading-tight tracking-tight  text-gray-900 md:text-2xl dark:text-white">
+          <h2 className="text-sm font-semibold leading-tight tracking-tight  text-gray-900 md:text-2xl dark:text-white">
             Filters
           </h2>
           <div>
@@ -264,7 +264,7 @@ const Challan = () => {
             </select>
           </div>
           <div className="w-full m-2">
-            <label className="text-xs px-2">Fee Period</label>
+            <label className="text-xs px-2">Period</label>
             <input
               type="month"
               value={filterValue.startDate}
@@ -301,7 +301,7 @@ const Challan = () => {
       <div className="z-0">
         <Suspense fallback={<Loader />} />
         <div className="flex flex-wrap justify-between">
-          <h2>
+        <h2 className="text-sm font-semibold leading-tight tracking-tight  text-gray-900 md:text-2xl dark:text-white">
             {filterValue.challanType === "DRIVER"
               ? "PaySlip List"
               : "Challan List"}
@@ -320,7 +320,8 @@ const Challan = () => {
             }}
           />
         </div>
-        <DataTable columns={columns} data={data} />
+        <DataTable
+fixedHeader columns={columns} data={data} />
       </div>
     </div>
   );

@@ -198,6 +198,7 @@ export default function activeDriver() {
       <div className="z-0">
         <Suspense fallback={<Loader />} />
         <DataTable
+fixedHeader
           //  title="Active Driver List"
           //  fixedHeader
           columns={columns}

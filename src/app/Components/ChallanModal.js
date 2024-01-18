@@ -105,7 +105,7 @@ const ChallanModal = ({ setChallanModal, handlePayNow, type }) => {
             </div>
             {/*body*/}
             <div className="relative px-6 py-2 flex-auto">
-              <div className="flex justify-between items-center gap-3">
+              <div className="flex flex-col justify-between items-center gap-3">
                 <div className="w-full">
                   <label className="text-xs capitalize px-2">Select {type}</label>
                   <Select
@@ -121,6 +121,7 @@ const ChallanModal = ({ setChallanModal, handlePayNow, type }) => {
                     }))}
                   />
                 </div>
+                <div className="flex">
                 <div className="w-full">
                   <label className="text-xs px-2">Payment Mode</label>
                   <select
@@ -142,7 +143,7 @@ const ChallanModal = ({ setChallanModal, handlePayNow, type }) => {
                   <input
                     type="date"
                     value={paymentData.paidAt}
-                    className="appearance-none block w-full  border border-gray-200 rounded  leading-tight focus:outline-none py-1 px-2 m-2 focus:bg-white focus:border-gray-500"
+                    className="appearance-none block w-full  border border-gray-200 rounded  leading-tight focus:outline-none py-2 px-2 focus:bg-white focus:border-gray-500"
                     onChange={(e) => {
                       setPaymentData({
                         ...paymentData,
@@ -151,10 +152,12 @@ const ChallanModal = ({ setChallanModal, handlePayNow, type }) => {
                     }}
                   />
                 </div>
+                </div>
               </div>
               <div className="z-0">
                 <Suspense fallback={<Loader />} />
                 <DataTable
+fixedHeader
                   // title="Challan List"
                   selectableRows
                   onSelectedRowsChange={(e) => {

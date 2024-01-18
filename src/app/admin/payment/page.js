@@ -189,7 +189,8 @@ const Payment = () => {
             }}
           />
         </div>
-        <DataTable columns={columns} data={data} />
+        <DataTable
+fixedHeader columns={columns} data={data} />
       </div>
     </div>
   );

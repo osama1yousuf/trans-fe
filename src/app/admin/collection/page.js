@@ -220,6 +220,7 @@ const Collection = () => {
           />
         </div>
         <DataTable
+fixedHeader
           // selectableRows
           // onSelectedRowsChange={(e) => {
           //   console.log(e)
