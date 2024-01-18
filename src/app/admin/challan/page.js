@@ -23,21 +23,34 @@ const Challan = () => {
   const [data, setData] = useState([]);
   const columns = [
     {
-      name: "Chalan Id",
+      name: filterValue.challanType === "CUSTOMER" ?  "Challan No": "PaySlip No",
       selector: (row) => row?.challanNo,
     },
     {
-      name: "Name",
+      name: filterValue.challanType === "CUSTOMER" ?  "Challan Date": "PaySlip Date",
+      selector: (row) => new Date(row?.challanDate).toDateString(),
+    },
+    {
+      name: filterValue.challanType === "CUSTOMER" ?  "Member Name": "Driver Name",
       selector: (row) =>
         `${row?.customerData?.firstName} ${row?.customerData?.lastName}`,
     },
     {
-      name: "Amount",
-      selector: (row) => row?.amount,
+      name: "Period",
+      selector: (row) => row?.feePeriod,
     },
     {
-      name: "Fee Period",
-      selector: (row) => row?.feePeriod,
+      name: "Amount",
+      selector: (row) =>  row?.amount.toLocaleString('en-US', { minimumFractionDigits: 0 }),
+    },
+    {
+      name: "Status",
+      selector: (row) => {row?.challanStatus},
+      cell : (row) =>(
+        <span className= {row?.challanStatus === "UN_PAID" ? "bg-red-500 uppercase text-white font-semibold text-xs rounded-md p-2" : row?.challanStatus === "PAID" ? "bg-green-500 uppercase text-white font-semibold text-xs rounded-md p-2" : "bg-gray-500 uppercase text-white font-semibold text-xs rounded-md p-2" } >{row?.challanStatus === "UN_PAID" ?  "Unpaid" : row?.challanStatus}</span>
+      )
+
+      
     },
     {
       name: "Acion",
@@ -62,7 +75,7 @@ const Challan = () => {
   const generateChallan = async () => {
     if (generateBulk.feePeriod && generateBulk.challanType) {
       try {
-        toast.loading("Generating Challan");
+        toast.loading(`Generating ${generateBulk.challanType === "CUSTOMER" ? "Challan" : "Payslip"}`);
         let response = await axiosInstance.post("/challan/all/generate", {
           ...generateBulk,
           challanDate: generateBulk.feePeriod + "-01T00:09:19.733Z",
@@ -90,6 +103,10 @@ const Challan = () => {
   };
 
   const getChallanList = async () => {
+    let endDate = new Date(filterValue.startDate)
+    if (filterValue.startDate !== null) {
+      endDate.setMonth(endDate.getMonth() + 1);
+    }
     let url =
       "/challan/get" +
       (filterValue.challanType !== null && filterValue.challanType !== "All"
@@ -99,10 +116,10 @@ const Challan = () => {
         ? `&challanStatus=${filterValue.paymentStatus}`
         : "") +
       (filterValue.startDate !== null
-        ? `&fromDate=${filterValue.startDate}T00:00:00.000Z`
+        ? `&fromDate=${filterValue.startDate}-01T00:00:00.000Z`
         : "") +
-      (filterValue.endDate !== null
-        ? `&toDate=${filterValue.endDate}T23:59:59.000Z`
+      (filterValue.startDate !== null
+        ?  `&toDate=${endDate.toISOString().split('T')[0]}T00:00:00.000Z`
         : "") +
       (filterValue.search !== null ? `&search=${filterValue.search}` : "");
     try {
@@ -143,7 +160,7 @@ const Challan = () => {
               <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
                 {/*header*/}
                 <div className="flex items-start justify-between p-5 border-b border-solid border-slate-200 rounded-t">
-                  <h3 className="text-3xl font-semibold">Generate Modal</h3>
+                  <h3 className="text-3xl font-semibold">Bulk Transaction</h3>
                   <button
                     className="p-1 ml-auto bg-transparent border-0 text-black opacity-5 float-right text-3xl leading-none font-semibold outline-none focus:outline-none"
                     onClick={() => setGenerateModal(false)}
@@ -156,7 +173,7 @@ const Challan = () => {
                 {/*body*/}
                 <div className="relative px-6 py-2 flex-auto">
                   <div className="w-full ">
-                    <label className="text-xs px-2">Payment Type</label>
+                    <label className="text-xs px-2">Transaction Type</label>
                     <select
                       value={generateBulk.challanType}
                       onChange={(e) => {
@@ -168,8 +185,8 @@ const Challan = () => {
                       }}
                       className="appearance-none block w-full  border border-gray-200 rounded  leading-tight focus:outline-none py-1 px-2 m-2 focus:bg-white focus:border-gray-500"
                     >
-                      <option value="DRIVER">Driver</option>
-                      <option value="CUSTOMER">Member</option>
+                      <option value="DRIVER">Pay Slip</option>
+                      <option value="CUSTOMER">Challan</option>
                     </select>
                   </div>
                   <div className="w-full">
@@ -230,7 +247,7 @@ const Challan = () => {
         {/* filters */}
         <div className="flex justify-between">
           <div className="w-full m-2">
-            <label className="text-xs px-2">Payment Type</label>
+            <label className="text-xs px-2">Transaction Type</label>
             <select
               value={filterValue.challanType}
               onChange={(e) => {
@@ -242,8 +259,8 @@ const Challan = () => {
               }}
               className="appearance-none block w-full  border border-gray-200 rounded  leading-tight focus:outline-none py-1 px-2 m-2 focus:bg-white focus:border-gray-500"
             >
-              <option value="DRIVER">Driver</option>
-              <option value="CUSTOMER">Member</option>
+              <option value="DRIVER">Pay Slip</option>
+              <option value="CUSTOMER">Challan</option>
             </select>
           </div>
           <div className="w-full m-2">
@@ -275,6 +292,7 @@ const Challan = () => {
               <option>All</option>
               <option value="PAID">Paid</option>
               <option value="UN_PAID">Unpaid</option>
+              <option value="VOID">Void</option>
             </select>
           </div>
         </div>

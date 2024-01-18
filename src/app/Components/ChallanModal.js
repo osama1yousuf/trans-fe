@@ -16,7 +16,7 @@ const ChallanModal = ({ setChallanModal, handlePayNow, type }) => {
     paymentMode: null,
     paidAt: null,
     paymentType: type === "driver" ? "DRIVER" : "CUSTOMER",
-    challanId: [],
+    challanIds: [],
   });
 
   const columns = [
@@ -160,7 +160,7 @@ const ChallanModal = ({ setChallanModal, handlePayNow, type }) => {
                   onSelectedRowsChange={(e) => {
                     setPaymentData({
                       ...paymentData,
-                      challanId: e.selectedRows,
+                      challanIds: e.selectedRows.map((v)=> v._id),
                     });
                   }}
                   columns={columns}
@@ -182,7 +182,7 @@ const ChallanModal = ({ setChallanModal, handlePayNow, type }) => {
                 type="button"
                 onClick={(e) => {
                   if (paymentData.paidAt && paymentData.paymentMode) {
-                    if (paymentData.challanId.length > 0) {
+                    if (paymentData.challanIds.length > 0) {
                       handlePayNow(paymentData, type);
                     }else{
                     toast.info("Please select atleast one challan")

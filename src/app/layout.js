@@ -24,7 +24,7 @@ export default function RootLayout({ children }) {
           position="top-center"
           theme="colored"
         />
-        <Dashboard >
+        <Dashboard>
           {children}
         </Dashboard>
       </body>
