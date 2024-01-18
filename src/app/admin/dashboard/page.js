@@ -5,8 +5,10 @@ import { BarChart } from "@/app/Components/BarChart";
 import { PieChart } from "@/app/Components/PieChart";
 import StatisticsCard from "@/app/Components/statisticsCard";
 import axiosInstance from "@/interceptor/axios_inteceptor";
+import Loader from "@/app/Components/Loader";
 
 export default function dashboard() {
+  const [loader , setLoader] = useState(true)
   const [feePeriod, setFeePeriod] = useState(
     new Date().getFullYear() + "-" + new Date().getMonth() + 1
   );
@@ -22,22 +24,28 @@ export default function dashboard() {
       console.log("error", error);
     }
   };
-  const getChallanDataByPeriod = async () =>{
+  const getChallanDataByPeriod = async () => {
     try {
-      let response = await axiosInstance.get(`/superadmin/analytics/challans?date=${feePeriod}`);
+      let response = await axiosInstance.get(
+        `/superadmin/analytics/challans?date=${feePeriod}`
+      );
       setAnalyticsByPeriod(response?.data);
     } catch (error) {
       console.log("error", error);
     }
-  }
+  };
   useEffect(() => {
     getChallan();
   }, []);
-  useEffect(()=>{
-    getChallanDataByPeriod()
-  },[feePeriod])
+  useEffect(() => {
+    getChallanDataByPeriod();
+    setLoader(false)
+  }, [feePeriod]);
   return (
     <>
+    {loader ? <Loader /> :
+    <>
+    {/* statisticsCard */}
       <div className="flex items-center flex-wrap">
         {/* driver Stats */}
         <div className="sm:w-1/2 text-center">
@@ -87,8 +95,8 @@ export default function dashboard() {
         {/* member stats */}
         <div className="sm:w-1/2 text-center">
           <div className="flex justify-between items-center">
-          <h3 className="text-xl font-semibold mb-1 sm:w-1/3">Member</h3>
-          <input
+            <h3 className="text-xl font-semibold mb-1 sm:w-1/3">Member</h3>
+            <input
               type="month"
               value={feePeriod}
               className="appearance-none sm:w-1/3 block w-full  border border-gray-200 rounded  leading-tight focus:outline-none py-1 px-2 mb-1 focus:bg-white focus:border-gray-500"
@@ -96,7 +104,7 @@ export default function dashboard() {
                 setFeePeriod(e.target.value);
               }}
             />
-            </div>
+          </div>
           <div className="flex">
             <div className="text-center sm:w-4/12 p-2">
               <div className="border border-gray-300 p-3 rounded-lg shadow-md">
@@ -138,51 +146,55 @@ export default function dashboard() {
             </div>
           </div>
         </div>
-
-        {/* challan Stats */}
-      </div>
-      <div className="flex items-center flex-wrap">
-        {/* challan Stats */}
-        {/* <div className="sm:w-1/2 text-center">
-          <h3 className="text-xl font-semibold">Challan</h3>
-          <div className="">
-            <StatisticsCard name={"Total Challan"} value={50} />
-            <StatisticsCard name={"Total Void Challan"} value={50} />
-            <StatisticsCard name={"Paid Challan"} value={30} />
-            <StatisticsCard name={"Unpaid Challan"} value={20} />
-          </div>
-        </div> */}
-        <div className="flex-col text-center w-full sm:w-1/3 px-20 pt-0">
-          <h3 className="text-xl font-semibold flex justify-center items-center">
-            Last 12 Month
-          </h3>
-          <div className="flex justify-between border border-gray-300 p-3 rounded-lg shadow-md">
-            <PieChart />
-          </div>
-        </div>
       </div>
 
+   {/* Bar Charts */}
       <div className="flex items-center ">
         {/* challan Stats - Last 12 Month */}
-        <div className="flex-col text-center w-full sm:w-1/2 p-4">
-          <h3 className="text-xl font-semibold flex justify-center items-center">
-            Customer
-          </h3>
+        <div className="flex-col text-center w-full sm:w-1/2 p-2">
+         
           <div className="flex justify-between border border-gray-300 p-3 rounded-lg shadow-md">
-            <BarChart secondLabel={"Collection"} firstLabel={"Challan"} firstData={analytics?.paymentCountsArray?.challanCountsArray | []} secondData={analytics?.customer?.challanCountsArray | []} />
+            <BarChart
+              secondLabel={"Collection"}
+              firstLabel={"Challan"}
+              firstData={analytics?.customer?.challanCountsArray | []}
+              secondData={analytics?.customer?.paymentCountsArray | []}
+            />
           </div>
         </div>
 
         {/* challan Stats - Last 6 Month */}
-        <div className="flex-col text-center w-full sm:w-1/2 p-4">
-          <h3 className="text-xl font-semibold flex justify-center items-center">
-            Driver
-          </h3>
+        <div className="flex-col text-center w-full sm:w-1/2 p-2">
+          
           <div className="flex justify-between border border-gray-300 p-3 rounded-lg shadow-md">
-            <BarChart secondLabel={"Payment"} firstLabel={"Slips"} firstData={analytics?.driver?.challanCountsArray | []} secondData={analytics?.driver?.challanCountsArray | []} />
+            <BarChart
+              secondLabel={"Payment"}
+              firstLabel={"Slips"}
+              firstData={analytics?.driver?.challanCountsArray | []}
+              secondData={analytics?.driver?.paymentCountsArray | []}
+            />
           </div>
         </div>
       </div>
+
+      {/* Pie Charts*/}
+      <div className="flex items-center flex-wrap">
+        <div className="sm:w-1/2 p-2">
+        <div className=" flex justify-center text-center border border-gray-300 rounded-lg shadow-md">
+          <div className="flex justify-between items-center py-2  w-[350px] h-[350px] ">
+            <PieChart type={"driver"} dataSet={[analyticsByPeriod?.customerCashTotal || 0 ,analyticsByPeriod?.customerBankTotal || 0 ]} />
+          </div>
+        </div>
+        </div>
+        <div className="sm:w-1/2 p-2">
+        <div className="flex justify-center text-center border border-gray-300 rounded-lg shadow-md">
+          <div className="flex justify-between items-center py-2  w-[350px] h-[350px] ">
+            <PieChart type={"member"} dataSet={[analyticsByPeriod?.driverCashTotal || 0 ,analyticsByPeriod?.driverBankTotal || 0 ]} />
+          </div>
+        </div>
+        </div>
+      </div>
+    </>}
     </>
     //  <Dashboard />
   );

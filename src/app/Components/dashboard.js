@@ -2,13 +2,16 @@
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { FaAlignLeft, FaRegTimesCircle } from "react-icons/fa";
+import { useWindowSize } from "@uidotdev/usehooks";
 import { usePathname } from "next/navigation";
 import Textfield from "./Textfield";
 import { useRouter } from "next/navigation";
 import { BsPersonCircle } from "react-icons/bs";
 import axiosInstance from "@/interceptor/axios_inteceptor";
 import { toast } from "react-toastify";
+import Loader from "./Loader";
 export default function Dashboard({ children }) {
+  const size = useWindowSize();
   const router = useRouter();
   let adminTab = [
     {
@@ -187,9 +190,15 @@ export default function Dashboard({ children }) {
     }
   }, [pathname]);
   const profileSetting = () => {
-    console.log("profile setting");
     setProfileModal(!profileModal);
   };
+
+  // useEffect(()=>{
+  // if (size.width < 1300 && size.width !== null) {
+  //   console.log("condition ture")
+  //   setSideBar(false)
+  // }
+  // },[size])
   return (
     <>
       {pathname !== "/" &&
@@ -437,17 +446,12 @@ export default function Dashboard({ children }) {
       pathname !== "/admin_signin" ? (
         <div className={`p-2 ${sideBar ? "sm:ml-0" : "sm:ml-64"}  `}>
           <div className="p-4 border-2 border-gray-200 border-transparent rounded-lg bg-white">
-            {children}
+             {children}
           </div>
         </div>
       ) : (
         <div className="border-gray-200  bg-white">{children}</div>
       )}
-      {/* <div className={`p-2 ${sideBar ? "sm:ml-0": "sm:ml-64"}  `}>
-        <div className="p-4 border-2 border-gray-200 border-transparent rounded-lg bg-white">
-          {children}
-        </div>
-      </div> */}
     </>
   );
 }

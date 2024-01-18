@@ -20,18 +20,7 @@ ChartJS.register(
   Legend
 );
 
-export const options = {
-  responsive: true,
-  plugins: {
-    legend: {
-      position: 'top' ,
-    },
-    title: {
-      display: true,
-      text: 'Chart.js Bar Chart',
-    },
-  },
-};
+
 
 function getLast12MonthNames() {
   const months = [];
@@ -52,7 +41,7 @@ const labels = getLast12MonthNames();
 
 
 
-export function BarChart({firstLabel , SecondLabel , firstData , secondData}) {
+export function BarChart({firstLabel , secondLabel , firstData , secondData}) {
    const data = {
     labels,
     datasets: [
@@ -62,11 +51,24 @@ export function BarChart({firstLabel , SecondLabel , firstData , secondData}) {
         backgroundColor: 'rgba(255, 99, 132, 0.5)',
       },
       {
-        label: SecondLabel,
+        label: secondLabel,
         data: secondData,
         backgroundColor: 'rgba(53, 162, 235, 0.5)',
       },
     ],
+  };
+
+  const options = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'top' ,
+      },
+      title: {
+        display: true,
+        text: firstLabel === "Challan" ? 'Member Bar Chart' : 'Driver Bar Chart',
+      },
+    },
   };
   return <Bar options={options} data={data} />;
 }

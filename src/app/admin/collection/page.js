@@ -9,34 +9,17 @@ import axiosInstance from "@/interceptor/axios_inteceptor";
 import ChallanModal from "@/app/Components/ChallanModal";
 
 const Collection = () => {
-  const [selectedRow, setSelectedRow] = useState([]);
+
   const [filterValue, setFilterValues] = useState({
     startDate: null,
     endDate: null,
-    paymentStatus: null,
+    paymentStatus: "PAID",
     challanType: "CUSTOMER",
     search: null,
   });
   const [challanModal, setChallanModal] = useState(false);
   const [data, setData] = useState([]);
   const columns = [
-    // {
-    //   name: "",
-    //   ignoreRowClick: true,
-    //   allowOverflow: true,
-    //   button: false,
-    //   width: "50px",
-    //   cell: (row) => (
-    //     <div>
-    //       <input
-    //         type="checkbox"
-    //         checked={row?._id === selectedRow?._id}
-    //         onChange={() => setSelectedRow(row)}
-    //       />
-    //     </div>
-    //   ),
-    //   head: () => null,
-    // },
     {
       name: "Chalan Id",
       selector: (row) => row?.challanNo,
@@ -54,25 +37,25 @@ const Collection = () => {
       name: "Fee Period",
       selector: (row) => row.feePeriod,
     },
-    {
-      name: "Acion",
-      selector: (row) => row.action,
-      cell: (row) => (
-        <>
-          {row.challanStatus === "UN_PAID" && (
-            <span title="Void Challan">
-              <button
-                onClick={(e) => voidChallan(row)}
-                className="bg-gray-100 hover:bg-blue-700 text-white  p-1 rounded"
-              >
-                <FcCancel size={"22px"} />
-              </button>
-              {/* <button className="bg-green-500 hover:bg-blue-700 text-white ms-1 p-1 rounded" type="submit">Edit driver</button> */}
-            </span>
-          )}
-        </>
-      ),
-    },
+    // {
+    //   name: "Acion",
+    //   selector: (row) => row.action,
+    //   cell: (row) => (
+    //     <>
+    //       {row.challanStatus === "UN_PAID" && (
+    //         <span title="Void Challan">
+    //           <button
+    //             onClick={(e) => voidChallan(row)}
+    //             className="bg-gray-100 hover:bg-blue-700 text-white  p-1 rounded"
+    //           >
+    //             <FcCancel size={"22px"} />
+    //           </button>
+    //           {/* <button className="bg-green-500 hover:bg-blue-700 text-white ms-1 p-1 rounded" type="submit">Edit driver</button> */}
+    //         </span>
+    //       )}
+    //     </>
+    //   ),
+    // },
   ];
 
   const voidChallan = async (e) => {
@@ -131,29 +114,26 @@ const Collection = () => {
   useEffect(() => {
     getChallanList();
   }, [filterValue]);
-  const handlePayNow = (val) => {
-    console.log("val", val);
+  const handlePayNow = (val , type) => {
+    console.log("val", val , type);
   };
   return (
     <div>
-      <ChallanModal
-        challanModal={challanModal}
-        selectedRow={selectedRow}
-        setChallanModal={setChallanModal}
-        handlePayNow={handlePayNow}
-      />
+      {challanModal && (
+        <ChallanModal
+          type={"customer"}
+          setChallanModal={setChallanModal}
+          handlePayNow={handlePayNow}
+        />
+      )}
       <div className="w-full flex justify-between lg:w-full  px-1">
         <h2 className="mb-1 text-xl font-bold leading-tight tracking-tight py-1 px-2 m-2 text-gray-900 md:text-2xl dark:text-white">
-          Filters
+        Challan List
         </h2>
         <div>
           <button
             onClick={() => {
-              if (selectedRow.length > 0) {
-                setChallanModal(true);
-              }else{
-                toast.info("Please select atleast 1 challan")
-              }
+              setChallanModal(true);
             }}
             className="bg-green-500 m-2 hover:bg-green-700 text-white font-bold py-1 px-3 rounded"
           >
@@ -163,7 +143,7 @@ const Collection = () => {
       </div>
 
       <div className="flex justify-between">
-        <div className="w-full m-2">
+        {/* <div className="w-full m-2">
           <label className="text-xs px-2">Start Date</label>
           <input
             type="date"
@@ -186,8 +166,8 @@ const Collection = () => {
               setFilterValues({ ...filterValue, endDate: e.target.value });
             }}
           />
-        </div>
-        <div className="w-full m-2">
+        </div> */}
+        {/* <div className="w-full m-2">
           <label className="text-xs px-2">Payment Status</label>
           <select
             value={filterValue.paymentStatus}
@@ -204,7 +184,7 @@ const Collection = () => {
             <option value="PAID">Paid</option>
             <option value="UN_PAID">Unpaid</option>
           </select>
-        </div>
+        </div> */}
         {/* <div className="w-full m-2">
           <label className="text-xs px-2">Payment Type</label>
           <select
@@ -223,8 +203,8 @@ const Collection = () => {
       </div>
       <div className="z-0">
         <Suspense fallback={<Loader />} />
-        <div className="flex flex-wrap justify-between">
-          <h2>Challan List</h2>
+        <div className="flex flex-wrap justify-between my-2">
+          <h2></h2>
           <input
             id="remember"
             aria-describedby="remember"
@@ -240,11 +220,11 @@ const Collection = () => {
           />
         </div>
         <DataTable
-          selectableRows
-          onSelectedRowsChange={(e) => {
-            console.log(e)
-            setSelectedRow(e.selectedRows);
-          }}
+          // selectableRows
+          // onSelectedRowsChange={(e) => {
+          //   console.log(e)
+          //   setSelectedRow(e.selectedRows);
+          // }}
           columns={columns}
           data={data}
         />

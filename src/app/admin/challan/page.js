@@ -3,55 +3,85 @@ import React, { Suspense, useState } from "react";
 import DataTable from "react-data-table-component";
 import Loader from "@/app/Components/Loader";
 import { toast } from "react-toastify";
+import { FcCancel } from "react-icons/fc";
 import { useEffect } from "react";
 import axiosInstance from "@/interceptor/axios_inteceptor";
 
 const Challan = () => {
   const [filterValue, setFilterValues] = useState({
+    startDate: null,
+    endDate: null,
+    paymentStatus: null,
     challanType: "CUSTOMER",
-    challanDate: null,
+    search: null,
   });
-
+  const [generateBulk, setGenerateBulk] = useState({
+    challanType: "CUSTOMER",
+    feePeriod: null,
+  });
+  const [generateModal, setGenerateModal] = useState(false);
   const [data, setData] = useState([]);
   const columns = [
     {
       name: "Chalan Id",
-      selector: (row) => row.challanNo,
+      selector: (row) => row?.challanNo,
     },
     {
       name: "Name",
       selector: (row) =>
-        `${row.customerId.firstName} ${row.customerId.lastName}`,
+        `${row?.customerData?.firstName} ${row?.customerData?.lastName}`,
     },
     {
       name: "Amount",
-      selector: (row) => row.amount,
+      selector: (row) => row?.amount,
     },
     {
-      name: "Challan Type",
-      selector: (row) => row.challanType,
+      name: "Fee Period",
+      selector: (row) => row?.feePeriod,
+    },
+    {
+      name: "Acion",
+      selector: (row) => row.action,
+      cell: (row) => (
+        <>
+          {row.challanStatus === "UN_PAID" && (
+            <span title="Void Challan">
+              <button
+                onClick={(e) => voidChallan(row)}
+                className="bg-gray-100 hover:bg-blue-700 text-white  p-1 rounded"
+              >
+                <FcCancel size={"22px"} />
+              </button>
+              {/* <button className="bg-green-500 hover:bg-blue-700 text-white ms-1 p-1 rounded" type="submit">Edit driver</button> */}
+            </span>
+          )}
+        </>
+      ),
     },
   ];
   const generateChallan = async () => {
-    if (filterValue.challanDate && filterValue.challanType) {
+    if (generateBulk.feePeriod && generateBulk.challanType) {
       try {
         toast.loading("Generating Challan");
         let response = await axiosInstance.post("/challan/all/generate", {
-          ...filterValue,
-          challanDate: filterValue.challanDate + "-01T00:09:19.733Z",
+          ...generateBulk,
+          challanDate: generateBulk.feePeriod + "-01T00:09:19.733Z",
         });
         console.log("response", response);
         toast.dismiss();
-        setData(response?.data?.data);
+        getChallanList();
+        setGenerateBulk({
+          challanType: "CUSTOMER",
+          feePeriod: null,
+        });
+        setGenerateModal(false);
 
-        // Display success toast without immediate dismissal
         toast.success(
           response?.data?.message || "Challan Generated Successfully"
         );
       } catch (error) {
         console.log("error while generating challan", error);
-        // Delay dismissal slightly to ensure error toast visibility
-        toast.dismiss(); // Delay for 2 seconds
+        toast.dismiss();
         toast.error(error?.response?.data?.message);
       }
     } else {
@@ -59,31 +89,152 @@ const Challan = () => {
     }
   };
 
+  const getChallanList = async () => {
+    let url =
+      "/challan/get" +
+      (filterValue.challanType !== null && filterValue.challanType !== "All"
+        ? `?challanType=${filterValue.challanType}`
+        : "") +
+      (filterValue.paymentStatus !== null && filterValue.paymentStatus !== "All"
+        ? `&challanStatus=${filterValue.paymentStatus}`
+        : "") +
+      (filterValue.startDate !== null
+        ? `&fromDate=${filterValue.startDate}T00:00:00.000Z`
+        : "") +
+      (filterValue.endDate !== null
+        ? `&toDate=${filterValue.endDate}T23:59:59.000Z`
+        : "") +
+      (filterValue.search !== null ? `&search=${filterValue.search}` : "");
+    try {
+      let response = await axiosInstance.get(url);
+      if (response.status === 200) {
+        console.log(response);
+        setData(response?.data?.data);
+      }
+    } catch (error) {
+      console.log("error", error);
+      setData([]);
+    }
+  };
+
+  const voidChallan = async (e) => {
+    try {
+      console.log("e", e);
+      let response = await axiosInstance.put(`/challan/status/void/${e._id}`);
+      console.log("response", response);
+      toast.success(response?.data?.message || "Challan Void Successfully");
+      getChallanList();
+    } catch (error) {
+      console.log(error);
+      toast.error(error?.message);
+    }
+  };
+
+  useEffect(() => {
+    getChallanList();
+  }, [filterValue]);
   return (
     <div>
+      {generateModal ? (
+        <>
+          <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
+            <div className="relative w-auto my-6 mx-auto max-w-6xl">
+              {/*content*/}
+              <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
+                {/*header*/}
+                <div className="flex items-start justify-between p-5 border-b border-solid border-slate-200 rounded-t">
+                  <h3 className="text-3xl font-semibold">Generate Modal</h3>
+                  <button
+                    className="p-1 ml-auto bg-transparent border-0 text-black opacity-5 float-right text-3xl leading-none font-semibold outline-none focus:outline-none"
+                    onClick={() => setGenerateModal(false)}
+                  >
+                    <span className="bg-transparent text-black opacity-5 h-6 w-6 text-2xl block outline-none focus:outline-none">
+                      ×
+                    </span>
+                  </button>
+                </div>
+                {/*body*/}
+                <div className="relative px-6 py-2 flex-auto">
+                  <div className="w-full ">
+                    <label className="text-xs px-2">Payment Type</label>
+                    <select
+                      value={generateBulk.challanType}
+                      onChange={(e) => {
+                        console.log("e.target.value", e.target.value);
+                        setGenerateBulk({
+                          ...generateBulk,
+                          challanType: e.target.value,
+                        });
+                      }}
+                      className="appearance-none block w-full  border border-gray-200 rounded  leading-tight focus:outline-none py-1 px-2 m-2 focus:bg-white focus:border-gray-500"
+                    >
+                      <option value="DRIVER">Driver</option>
+                      <option value="CUSTOMER">Member</option>
+                    </select>
+                  </div>
+                  <div className="w-full">
+                    <label className="text-xs px-2">Fee Period</label>
+                    <input
+                      type="month"
+                      value={generateBulk.feePeriod}
+                      className="appearance-none block w-full  border border-gray-200 rounded  leading-tight focus:outline-none py-1 px-2 m-2 focus:bg-white focus:border-gray-500"
+                      onChange={(e) => {
+                        setGenerateBulk({
+                          ...generateBulk,
+                          feePeriod: e.target.value,
+                        });
+                      }}
+                    />
+                  </div>
+                </div>
+                {/*footer*/}
+                <div className="flex items-center justify-end p-6 border-t border-solid border-slate-200 rounded-b">
+                  <button
+                    className="text-red-500 background-transparent font-bold uppercase px-6 py-2 text-sm outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
+                    type="button"
+                    onClick={() => setGenerateModal(false)}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    className="bg-emerald-500 text-white active:bg-emerald-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
+                    type="button"
+                    onClick={generateChallan}
+                  >
+                    Done
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="opacity-25 fixed inset-0 z-40 bg-black"></div>
+        </>
+      ) : null}
       <div className="w-full align-bottom lg:w-full">
+        {/* filter and generate button */}
         <div className="flex flex-wrap justify-between">
-        <h2 className="text-md font-semibold leading-tight tracking-tight  text-gray-900 md:text-2xl dark:text-white">
-          Filters
-        </h2>
-        <div>
-        <button
-          onClick={generateChallan}
-          className="bg-green-500 m-2 hover:bg-green-700 text-white font-bold py-1 px-3 rounded"
-        >
-          {filterValue.challanType === "DRIVER"
-            ? "Genrate PaySlip"
-            : "Generate Challan"}
-        </button>
-      </div>
-      </div>
-        {/* <div className="flex justify-between">
+          <h2 className="text-md font-semibold leading-tight tracking-tight  text-gray-900 md:text-2xl dark:text-white">
+            Filters
+          </h2>
+          <div>
+            <button
+              onClick={() => {
+                setGenerateModal(true);
+              }}
+              className="bg-green-500 m-2 hover:bg-green-700 text-white font-bold py-1 px-3 rounded"
+            >
+              Generate Bulk
+            </button>
+          </div>
+        </div>
+        {/* filters */}
+        <div className="flex justify-between">
           <div className="w-full m-2">
             <label className="text-xs px-2">Payment Type</label>
             <select
               value={filterValue.challanType}
               onChange={(e) => {
-                setData([])
+                console.log("e.target.value", e.target.value);
                 setFilterValues({
                   ...filterValue,
                   challanType: e.target.value,
@@ -104,23 +255,7 @@ const Challan = () => {
               onChange={(e) => {
                 setFilterValues({
                   ...filterValue,
-                  challanDate: e.target.value,
-                });
-              }}
-            />
-          </div>
-        </div> */}
-        <div className="flex justify-between">
-          <div className="w-full m-2">
-            <label className="text-xs px-2">Fee Period</label>
-            <input
-              type="month"
-              value={filterValue.startDate}
-              className="appearance-none block w-full  border border-gray-200 rounded  leading-tight focus:outline-none py-1 px-2 m-2 focus:bg-white focus:border-gray-500"
-              onChange={(e) => {
-                setFilterValues({
-                  ...filterValue,
-                  challanDate: e.target.value,
+                  startDate: e.target.value,
                 });
               }}
             />
@@ -130,7 +265,6 @@ const Challan = () => {
             <select
               value={filterValue.paymentStatus}
               onChange={(e) => {
-                setSelectedRow(null);
                 setFilterValues({
                   ...filterValue,
                   paymentStatus: e.target.value,
@@ -143,98 +277,32 @@ const Challan = () => {
               <option value="UN_PAID">Unpaid</option>
             </select>
           </div>
-          <div className="w-full m-2">
-            <label className="text-xs px-2">Payment Type</label>
-            <select
-              value={filterValue.challanType}
-              onChange={(e) => {
-                console.log("e.target.value", e.target.value);
-                setSelectedRow(null);
-                setFilterValues({
-                  ...filterValue,
-                  challanType: e.target.value,
-                });
-              }}
-              className="appearance-none block w-full  border border-gray-200 rounded  leading-tight focus:outline-none py-1 px-2 m-2 focus:bg-white focus:border-gray-500"
-            >
-              <option value="DRIVER">Driver</option>
-              <option value="CUSTOMER">Member</option>
-            </select>
-          </div>
         </div>
       </div>
-
-
-      {/* <div className="flex justify-between">
-        <div className="w-full m-2">
-          <label className="text-xs px-2">Start Date</label>
-          <input
-            type="date"
-            value={filterValue.startDate}
-            className="appearance-none block w-full  border border-gray-200 rounded  leading-tight focus:outline-none py-1 px-2 m-2 focus:bg-white focus:border-gray-500"
-            onChange={(e) => {
-              setSelectedRow(null);
-              setFilterValues({ ...filterValue, startDate: e.target.value });
-            }}
-          />
-        </div>
-        <div className="w-full m-2">
-          <label className="text-xs px-2">End Date</label>
-          <input
-            type="date"
-            value={filterValue.endDate}
-            className="appearance-none block w-full  border border-gray-200 rounded  leading-tight focus:outline-none py-1 px-2 m-2 focus:bg-white focus:border-gray-500"
-            onChange={(e) => {
-              setSelectedRow(null);
-              setFilterValues({ ...filterValue, endDate: e.target.value });
-            }}
-          />
-        </div>
-        <div className="w-full m-2">
-          <label className="text-xs px-2">Payment Status</label>
-          <select
-            value={filterValue.paymentStatus}
-            onChange={(e) => {
-              setSelectedRow(null);
-              setFilterValues({
-                ...filterValue,
-                paymentStatus: e.target.value,
-              });
-            }}
-            className="appearance-none block w-full  border border-gray-200 rounded  leading-tight focus:outline-none py-1 px-2 m-2 focus:bg-white focus:border-gray-500"
-          >
-            <option>All</option>
-            <option value="PAID">Paid</option>
-            <option value="UN_PAID">Unpaid</option>
-          </select>
-        </div>
-        <div className="w-full m-2">
-          <label className="text-xs px-2">Payment Type</label>
-          <select
-            value={filterValue.challanType}
-            onChange={(e) => {
-              console.log("e.target.value", e.target.value);
-              setSelectedRow(null)
-              setFilterValues({ ...filterValue, challanType: e.target.value });
-            }}
-            className="appearance-none block w-full  border border-gray-200 rounded  leading-tight focus:outline-none py-1 px-2 m-2 focus:bg-white focus:border-gray-500"
-          >
-            <option value="DRIVER">Driver</option>
-            <option value="CUSTOMER">Member</option>
-          </select>
-        </div>
-      </div> */}
+      {/* table section */}
       <div className="z-0">
         <Suspense fallback={<Loader />} />
-        <DataTable
-          title={
-            filterValue.challanType === "DRIVER"
+        <div className="flex flex-wrap justify-between">
+          <h2>
+            {filterValue.challanType === "DRIVER"
               ? "PaySlip List"
-              : "Challan List"
-          }
-          columns={columns}
-          data={data}
-        />
+              : "Challan List"}
+          </h2>
+          <input
+            id="remember"
+            aria-describedby="remember"
+            type="text"
+            className="border  p-1 rounded  focus:ring-3 focus:ring-primary-300 :bg-gray-700 :border-gray-600 :focus:ring-primary-600 :ring-offset-gray-800"
+            placeholder="Search Name"
+            onChange={(e) => {
+              setFilterValues({
+                ...filterValue,
+                search: e.target.value,
+              });
+            }}
+          />
+        </div>
+        <DataTable columns={columns} data={data} />
       </div>
     </div>
   );
