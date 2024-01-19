@@ -1,7 +1,6 @@
 'use client'
-
-import Dashboard from "@/app/Components/Dashboard"
 import axiosInstance from "@/interceptor/axios_inteceptor";
+import { useUserValidator } from "@/interceptor/userValidate";
 import { useEffect, useState } from "react";
 import DataTable from 'react-data-table-component';
 import { toast } from "react-toastify";
@@ -9,6 +8,7 @@ import { toast } from "react-toastify";
 
 
 export default function InactiveDriver(){
+  useUserValidator("superadmin")
     const columns = [
   
           {
@@ -82,8 +82,10 @@ export default function InactiveDriver(){
     }, [])
     return(
         // <Dashboard >
-            <div className="z-0">    
+            <div className="z-0 w-full">    
              <DataTable
+ pagination
+ paginationPerPage={10} 
 fixedHeader
              title="InActive Driver List"
             //  fixedHeader

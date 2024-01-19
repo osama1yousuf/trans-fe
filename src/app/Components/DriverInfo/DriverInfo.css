@@ -1,0 +1,154 @@
+.driver-info-div {
+    background-color: white;
+    padding: 10px;
+}
+
+.driver-info-top-section {
+    border-bottom: 0.5px solid #9ca3af;
+    padding-bottom: 5px;
+}
+
+.driver-info-bottom-section {
+    padding-top: 5px;
+}
+
+.driver-photo-div {
+    display: inline-block;
+    width: 30%;
+    vertical-align: middle;
+}
+
+.driver-liscene-info-div {
+    display: inline-block;
+    width: 40%;
+    vertical-align: middle;
+}
+
+.driver-score-div {
+    display: inline-block;
+    width: 30%;
+    vertical-align: top;
+    text-align: right;
+}
+
+.driver-avatar {
+    background-image: url("https://rainbow-centaur-5d0512.netlify.app/static/media/avatar.492d20aa65b729ee27c0.svg");
+    height: 100px;
+    width:  100px;
+    background-size: cover;
+    margin: 0 auto;
+}
+
+.driver-firstname {
+    display: block;
+    font-size: 25px;
+    font-weight: 500;
+}
+
+.driver-lastname {
+    display: block;
+    font-size: 25px;
+    font-weight: 500;
+}
+
+.license-info-title {
+    display: block;
+    font-weight: 200;
+}
+
+.license-number {
+    display: block;
+    font-weight: 500;
+    font-size: 18px;
+}
+
+.expiration-title {
+    font-weight: 200;
+}
+
+.expiration-date {
+    background-color: #dc2626;
+    color: white;
+    padding: 5px;
+    border-radius: 10px;
+}
+
+.expiration-info-div {
+    padding: 5px 0 5px 0; /* top right bottom left */
+}
+
+.certified-title {
+    display: inline-block;
+    background-color: #84cc16;
+    vertical-align: middle;
+    padding: 5px 10px 5px 10px;
+    border-radius: 10px;
+}
+
+.rating {
+    display: block;
+    padding: 5px 0 5px 0;
+}
+
+.driver-address-div {
+    display: inline-block;
+    width: 50%;
+}
+
+.driving-score-title {
+    font-weight: 200;
+}
+
+.home-icon-div {
+    display: inline-block;
+    vertical-align: middle;
+    width: 20%;
+    text-align: center;
+}
+
+.address-div {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.home-address-title {
+    display: block;
+    font-weight: 200;
+} 
+
+.address-span-1 {
+    display: block;
+}
+
+.address-span-2 {
+    display: block;
+}
+
+.driver-radius-div {
+    display: inline-block;
+    width: 10%;
+}
+
+.radius-title {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.driver-radius-div {
+    display: flex;
+    width: 50%;
+}
+
+.radius-div {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+@media screen and (max-width: 640px) {
+    .expiration-info-div {
+        display: none;
+    }
+    .rating {
+        display: none;
+    }
+}

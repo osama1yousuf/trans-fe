@@ -8,8 +8,10 @@ import { MdOutlinePayment } from "react-icons/md";
 import moment from "moment";
 import { BiEdit } from "react-icons/bi";
 import { useRouter } from "next/navigation";
+import { useUserValidator } from "@/interceptor/userValidate";
 
 export default function ActiveMember() {
+  useUserValidator("superadmin")
   const router = useRouter();
   const [showModal, setShowModal] = useState(false);
   const [challanData, setChallanData] = useState({
@@ -137,7 +139,7 @@ export default function ActiveMember() {
   }, []);
   return (
     // <Dashboard >
-    <>
+    <div className="w-full">
           {showModal && <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
         <div className="relative w-auto my-6 mx-auto max-w-3xl">
           {/*content*/}
@@ -192,6 +194,8 @@ export default function ActiveMember() {
       {" "}
       <div className="z-0">
         <DataTable
+ pagination
+ paginationPerPage={10} 
 fixedHeader
           // title="Active Member List"
           //  fixedHeader
@@ -199,7 +203,7 @@ fixedHeader
           data={data}
         />
       </div>
-    </>
+    </div>
     // </Dashboard>
   );
 }

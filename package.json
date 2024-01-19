@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@mui/icons-material": "^5.15.5",
     "@uidotdev/usehooks": "^2.4.1",
     "autoprefixer": "10.4.14",
     "axios": "^1.4.0",

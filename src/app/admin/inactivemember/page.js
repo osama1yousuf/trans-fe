@@ -1,16 +1,14 @@
 'use client'
-
-import Dashboard from "@/app/Components/Dashboard"
 import axiosInstance from "@/interceptor/axios_inteceptor";
+import { useUserValidator } from "@/interceptor/userValidate";
 import moment from "moment";
 import { useEffect, useState } from "react";
 import DataTable from 'react-data-table-component';
 import { toast } from "react-toastify";
 
 
-
-
 export default function InactiveMember() {
+  useUserValidatordator("admin")
     const [data, setData] = useState([])
     const columns = [
 
@@ -89,8 +87,10 @@ export default function InactiveMember() {
     }, [])
     return (
         // <Dashboard >
-        <div className="z-0">
+        <div className="z-0 w-full">
             <DataTable
+ pagination
+ paginationPerPage={10} 
 fixedHeader
                 title="Active Member List"
                 //  fixedHeader

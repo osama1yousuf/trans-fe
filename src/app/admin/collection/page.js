@@ -7,9 +7,10 @@ import { useEffect } from "react";
 import { toast } from "react-toastify";
 import axiosInstance from "@/interceptor/axios_inteceptor";
 import ChallanModal from "@/app/Components/ChallanModal";
+import { useUserValidator } from "@/interceptor/userValidate";
 
 const Collection = () => {
-
+  useUserValidator("superadmin") 
   const [filterValue, setFilterValues] = useState({
     startDate: null,
     endDate: null,
@@ -118,7 +119,7 @@ const Collection = () => {
     console.log("val", val , type);
   };
   return (
-    <div>
+    <div className="w-full">
       {challanModal && (
         <ChallanModal
           type={"customer"}
@@ -220,6 +221,8 @@ const Collection = () => {
           />
         </div>
         <DataTable
+ pagination
+ paginationPerPage={10} 
 fixedHeader
           // selectableRows
           // onSelectedRowsChange={(e) => {

@@ -1,0 +1,102 @@
+.vehicle-details-main-div {
+    margin-top: 20px;
+    background-color: white;
+}
+
+.vehicle-details-title-div {
+    background-color: black;
+    color: white;
+}
+
+.vehicle-details-title {
+    font-size: 20px;
+    font-weight: 500;
+    padding: 10px;
+}
+
+.car-info-div {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+}
+
+.car-photo-div {
+    background-image: url("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSKjdmd1W7CJn7ae3CCz3z9zpYoHTFQ7Ymc3c-YxIGo68CkDXNAEXL1REqrPMLSTWVKN00&usqp=CAU");
+    height: 250px;
+    width: 350px;
+    background-size: cover;
+}
+
+.car-model-info-div {
+    text-align: center;
+}
+
+.car-name-span {
+    display: block;
+    font-size: 20px;
+    font-weight: 500 ;
+}
+
+.car-number-plate-span {
+    display: block;
+    font-weight: 500 ;
+}
+
+.car-color-span {
+    display: block;
+    font-weight: 200;
+}
+
+/* .inspection-and-maintain-div {
+    display: flex;
+    flex-direction: row;
+} */
+
+.inspection-div {
+    text-align: center;
+}
+
+.maintain-div {
+    text-align: center;
+}
+
+.next-vehicle-inspection-title {
+    display: block;
+    font-weight: 500;
+    
+}
+
+.next-vehicle-maintain-title {
+    display: block;
+    font-weight: 500;
+}
+
+.inspection-date {
+    background-color: #dc2626;
+    color: white;
+    padding: 5px;
+    margin: 10px;
+}
+
+.maintain-date {
+    background-color: #84cc16;
+    color: white;
+    padding: 5px;
+    margin: 10px;
+}
+
+.inspection-box {
+    background-color: #cbd5e1;
+    text-align: center;
+    margin: 10px;
+    padding: 10px;
+}
+
+.inspection-box-title {
+    font-style: bold;
+    font-size: 25px;
+    font-weight: 600;
+    color: gray;
+}

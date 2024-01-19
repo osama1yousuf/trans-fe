@@ -66,7 +66,7 @@ export function BarChart({firstLabel , secondLabel , firstData , secondData}) {
       },
       title: {
         display: true,
-        text: firstLabel === "Challan" ? 'Member Bar Chart' : 'Driver Bar Chart',
+        text: firstLabel === "Challan" ? 'Member Chart' : 'Driver Chart',
       },
     },
   };

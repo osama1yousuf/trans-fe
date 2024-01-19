@@ -6,8 +6,10 @@ import { toast } from "react-toastify";
 import { FcCancel } from "react-icons/fc";
 import { useEffect } from "react";
 import axiosInstance from "@/interceptor/axios_inteceptor";
+import { useUserValidator } from "@/interceptor/userValidate";
 
 const Challan = () => {
+  useUserValidator("superadmin")
   const [filterValue, setFilterValues] = useState({
     startDate: null,
     endDate: null,
@@ -151,7 +153,7 @@ const Challan = () => {
     getChallanList();
   }, [filterValue]);
   return (
-    <div>
+    <div className="w-full">
       {generateModal ? (
         <>
           <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
@@ -245,8 +247,8 @@ const Challan = () => {
           </div>
         </div>
         {/* filters */}
-        <div className="flex justify-between">
-          <div className="w-full m-2">
+        <div className="flex justify-between items-center flex-wrap">
+          <div className="w-full sm:m-2 m-0">
             <label className="text-xs px-2">Transaction Type</label>
             <select
               value={filterValue.challanType}
@@ -321,6 +323,8 @@ const Challan = () => {
           />
         </div>
         <DataTable
+ pagination
+ paginationPerPage={10} 
 fixedHeader columns={columns} data={data} />
       </div>
     </div>

@@ -21,12 +21,17 @@ const ChallanModal = ({ setChallanModal, handlePayNow, type }) => {
 
   const columns = [
     {
-      name: "Chalan Id",
-      selector: (row) => row.challanNo,
+      name: "Chalan No",
+      selector: (row) => row?.challanNo,
     },
     {
-      name: "Name",
-      selector: (row) => `${row.customerData.firstName}`,
+      name: "Date",
+      selector: (row) =>
+        `${new Date(row?.challanDate).toLocaleDateString("en-GB", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+        })}`,
     },
     {
       name: "Amount",
@@ -39,7 +44,7 @@ const ChallanModal = ({ setChallanModal, handlePayNow, type }) => {
         const monthAbbreviation = createdAtDate.toLocaleString("default", {
           month: "long",
         });
-        return monthAbbreviation;
+        return row?.feePeriod;
       },
     },
   ];
@@ -107,7 +112,7 @@ const ChallanModal = ({ setChallanModal, handlePayNow, type }) => {
             <div className="relative px-6 py-2 flex-auto">
               <div className="flex flex-col justify-between items-center gap-3">
                 <div className="w-full">
-                  <label className="text-xs capitalize px-2">Select {type}</label>
+                  <label className="text-xs capitalize px-2">{type}</label>
                   <Select
                     value={selectedUser}
                     onChange={(e) => {
@@ -121,49 +126,52 @@ const ChallanModal = ({ setChallanModal, handlePayNow, type }) => {
                     }))}
                   />
                 </div>
-                <div className="flex">
-                <div className="w-full">
-                  <label className="text-xs px-2">Payment Mode</label>
-                  <select
-                    value={paymentData.paymentMode}
-                    onChange={(e) => {
-                      setPaymentData({
-                        ...paymentData,
-                        paymentMode: e.target.value,
-                      });
-                    }}
-                    className="appearance-none block w-full  border border-gray-200 rounded  leading-tight focus:outline-none py-2 px-2 focus:bg-white focus:border-gray-500"
-                  >
-                    <option value="CASH">Cash</option>
-                    <option value="ONLINE">Online</option>
-                  </select>
-                </div>
-                <div className="w-full">
-                  <label className="text-xs px-2">Paid At</label>
-                  <input
-                    type="date"
-                    value={paymentData.paidAt}
-                    className="appearance-none block w-full  border border-gray-200 rounded  leading-tight focus:outline-none py-2 px-2 focus:bg-white focus:border-gray-500"
-                    onChange={(e) => {
-                      setPaymentData({
-                        ...paymentData,
-                        paidAt: e.target.value,
-                      });
-                    }}
-                  />
-                </div>
+                <div className="flex gap-2 w-full">
+                  <div className="w-1/2">
+                    <label className="text-xs px-2">Mode</label>
+                    <select
+                      value={paymentData.paymentMode}
+                      onChange={(e) => {
+                        setPaymentData({
+                          ...paymentData,
+                          paymentMode: e.target.value,
+                        });
+                      }}
+                      className="appearance-none block w-full  border border-gray-200 rounded  leading-tight focus:outline-none py-2 px-2 focus:bg-white focus:border-gray-500"
+                    >
+                      <option value="CASH">Cash</option>
+                      <option value="ONLINE">Online</option>
+                    </select>
+                  </div>
+                  <div className="w-1/2">
+                    <label className="text-xs px-2">
+                      {type === "driver" ? "Paid Date" : "Collect Date"}
+                    </label>
+                    <input
+                      type="date"
+                      value={paymentData.paidAt}
+                      className="appearance-none block w-full  border border-gray-200 rounded  leading-tight focus:outline-none py-2 px-2 focus:bg-white focus:border-gray-500"
+                      onChange={(e) => {
+                        setPaymentData({
+                          ...paymentData,
+                          paidAt: e.target.value,
+                        });
+                      }}
+                    />
+                  </div>
                 </div>
               </div>
               <div className="z-0">
                 <Suspense fallback={<Loader />} />
                 <DataTable
-fixedHeader
-                  // title="Challan List"
+                  pagination
+                  paginationPerPage={10}
+                  fixedHeader
                   selectableRows
                   onSelectedRowsChange={(e) => {
                     setPaymentData({
                       ...paymentData,
-                      challanIds: e.selectedRows.map((v)=> v._id),
+                      challanIds: e.selectedRows.map((v) => v._id),
                     });
                   }}
                   columns={columns}
@@ -187,11 +195,11 @@ fixedHeader
                   if (paymentData.paidAt && paymentData.paymentMode) {
                     if (paymentData.challanIds.length > 0) {
                       handlePayNow(paymentData, type);
-                    }else{
-                    toast.info("Please select atleast one challan")
+                    } else {
+                      toast.info("Please select atleast one challan");
                     }
                   } else {
-                    toast.info("Please fill required field")
+                    toast.info("Please fill required field");
                   }
                 }}
               >

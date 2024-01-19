@@ -44,7 +44,7 @@ export function PieChart({dataSet , type}) {
       },
       title: {
         display: true,
-        text: type === "driver" ? 'Driver Pie Chart Pay ModeWise' : 'Member Pie Chart Receive ModeWise',
+        text: type === "driver" ? 'Driver Pay ModeWise' : 'Member Receive ModeWise',
       },
     },
   };

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Formik, Form, Field, ErrorMessage } from "formik"
+import { Formik, Form } from "formik"
 import axios from "axios";
 import * as Yup from 'yup';
 import { useEffect, useState } from "react";
@@ -55,12 +55,12 @@ export default function SignIn() {
     }
     }catch(e){
         console.log("error" , e);
-        toast.error(e.message, { autoClose : 1000 })
+        toast.error(e.response?.data?.message || "Server Error", { autoClose : 1000 })
     }
   }
   return (
      <section className="bg-gray-50 min-h-screen :bg-gray-900">
-      {console.log(userType)}
+      {/* {console.log(userType)} */}
       <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
         <a
           href="#"

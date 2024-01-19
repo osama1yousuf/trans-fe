@@ -6,8 +6,10 @@ import SingleSelectCheckbox from "@/app/Components/SingleSelectCheckbox";
 import axiosInstance from "@/interceptor/axios_inteceptor";
 import { usePathname, useRouter } from "next/navigation";
 import { BsXCircle } from "react-icons/bs";
+import { useUserValidator } from "@/interceptor/userValidate";
 
 export default function Editassign() {
+  useUserValidator("superadmin")
   const router = useRouter();
   const pathname = usePathname();
   let intialSection = {
@@ -297,7 +299,7 @@ export default function Editassign() {
     }
   };
   return (
-    <div>
+    <div className="w-full">
       {console.log("driverDetail", sections)}
       <div className="flex sticky flex-col">
         <div className="w-1/2">

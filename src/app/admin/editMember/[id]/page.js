@@ -6,7 +6,9 @@ import axiosInstance from "@/interceptor/axios_inteceptor";
 import { toast } from "react-toastify";
 import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useState } from "react";
+import { useUserValidator } from "@/interceptor/userValidate";
 export default function createMember() {
+  useUserValidator("superadmin")
     const router = useRouter()
     const pathname = usePathname()
     let time = ["7:00 AM","7:30 AM","8:00 AM","8:30 AM", "9:00 AM", "9:30 AM", "10:00 AM", "10:30 AM", "11:00 AM", "11:30 AM", "12:00 PM", "12:30 PM", "1:00 PM", "1:30 PM", "2:00 PM", "2:30 PM", "3:00 PM", "3:30 PM", "4:00 PM", "4:30 PM", "5:00 PM", "5:30 PM", "6:00 PM", "6:30 PM", "7:00 PM", "7:30 PM", "8:00 PM", "8:30 PM", "9:00 PM", "9:30 PM", "10:00 PM", "10:30 PM", "11:00 PM", "11:30 PM", "12:00 PM" , "12:30 PM",]
@@ -360,7 +362,7 @@ useEffect( ()=>{
                                         id="bothSide"
                                         name="bothSide"
                                         className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                                        data-te-select-init
+                                        
                                     >
                                         <option value="">Select Option</option>
                                         <option value='pickUp' >Pickup</option>
@@ -385,8 +387,8 @@ useEffect( ()=>{
                                         <Field as="select"
                                             id="pickUpAddress"
                                             name="pickUpAddress"
-                                            data-te-select-init
-                                            className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" data-te-select-init>
+                                            
+                                            className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" >
                                             <option value="select">Select</option>
                                             {
                                                 location.map((val, index) => {
@@ -410,8 +412,8 @@ useEffect( ()=>{
                                         <Field as="select"
                                             id="pickUpTime"
                                             name="pickUpTime"
-                                            data-te-select-init
-                                            className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" data-te-select-init>
+                                            
+                                            className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" >
                                             <option value="select">Select</option>
                                             {
                                                 time.map((val, index) => {
@@ -435,8 +437,8 @@ useEffect( ()=>{
                                         <Field as="select"
                                             id="satPickUpTime"
                                             name="satPickUpTime"
-                                            data-te-select-init
-                                            className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" data-te-select-init>
+                                            
+                                            className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" >
                                             <option value="select">Select</option>
                                             {
                                                 time.map((val, index) => {
@@ -460,8 +462,8 @@ useEffect( ()=>{
                                         <Field as="select"
                                             id="sunPickUpTime"
                                             name="sunPickUpTime"
-                                            data-te-select-init
-                                            className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" data-te-select-init>
+                                            
+                                            className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" >
                                             <option value="select">Select</option>
                                             {
                                                 time.map((val, index) => {
@@ -488,8 +490,8 @@ useEffect( ()=>{
                                         <Field as="select"
                                             id="dropOffAddress"
                                             name="dropOffAddress"
-                                            data-te-select-init
-                                            className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" data-te-select-init>
+                                            
+                                            className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" >
                                             <option value="select">Select</option>
                                             {
                                                 location.map((val, index) => {
@@ -513,8 +515,8 @@ useEffect( ()=>{
                                         <Field as="select"
                                             id="dropOffTime"
                                             name="dropOffTime"
-                                            data-te-select-init
-                                            className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" data-te-select-init>
+                                            
+                                            className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" >
                                             <option value="select">Select</option>
                                             {
                                                 time.map((val, index) => {
@@ -538,8 +540,8 @@ useEffect( ()=>{
                                         <Field as="select"
                                             id="satDropOffTime"
                                             name="satDropOffTime"
-                                            data-te-select-init
-                                            className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" data-te-select-init>
+                                            
+                                            className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" >
                                             <option value="select">Select</option>
                                             {
                                                 time.map((val, index) => {
@@ -563,8 +565,8 @@ useEffect( ()=>{
                                         <Field as="select"
                                             id="sunDropOffTime"
                                             name="sunDropOffTime"
-                                            data-te-select-init
-                                            className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" data-te-select-init>
+                                            
+                                            className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" >
                                             <option value="select">Select</option>
                                             {
                                                 time.map((val, index) => {
@@ -612,8 +614,8 @@ useEffect( ()=>{
                                     <Field as="select"
                                         id="feeType"
                                         name="feeType"
-                                        data-te-select-init
-                                        className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" data-te-select-init>
+                                        
+                                        className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" >
                                         <option value="">Select Option</option>
                                         <option value="advance">Advance</option>
                                         <option value="monthEnd ">Month End</option>

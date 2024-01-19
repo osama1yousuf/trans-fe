@@ -8,8 +8,10 @@ import { Suspense, useEffect, useState } from "react";
 import axiosInstance from "@/interceptor/axios_inteceptor";
 import { toast } from "react-toastify";
 import Loader from "@/app/Components/Loader";
+import { useUserValidator } from "@/interceptor/userValidate";
 
 export default function activeDriver() {
+  useUserValidator("superadmin")
   const router = useRouter();
   const [data, setData] = useState([]);
   const [showModal, setShowModal] = useState(false);
@@ -45,11 +47,11 @@ export default function activeDriver() {
           <span title="Driver Challan Generate">
             <button
               onClick={(e) => {
-                setShowModal(true)
+                setShowModal(true);
                 setChallanData({
-                    ...challanData,
-                    driverId : row?._id
-                })
+                  ...challanData,
+                  driverId: row?._id,
+                });
               }}
               className="bg-blue-500 hover:bg-blue-700 text-white text-xs  p-1 rounded"
             >
@@ -102,14 +104,17 @@ export default function activeDriver() {
 
   const handleGenerateChallan = async () => {
     try {
-      let response = await axiosInstance.post("/challan/generate" , {...challanData , challanDate : challanData.challanDate + "-01T00:09:19.733Z"});
-      console.log("response", response)
-      toast.success("challan generated successfully")
-      setShowModal(false)
-     } catch (error) {
+      let response = await axiosInstance.post("/challan/generate", {
+        ...challanData,
+        challanDate: challanData.challanDate + "-01T00:09:19.733Z",
+      });
+      console.log("response", response);
+      toast.success("challan generated successfully");
+      setShowModal(false);
+    } catch (error) {
       toast.error(error?.message);
       console.log("error", error);
-      setShowModal(false)
+      setShowModal(false);
     }
   };
 
@@ -143,69 +148,73 @@ export default function activeDriver() {
 
   return (
     // <Dashboard >
-    <>
-      {showModal && <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
-        <div className="relative w-auto my-6 mx-auto max-w-3xl">
-          {/*content*/}
-          <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
-            {/*header*/}
-            <div className="flex items-start justify-between p-5 border-b border-solid border-slate-200 rounded-t">
-              <h3 className="text-3xl font-semibold">Challan Generate</h3>
-              <button
-                className="p-1 ml-auto bg-transparent border-0 text-black opacity-5 float-right text-3xl leading-none font-semibold outline-none focus:outline-none"
-                onClick={() => setShowModal(false)}
-              >
-                <span className="bg-transparent text-black opacity-5 h-6 w-6 text-2xl block outline-none focus:outline-none">
-                  ×
-                </span>
-              </button>
-            </div>
-            {/*body*/}
-            <div className="relative p-6 flex-auto">
-            <label className="text-xs px-2">Fee Period</label>
-            <input
-              type="month"
-              value={challanData.challanDate}
-              className="appearance-none block w-full  border border-gray-200 rounded  leading-tight focus:outline-none py-1 px-2 m-2 focus:bg-white focus:border-gray-500"
-              onChange={(e) => {
-                setChallanData({
-                  ...challanData,
-                  challanDate: e.target.value ,
-                });
-              }}
-            />
-            </div>
-            {/*footer*/}
-            <div className="flex items-center justify-end p-6 border-t border-solid border-slate-200 rounded-b">
-              <button
-                className="text-red-500 background-transparent font-bold uppercase px-6 py-2 text-sm outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
-                type="button"
-                onClick={() => setShowModal(false)}
-              >
-                Close
-              </button>
-              <button
-                className="bg-emerald-500 text-white active:bg-emerald-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
-                type="button"
-                onClick={handleGenerateChallan}
-              >
-                Generate
-              </button>
+    <div className="w-full">
+      {showModal && (
+        <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
+          <div className="relative w-auto my-6 mx-auto max-w-3xl">
+            {/*content*/}
+            <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
+              {/*header*/}
+              <div className="flex items-start justify-between p-5 border-b border-solid border-slate-200 rounded-t">
+                <h3 className="text-3xl font-semibold">Challan Generate</h3>
+                <button
+                  className="p-1 ml-auto bg-transparent border-0 text-black opacity-5 float-right text-3xl leading-none font-semibold outline-none focus:outline-none"
+                  onClick={() => setShowModal(false)}
+                >
+                  <span className="bg-transparent text-black opacity-5 h-6 w-6 text-2xl block outline-none focus:outline-none">
+                    ×
+                  </span>
+                </button>
+              </div>
+              {/*body*/}
+              <div className="relative p-6 flex-auto">
+                <label className="text-xs px-2">Fee Period</label>
+                <input
+                  type="month"
+                  value={challanData.challanDate}
+                  className="appearance-none block w-full  border border-gray-200 rounded  leading-tight focus:outline-none py-1 px-2 m-2 focus:bg-white focus:border-gray-500"
+                  onChange={(e) => {
+                    setChallanData({
+                      ...challanData,
+                      challanDate: e.target.value,
+                    });
+                  }}
+                />
+              </div>
+              {/*footer*/}
+              <div className="flex items-center justify-end p-6 border-t border-solid border-slate-200 rounded-b">
+                <button
+                  className="text-red-500 background-transparent font-bold uppercase px-6 py-2 text-sm outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
+                  type="button"
+                  onClick={() => setShowModal(false)}
+                >
+                  Close
+                </button>
+                <button
+                  className="bg-emerald-500 text-white active:bg-emerald-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
+                  type="button"
+                  onClick={handleGenerateChallan}
+                >
+                  Generate
+                </button>
+              </div>
             </div>
           </div>
         </div>
-      </div>}
+      )}
       <div className="z-0">
         <Suspense fallback={<Loader />} />
         <DataTable
-fixedHeader
+          pagination
+          paginationPerPage={10}
+          fixedHeader
           //  title="Active Driver List"
           //  fixedHeader
           columns={columns}
           data={data}
         />
       </div>
-    </>
+    </div>
     // </Dashboard>
   );
 }

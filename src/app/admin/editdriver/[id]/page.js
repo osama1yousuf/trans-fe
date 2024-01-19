@@ -9,7 +9,9 @@ import axios from "axios";
 import axiosInstance from "@/interceptor/axios_inteceptor";
 import { toast } from "react-toastify";
 import { useEffect, useState } from "react";
+import { useUserValidator } from "@/interceptor/userValidate";
 export default function editdriver() {
+  useUserValidator("superadmin")
     const pathname = usePathname()
     const router = useRouter()
     const [ initialValues , setInitialValues ]= useState({
@@ -131,8 +133,8 @@ export default function editdriver() {
                 licenseIssue: data.licenseInfo.licenseIssue,
                 licenseExpiry: data.licenseInfo.licenseExpiry,
                 joiningDate: data.joiningDate,
-                salary: data?.salaryInfo?.salary,
-                salaryType: data?.salaryInfo?.salaryType,
+                salary: data?.salaryInfo[0]?.salary,
+                salaryType: data?.salaryInfo[0]?.salaryType,
                 comments: ''
               });
             } catch (error) {
@@ -155,7 +157,7 @@ export default function editdriver() {
                 {({ isSubmitting }) => (
                     <Form className="w-full">
                         <div className="w-full flex  m-1 lg:w-full px-3">
-                                <button type="submit" disabled={isSubmitting} className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded" >SAVE</button>
+                                <button type="submit" disabled={isSubmitting} className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded" >UPDATE</button>
                             </div>
                         <div className="flex  flex-wrap -mx-3 mb-6">
                             {/* <div> */}
@@ -169,7 +171,7 @@ export default function editdriver() {
                                         First Name
                                     </label>
                                     <Field
-                                        className="appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
+                                        className="appearance-none block w-full bg-gray-200 text-gray-700 border rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
                                         id="firstName"
                                         name="firstName"
                                         type="text"
@@ -188,7 +190,7 @@ export default function editdriver() {
                                         Last Name
                                     </label>
                                     <Field
-                                        className="appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
+                                        className="appearance-none block w-full bg-gray-200 text-gray-700 border rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
                                         id="lastName"
                                         name="lastName"
                                         type="text"

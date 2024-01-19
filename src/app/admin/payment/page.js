@@ -5,8 +5,10 @@ import Loader from "@/app/Components/Loader";
 import { useEffect } from "react";
 import axiosInstance from "@/interceptor/axios_inteceptor";
 import ChallanModal from "@/app/Components/ChallanModal";
+import { useUserValidator } from "@/interceptor/userValidate";
 
 const Payment = () => {
+  useUserValidatorr("admin")
   const [filterValue, setFilterValues] = useState({
     startDate: null,
     endDate: null,
@@ -88,7 +90,7 @@ const Payment = () => {
     console.log("val", val , type);
   };
   return (
-    <div>
+    <div className="w-full">
       {challanModal && (
         <ChallanModal
           setChallanModal={setChallanModal}
@@ -190,6 +192,8 @@ const Payment = () => {
           />
         </div>
         <DataTable
+ pagination
+ paginationPerPage={10} 
 fixedHeader columns={columns} data={data} />
       </div>
     </div>

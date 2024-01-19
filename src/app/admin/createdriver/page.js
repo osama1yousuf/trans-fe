@@ -8,7 +8,9 @@ import * as Yup from 'yup';
 import axios from "axios";
 import axiosInstance from "@/interceptor/axios_inteceptor";
 import { toast } from "react-toastify";
+import { useUserValidator } from "@/interceptor/userValidate";
 export default function createdriver() {
+  useUserValidator("superadmin")
     const router = useRouter()
     const validateDriverSchema = Yup.object().shape({
         firstName: Yup.string().required("First name required"),
@@ -128,7 +130,7 @@ export default function createdriver() {
                                         First Name
                                     </label>
                                     <Field
-                                        className="appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
+                                        className="appearance-none block w-full bg-gray-200 text-gray-700 border  rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
                                         id="firstName"
                                         name="firstName"
                                         type="text"
@@ -147,7 +149,7 @@ export default function createdriver() {
                                         Last Name
                                     </label>
                                     <Field
-                                        className="appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
+                                        className="appearance-none block w-full bg-gray-200 text-gray-700 border rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
                                         id="lastName"
                                         name="lastName"
                                         type="text"

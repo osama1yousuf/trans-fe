@@ -30,7 +30,7 @@ export default function Home() {
       <div className=' md:flex p-10  item-center'>
         <img className='w-36 h-20 flex m-auto'  src="https://muhammaditransport.com/wp-content/uploads/2023/03/cropped-logo-1.png" alt="logo" />
         <div className='text-center'>
-          <h1 className='text-2xl md:text-4xl px-4 pt-4  border-b border-black'>MUHAMMADI TRANSPORT SERVICE</h1>
+          <h1 className='text-2xl md:text-4xl px-4 pt-4  border-b border-black'>Transport Ease</h1>
           <p className='p-2'>Connecting You, Anywhere and Everywhere!</p>
         </div>
       </div>
