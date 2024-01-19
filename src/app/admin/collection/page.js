@@ -2,7 +2,6 @@
 import React, { Suspense, useState } from "react";
 import DataTable from "react-data-table-component";
 import Loader from "@/app/Components/Loader";
-import { FcCancel } from "react-icons/fc";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
 import axiosInstance from "@/interceptor/axios_inteceptor";
@@ -10,7 +9,7 @@ import ChallanModal from "@/app/Components/ChallanModal";
 import { useUserValidator } from "@/interceptor/userValidate";
 
 const Collection = () => {
-  useUserValidator("superadmin") 
+  useUserValidator("superadmin");
   const [filterValue, setFilterValues] = useState({
     startDate: null,
     endDate: null,
@@ -87,18 +86,15 @@ const Collection = () => {
   };
   const getChallanList = async () => {
     let url =
-      "/challan/get" +
+      "/payment/get" +
       (filterValue.challanType !== null && filterValue.challanType !== "All"
-        ? `?challanType=${filterValue.challanType}`
-        : "") +
-      (filterValue.paymentStatus !== null && filterValue.paymentStatus !== "All"
-        ? `&challanStatus=${filterValue.paymentStatus}`
+        ? `?paymentType=${filterValue.challanType}`
         : "") +
       (filterValue.startDate !== null
-        ? `&fromDate=${filterValue.startDate}T00:00:00.000Z`
+        ? `&fromDate=${filterValue.startDate}-01T00:00:00.000Z`
         : "") +
-      (filterValue.endDate !== null
-        ? `&toDate=${filterValue.endDate}T23:59:59.000Z`
+      (filterValue.startDate !== null
+        ? `&toDate=${endDate.toISOString().split("T")[0]}T00:00:00.000Z`
         : "") +
       (filterValue.search !== null ? `&search=${filterValue.search}` : "");
     try {
@@ -115,8 +111,16 @@ const Collection = () => {
   useEffect(() => {
     getChallanList();
   }, [filterValue]);
-  const handlePayNow = (val , type) => {
-    console.log("val", val , type);
+  const handlePayNow = async (val, type) => {
+    try {
+      let response = await axiosInstance.post(`/challan/status/paid`, val);
+      console.log("response", response);
+      toast.success(response?.data?.message);
+    } catch (error) {
+      console.log("error", error);
+      toast.error(error?.response?.data?.message);
+    }
+    setChallanModal(false);
   };
   return (
     <div className="w-full">
@@ -128,8 +132,8 @@ const Collection = () => {
         />
       )}
       <div className="w-full flex justify-between lg:w-full  px-1">
-        <h2 className="mb-1 text-xl font-bold leading-tight tracking-tight py-1 px-2 m-2 text-gray-900 md:text-2xl dark:text-white">
-        Challan List
+        <h2 className="mb-1 text-md font-bold leading-tight tracking-tight py-1 px-2 m-2 text-gray-900 md:text-2xl dark:text-white">
+          Challan List
         </h2>
         <div>
           <button
@@ -204,6 +208,20 @@ const Collection = () => {
       </div>
       <div className="z-0">
         <Suspense fallback={<Loader />} />
+          <div className="w-full sm:w-1/3 p-2">
+            <label className="text-xs px-2">Period</label>
+            <input
+              type="month"
+              value={filterValue.startDate}
+              className="appearance-none block w-full  border border-gray-200 rounded  leading-tight focus:outline-none py-1 px-2 p-2 focus:bg-white focus:border-gray-500"
+              onChange={(e) => {
+                setFilterValues({
+                  ...filterValue,
+                  startDate: e.target.value,
+                });
+              }}
+            />
+          </div>
         <div className="flex flex-wrap justify-between my-2">
           <h2></h2>
           <input
@@ -221,9 +239,9 @@ const Collection = () => {
           />
         </div>
         <DataTable
- pagination
- paginationPerPage={10} 
-fixedHeader
+          pagination
+          paginationPerPage={10}
+          fixedHeader
           // selectableRows
           // onSelectedRowsChange={(e) => {
           //   console.log(e)

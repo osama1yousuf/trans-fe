@@ -247,8 +247,8 @@ const Challan = () => {
           </div>
         </div>
         {/* filters */}
-        <div className="flex justify-between items-center flex-wrap">
-          <div className="w-full sm:m-2 m-0">
+        <div className="flex justify-between items-center ">
+          <div className="w-full sm:w-1/3 p-2">
             <label className="text-xs px-2">Transaction Type</label>
             <select
               value={filterValue.challanType}
@@ -259,18 +259,18 @@ const Challan = () => {
                   challanType: e.target.value,
                 });
               }}
-              className="appearance-none block w-full  border border-gray-200 rounded  leading-tight focus:outline-none py-1 px-2 m-2 focus:bg-white focus:border-gray-500"
+              className="appearance-none block w-full  border border-gray-200 rounded  leading-tight focus:outline-none py-1 px-2 p-2 focus:bg-white focus:border-gray-500"
             >
               <option value="DRIVER">Pay Slip</option>
               <option value="CUSTOMER">Challan</option>
             </select>
           </div>
-          <div className="w-full m-2">
+          <div className="w-full sm:w-1/3 p-2">
             <label className="text-xs px-2">Period</label>
             <input
               type="month"
               value={filterValue.startDate}
-              className="appearance-none block w-full  border border-gray-200 rounded  leading-tight focus:outline-none py-1 px-2 m-2 focus:bg-white focus:border-gray-500"
+              className="appearance-none block w-full  border border-gray-200 rounded  leading-tight focus:outline-none py-1 px-2 p-2 focus:bg-white focus:border-gray-500"
               onChange={(e) => {
                 setFilterValues({
                   ...filterValue,
@@ -279,7 +279,7 @@ const Challan = () => {
               }}
             />
           </div>
-          <div className="w-full m-2">
+          <div className="w-full sm:w-1/3 m-2">
             <label className="text-xs px-2">Payment Status</label>
             <select
               value={filterValue.paymentStatus}

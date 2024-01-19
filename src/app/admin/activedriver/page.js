@@ -208,7 +208,7 @@ export default function activeDriver() {
           pagination
           paginationPerPage={10}
           fixedHeader
-          //  title="Active Driver List"
+           title="Active Driver List"
           //  fixedHeader
           columns={columns}
           data={data}

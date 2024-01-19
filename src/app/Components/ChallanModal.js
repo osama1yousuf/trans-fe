@@ -13,7 +13,7 @@ const ChallanModal = ({ setChallanModal, handlePayNow, type }) => {
   const [data, setData] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
   const [paymentData, setPaymentData] = useState({
-    paymentMode: null,
+    paymentMode: "CASH",
     paidAt: null,
     paymentType: type === "driver" ? "DRIVER" : "CUSTOMER",
     challanIds: [],

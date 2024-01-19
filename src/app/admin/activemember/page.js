@@ -197,7 +197,7 @@ export default function ActiveMember() {
  pagination
  paginationPerPage={10} 
 fixedHeader
-          // title="Active Member List"
+          title="Active Member List"
           //  fixedHeader
           columns={columns}
           data={data}

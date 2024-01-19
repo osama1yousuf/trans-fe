@@ -6,9 +6,9 @@ import { useEffect } from "react";
 import axiosInstance from "@/interceptor/axios_inteceptor";
 import ChallanModal from "@/app/Components/ChallanModal";
 import { useUserValidator } from "@/interceptor/userValidate";
-
+import { toast } from "react-toastify";
 const Payment = () => {
-  useUserValidatorr("admin")
+  useUserValidator("superadmin")
   const [filterValue, setFilterValues] = useState({
     startDate: null,
     endDate: null,
@@ -86,8 +86,16 @@ const Payment = () => {
   useEffect(() => {
     getChallanList();
   }, [filterValue]);
-  const handlePayNow = (val , type) => {
-    console.log("val", val , type);
+  const handlePayNow = async (val , type) => {
+    try {
+      let response = await axiosInstance.post(`/challan/status/paid` , val)
+      console.log("response" , response)
+      toast.success(response?.data?.message)
+    } catch (error) {
+      console.log("error" , error)
+      toast.error(error?.response?.data?.message)
+    }
+    setChallanModal(false)
   };
   return (
     <div className="w-full">
