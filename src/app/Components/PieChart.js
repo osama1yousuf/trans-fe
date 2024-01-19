@@ -9,7 +9,7 @@ ChartJS.register(ArcElement, Tooltip, Legend);
 
 export function PieChart({dataSet , type}) {
   const data = {
-    labels: ['Online' , "Cash"],
+    labels: [ "Cash"  , 'Online' ],
     datasets: [
       {
         label: '# of Votes',
