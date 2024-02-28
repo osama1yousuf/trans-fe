@@ -10,6 +10,7 @@ import { toast } from "react-toastify";
 import Loader from "@/app/Components/Loader";
 import { useUserValidator } from "@/interceptor/userValidate";
 
+
 export default function activeDriver() {
   useUserValidator("superadmin")
   const router = useRouter();
