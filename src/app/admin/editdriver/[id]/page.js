@@ -10,7 +10,7 @@ import axiosInstance from "@/interceptor/axios_inteceptor";
 import { toast } from "react-toastify";
 import { useEffect, useState } from "react";
 import { useUserValidator } from "@/interceptor/userValidate";
-export default function editdriver() {
+export default function Editdriver() {
   useUserValidator("superadmin")
     const pathname = usePathname()
     const router = useRouter()

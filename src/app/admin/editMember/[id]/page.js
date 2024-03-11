@@ -7,7 +7,7 @@ import { toast } from "react-toastify";
 import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useState } from "react";
 import { useUserValidator } from "@/interceptor/userValidate";
-export default function createMember() {
+export default function CreateMember() {
   useUserValidator("superadmin")
     const router = useRouter()
     const pathname = usePathname()

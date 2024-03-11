@@ -9,7 +9,7 @@ import { BsXCircle } from "react-icons/bs";
 import { useUserValidator } from "@/interceptor/userValidate";
 
 export default function Editassign() {
-  useUserValidator("superadmin")
+  useUserValidator("superadmin");
   const router = useRouter();
   const pathname = usePathname();
   let intialSection = {
@@ -149,7 +149,7 @@ export default function Editassign() {
     getAllMembers();
     getDrivePreviousAssign(id);
     getDriver(id);
-  }, []);
+  }, [pathname]);
 
   const handleLineItems = (e) => {
     console.log(e);
@@ -330,7 +330,7 @@ export default function Editassign() {
       </div>
       {sections.map((val, i) => {
         return (
-          <div className="border my-8 mx-4">
+          <div key={i} className="border my-8 mx-4">
             <div className=" px-8 py-4">
               <div className="flex justify-between aligin-items-center  bg-white">
                 <div>
@@ -389,7 +389,10 @@ export default function Editassign() {
                 <tbody>
                   {val.data.map((newVal, index) => {
                     return (
-                      <tr className="bg-white border-b :bg-gray-900 :border-gray-700">
+                      <tr
+                        key={i}
+                        className="bg-white border-b :bg-gray-900 :border-gray-700"
+                      >
                         <th
                           scope="row"
                           className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap :text-white"

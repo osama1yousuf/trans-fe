@@ -11,7 +11,7 @@ import Loader from "@/app/Components/Loader";
 import { useUserValidator } from "@/interceptor/userValidate";
 
 
-export default function activeDriver() {
+export default function ActiveDriver() {
   useUserValidator("superadmin")
   const router = useRouter();
   const [data, setData] = useState([]);

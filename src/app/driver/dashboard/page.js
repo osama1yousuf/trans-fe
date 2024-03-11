@@ -1,11 +1,7 @@
-'use client'
-import { useUserValidator } from "@/interceptor/userValidate"
+"use client";
+import { useUserValidator } from "@/interceptor/userValidate";
 
-export default function example(){
-  useUserValidator("driver")
-  return(
-    <div className="w-full">
-    Driver Dashboard
-    </div>
-  )
+export default function Example() {
+  useUserValidator("driver");
+  return <div className="w-full">Driver Dashboard</div>;
 }
