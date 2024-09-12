@@ -4,11 +4,11 @@ import React, { useEffect, useState } from "react";
 import { FaAlignLeft, FaRegTimesCircle } from "react-icons/fa";
 import { useWindowSize } from "@uidotdev/usehooks";
 import { usePathname } from "next/navigation";
-import Textfield from "./Textfield";
 import { useRouter } from "next/navigation";
-import { BsPersonCircle } from "react-icons/bs";
 import axiosInstance from "@/interceptor/axios_inteceptor";
 import { toast } from "react-toastify";
+import Image from "next/image"
+import logo from "../../assets/logo.png"
 import Loader from "./Loader";
 export default function Dashboard({ children }) {
   const size = useWindowSize();
@@ -175,11 +175,11 @@ export default function Dashboard({ children }) {
     let initialTabs = [];
     if (localStorage.getItem("token")) {
       let userType = localStorage.getItem("userType");
-      if (userType == "driver") {
+      if (userType == "DRIVER") {
         initialTabs = driverTab;
-      } else if (userType == "member") {
+      } else if (userType == "CUSTOMER") {
         initialTabs = memberTab;
-      } else if (userType == "superadmin") {
+      } else if (userType == "SUPERADMIN") {
         initialTabs = adminTab;
       } else {
         localStorage.clear();
@@ -192,12 +192,6 @@ export default function Dashboard({ children }) {
     setProfileModal(!profileModal);
   };
 
-  // useEffect(()=>{
-  // if (size.width < 1300 && size.width !== null) {
-  //   console.log("condition ture")
-  //   setSideBar(false)
-  // }
-  // },[size])
   return (
     <>
       {pathname !== "/" &&
@@ -264,12 +258,14 @@ export default function Dashboard({ children }) {
             </>
           ) : null}
           <div className="sticky top-0 z-40 left-0 w-full">
-            <div className="bg-white rounded shadow-lg py-4 px-6">
-              <nav className="flex justify-between">
+            <div className="bg-white rounded shadow-lg">
+              <nav className="flex justify-between p-2">
                 <div className="flex items-center space-x-3 lg:pr-16 pr-6">
-                  <img
-                    className="sm:w-32 h-12 sm:block hidden mr-2"
-                    src="https://muhammaditransport.com/wp-content/uploads/2023/03/cropped-logo-1.png"
+                  <Image
+                    className="sm:block hidden mr-3"
+                    width={90}
+                    height={90}
+                    src={logo}
                     alt="logo"
                   />
 
