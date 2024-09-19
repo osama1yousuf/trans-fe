@@ -16,7 +16,7 @@ export default function Dashboard({ children }) {
   let adminTab = [
     {
       name: "Dashboard",
-      url: "admin/dashboard",
+      url: "dashboard",
       active: false,
     },
     {
@@ -35,6 +35,10 @@ export default function Dashboard({ children }) {
         {
           name: "InActive Driver",
           endpoints: "admin/inactivedriver",
+        },
+        {
+          name: "Attendance",
+          endpoints: "admin/attendance",
         },
       ],
     },
@@ -95,7 +99,12 @@ export default function Dashboard({ children }) {
   let driverTab = [
     {
       name: "Dashboard",
-      url: "driver/dashboard",
+      url: "dashboard",
+      active: false,
+    },
+    {
+      name: "Attendance",
+      url: "driver/attendance",
       active: false,
     },
   ];
@@ -459,7 +468,7 @@ export default function Dashboard({ children }) {
               : "sm:ml-64"
           }`}
         >
-          <div className="p-4 border-2 border-gray-200 border-transparent rounded-md min-h-[84vh] bg-white flex justify-center">
+          <div className="p-4 border-2 border-gray-200 border-transparent rounded-md min-h-[84vh] bg-white w-[100%]">
             {children}
           </div>
         </div>

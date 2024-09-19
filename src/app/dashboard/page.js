@@ -16,7 +16,7 @@ export default function Dashboard() {
   return (
     <>
      {
-        dashboardType === "SUPERADMIN" && <DriverDashboard /> ||
+        dashboardType === "SUPERADMIN" && <AdminDashboard /> ||
         dashboardType === "DRIVER" && <DriverDashboard /> ||
         dashboardType === "CUSTOMER" && <MemberDashboard />
      }

@@ -12,7 +12,7 @@ import { useUserValidator } from "@/interceptor/userValidate";
 
 
 export default function ActiveDriver() {
-  useUserValidator("superadmin")
+  // useUserValidator("superadmin")
   const router = useRouter();
   const [data, setData] = useState([]);
   const [showModal, setShowModal] = useState(false);
