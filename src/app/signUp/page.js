@@ -7,7 +7,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import Textfield from "../Components/Textfield";
 
-export default function () {
+export default function SignUp () {
     let url = process.env.BASE_URL
     const rounter = useRouter()
     // console.log(url,"chec kurl")
