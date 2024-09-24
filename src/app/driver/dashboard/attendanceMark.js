@@ -213,7 +213,13 @@ export default function AttendanceMark() {
                     }
                     className="bg-green-500 hover:bg-green-600 text-white"
                   >
-                    Check In
+                    Check In - {shifts.find(
+                      (e) =>
+                        e.shift === `SHIFT_${index + 1}` && e.checkInTime !== null
+                    ) && formatTime(new Date(shifts.find(
+                      (e) =>
+                        e.shift === `SHIFT_${index + 1}` && e.checkInTime !== null
+                    )?.checkInTime))}
                   </Button>
                   <Button
                     onClick={() => handleCheckOut(index)}
@@ -228,8 +234,26 @@ export default function AttendanceMark() {
                     }
                     className="bg-red-500 hover:bg-red-600 text-white"
                   >
-                    Check Out
+                    Check Out - {shifts.find(
+                      (e) =>
+                        e.shift === `SHIFT_${index + 1}` &&
+                        e.checkInTime !== null
+                    ) &&
+                      shifts.find(
+                        (e) =>
+                          e.shift === `SHIFT_${index + 1}` &&
+                          e.checkoutTime !== null
+                      ) && formatTime(
+                        new Date(
+                          shifts.find(
+                            (e) =>
+                              e.shift === `SHIFT_${index + 1}` &&
+                              e.checkInTime !== null
+                          )?.checkoutTime
+                        )
+                      )}
                   </Button>
+
                 </div>
               </CardContent>
             </Card>
