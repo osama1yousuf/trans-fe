@@ -58,7 +58,7 @@ export default function Attendance() {
     getAttendance(filterSelect);
   }, [filterSelect]);
   return (
-    <div>
+    <div className="p-4">
       <div className="w-full lg:w-1/4">
         <SelectDropdown
           label={"Filter"}
