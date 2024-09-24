@@ -85,7 +85,7 @@ export const attendanceColForAdmin = [
             : '-'}
         </p>
         <p className="bg-green-500 p-1 text-center text-white">
-          {row.attendance.find((e) => e.shift === "SHIFT_1" && e?.checkoutTime !== null)
+          {row.attendance.find((e) => e.shift === "SHIFT_1" && e?.checkOutTime !== null)
             ? formatTime(new Date(row.attendance.find((e) => e.shift === "SHIFT_1" && e?.checkOutTime !== null)?.checkOutTime))
             : '-'}
         </p>
