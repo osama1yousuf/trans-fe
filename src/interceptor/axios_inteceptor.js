@@ -12,8 +12,11 @@ axiosInstance.interceptors.request.use(
     if (userAccessToken) {
       config.headers.Authorization = `Bearer ${userAccessToken}`;
     } else {
+      // Token not available, redirect to login page
+      console.log("Token not available, redirecting to login");
       localStorage.clear();
-      window.location.reload(false);
+      window.location.href = '/';
+      return Promise.reject('No token available');
     }
 
     return config;
@@ -28,14 +31,15 @@ axiosInstance.interceptors.response.use(
     // Handle any successful responses here
     return response;
   },
-  async (error) => {
+  (error) => {
     const originalRequest = error.config;
 
-    if (error.response.status === 401) {
+    if (error.response && error.response.status === 401) {
+      // Token is expired or unauthorized, clear token and redirect
       localStorage.clear();
-      window.location.reload(false);
+      console.log("Unauthorized, redirecting to login");
+      window.location.href = '/';
       return Promise.reject(error);
-     
     }
 
     return Promise.reject(error);
