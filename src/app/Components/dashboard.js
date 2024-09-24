@@ -42,52 +42,52 @@ export default function Dashboard({ children }) {
         },
       ],
     },
-    {
-      name: "Member",
-      url: "member",
-      active: false,
-      Content: [
-        {
-          name: "Create Member",
-          endpoints: "admin/createmember",
-        },
-        {
-          name: "Active Member",
-          endpoints: "admin/activemember",
-        },
-        {
-          name: "InActive Member",
-          endpoints: "admin/inactivemember",
-        },
-      ],
-    },
+    // {
+    //   name: "Member",
+    //   url: "member",
+    //   active: false,
+    //   Content: [
+    //     {
+    //       name: "Create Member",
+    //       endpoints: "admin/createmember",
+    //     },
+    //     {
+    //       name: "Active Member",
+    //       endpoints: "admin/activemember",
+    //     },
+    //     {
+    //       name: "InActive Member",
+    //       endpoints: "admin/inactivemember",
+    //     },
+    //   ],
+    // },
     {
       name: "Location",
       url: "admin/location",
       active: false,
     },
-    {
-      name: "Financial",
-      url: "financial",
-      active: false,
-      Content: [
-        {
-          name: "Challan / PaySlip",
-          endpoints: "admin/challan",
-          // active: false,
-        },
-        {
-          name: "Collection",
-          endpoints: "admin/collection",
-          // active: false,
-        },
-        {
-          name: "Payment",
-          endpoints: "admin/payment",
-          // active: false,
-        },
-      ],
-    },
+    // {
+    //   name: "Financial",
+    //   url: "financial",
+    //   active: false,
+    //   Content: [
+    //     {
+    //       name: "Challan / PaySlip",
+    //       endpoints: "admin/challan",
+    //       // active: false,
+    //     },
+    //     {
+    //       name: "Collection",
+    //       endpoints: "admin/collection",
+    //       // active: false,
+    //     },
+    //     {
+    //       name: "Payment",
+    //       endpoints: "admin/payment",
+    //       // active: false,
+    //     },
+    //   ],
+    // },
   ];
   let memberTab = [
     {
@@ -459,16 +459,16 @@ export default function Dashboard({ children }) {
       pathname !== "/driver_signin" &&
       pathname !== "/admin_signin" ? (
         <div
-          className={`p-2 ${
+          className={`p-1 ${
             sideBar
               ? "sm:ml-0"
-              : pathname === "/driver/dashboard" ||
-                pathname === "/member/dashboard"
+              : pathname === "/dashboard" ||
+                pathname === "/dashboard"
               ? "sm:ml-0"
               : "sm:ml-64"
           }`}
         >
-          <div className="p-4 border-2 border-gray-200 border-transparent rounded-md min-h-[84vh] bg-white w-[100%]">
+          <div className=" border-transparent rounded-md min-h-[84vh] bg-white w-full">
             {children}
           </div>
         </div>
