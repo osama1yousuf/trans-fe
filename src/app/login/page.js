@@ -27,6 +27,7 @@ export default function Login() {
     password: "",
   };
   const handleSubmit = async (values, { setSubmitting }) => {
+    console.log("wrk" );
     setSubmitting(false);
     try {
       const response = await axios.post(`${url}/api/login`, values);

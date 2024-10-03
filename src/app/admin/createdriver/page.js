@@ -3,12 +3,17 @@
 import { FaUser } from "react-icons/fa";
 import { usePathname, useRouter } from "next/navigation";
 import { Formik, Form, Field, ErrorMessage } from "formik";
+import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
+import { useForm } from "react-hook-form";
 
 import axios from "axios";
 import axiosInstance from "@/interceptor/axios_inteceptor";
 import { toast } from "react-toastify";
 import { useUserValidator } from "@/interceptor/userValidate";
+import Textfield2 from "@/app/Components/TextField2";
+import SelectInput from "@/app/Components/SelectInput";
+import TextArea from "@/app/Components/TextArea";
 export default function Createdriver() {
   useUserValidator("superadmin");
   const router = useRouter();
@@ -72,10 +77,22 @@ export default function Createdriver() {
     salary: "",
     salaryType: "",
     comments: "",
+    // shifts info
+    shifts: 0,
   };
-  const handleSubmit = async (values, { setSubmitting }) => {
-    setSubmitting(false);
-    // console.log(values);
+  const {
+    register,
+    setFocus,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    defaultValues: initialValues,
+    resolver: yupResolver(validateDriverSchema),
+  });
+
+  const onSubmit = async (values) => {
+    // setSubmitting(false);
+    console.log("values", values);
     let body = {
       firstName: values.firstName,
       lastName: values.lastName,
@@ -103,465 +120,284 @@ export default function Createdriver() {
         salaryType: values.salaryType,
       },
     };
-    try {
-      console.log(body);
-      const responsne = await axiosInstance.post("/driver", body);
-      console.log("responsne", responsne);
-      toast.success("Driver created successfully", { autoClose: 1000 });
-      router.push("/admin/activedriver");
-    } catch (e) {
-      console.log("error", e.response.data.message[0]);
-      toast.error(e.response.data.message[0], { autoClose: 1000 });
-    }
+    // try {
+    //   console.log(body);
+    //   const responsne = await axiosInstance.post("/driver", body);
+    //   console.log("responsne", responsne);
+    //   toast.success("Driver created successfully", { autoClose: 1000 });
+    //   router.push("/admin/activedriver");
+    // } catch (e) {
+    //   console.log("error", e.response.data.message[0]);
+    //   toast.error(e.response.data.message[0], { autoClose: 1000 });
+    // }
   };
   return (
-    // <Dashboard>
     <>
-      {/* <br /> */}
-      {/* <h1 className="text-3xl border-b-2">Create Driver</h1> */}
-      {/* <br /> */}
-
-      <Formik
-        initialValues={initialValues}
-        validationSchema={validateDriverSchema}
-        onSubmit={handleSubmit}
-      >
-        {({ isSubmitting }) => (
-          <Form className="w-full">
-            <div className="w-full flex m-1 lg:w-full px-3">
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
-              >
-                SAVE
-              </button>
+      <form className="p-4" onSubmit={handleSubmit(onSubmit)}>
+        <div className="w-full flex m-1 lg:w-full px-3">
+          <button
+            type="submit"
+            // disabled={isSubmitting}
+            className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+          >
+            SAVE
+          </button>
+        </div>
+        <div className="flex  flex-wrap -mx-3 mb-6">
+          {/* <div> */}
+          <label className="text-sm m-2">Personal Info</label>
+          <div className="w-full flex rounded-2 flex-wrap border-2 p-2">
+            <div className="w-full  mt-2 lg:w-1/4 px-3">
+              <Textfield2
+                setFocus={setFocus}
+                error={errors}
+                register={register}
+                name={"firstName"}
+                label={"First Name"}
+                type={"text"}
+              />
             </div>
-            <div className="flex  flex-wrap -mx-3 mb-6">
-              {/* <div> */}
-              <label className="text-sm m-2">Personal Info</label>
-              <div className="w-full flex rounded-2 flex-wrap border-2 p-2">
-                <div className="w-full  mt-2 lg:w-1/4 px-3">
-                  <label
-                    className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                    htmlFor="firstName"
-                  >
-                    First Name
-                  </label>
-                  <Field
-                    className="appearance-none block w-full bg-gray-200 text-gray-700 border  rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
-                    id="firstName"
-                    name="firstName"
-                    type="text"
-                    placeholder="First Name"
-                  />
-                  <ErrorMessage name="firstName">
-                    {(errorMsg) => (
-                      <span className="text-red-500 text-sm">{errorMsg}</span>
-                    )}
-                  </ErrorMessage>
-                  {/* <p className="text-red-500 text-xs italic">Please fill out this field.</p> */}
-                </div>
-                <div className="w-full  mt-2 lg:w-1/4 px-3">
-                  <label
-                    className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                    htmlFor="lastName"
-                  >
-                    Last Name
-                  </label>
-                  <Field
-                    className="appearance-none block w-full bg-gray-200 text-gray-700 border rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
-                    id="lastName"
-                    name="lastName"
-                    type="text"
-                    placeholder="Last Name"
-                  />
-                  <ErrorMessage name="lastName">
-                    {(errorMsg) => (
-                      <span className="text-red-500 text-sm">{errorMsg}</span>
-                    )}
-                  </ErrorMessage>
-                  {/* <p className="text-red-500 text-xs italic">Please fill out this field.</p> */}
-                </div>
-                <div className="w-full  mt-2 lg:w-1/4 px-3">
-                  <label
-                    className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                    htmlFor="dateOfBirth"
-                  >
-                    Date of Birth
-                  </label>
-                  <Field
-                    className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                    id="dateOfBirth"
-                    name="dateOfBirth"
-                    type="date"
-                    // placeholder="42***-*******-*"
-                  />
-                  <ErrorMessage name="dateOfBirth">
-                    {(errorMsg) => (
-                      <span className="text-red-500 text-sm">{errorMsg}</span>
-                    )}
-                  </ErrorMessage>
-                </div>
-                <div className="w-full  mt-2 lg:w-1/4 px-3">
-                  <label
-                    className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                    htmlFor="cnicNo"
-                  >
-                    CNIC No
-                  </label>
-                  <Field
-                    className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                    id="cnicNo"
-                    name="cnicNo"
-                    type="number"
-                    placeholder="42***********"
-                  />
-                  <ErrorMessage name="cnicNo">
-                    {(errorMsg) => (
-                      <span className="text-red-500 text-sm">{errorMsg}</span>
-                    )}
-                  </ErrorMessage>
-                </div>
-                <div className="w-full  mt-2 lg:w-1/4 px-3">
-                  <label
-                    className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                    htmlFor="cnicExpiry"
-                  >
-                    CNIC Expiry
-                  </label>
-                  <Field
-                    className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                    id="cnicExpiry"
-                    name="cnicExpiry"
-                    type="date"
-                    // placeholder="42***-*******-*"
-                  />
-                  <ErrorMessage name="cnicExpiry">
-                    {(errorMsg) => (
-                      <span className="text-red-500 text-sm">{errorMsg}</span>
-                    )}
-                  </ErrorMessage>
-                </div>
-                <div className="w-full  mt-2 lg:w-1/4 px-3">
-                  <label
-                    className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                    htmlFor="contactOne"
-                  >
-                    Contact # 1*
-                  </label>
-                  <Field
-                    className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                    id="contactOne"
-                    name="contactOne"
-                    type="tel"
-                    // placeholder="42***-*******-*"
-                  />
-                  <ErrorMessage name="contactOne">
-                    {(errorMsg) => (
-                      <span className="text-red-500 text-sm">{errorMsg}</span>
-                    )}
-                  </ErrorMessage>
-                </div>
-                <div className="w-full  mt-2 lg:w-1/4 px-3">
-                  <label
-                    className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                    htmlFor="contactTwo"
-                  >
-                    Contact # 2
-                  </label>
-                  <Field
-                    className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                    id="contactTwo"
-                    name="contactTwo"
-                    type="tel"
-                    // placeholder="42***-*******-*"
-                  />
-                  <ErrorMessage name="contactTwo">
-                    {(errorMsg) => (
-                      <span className="text-red-500 text-sm">{errorMsg}</span>
-                    )}
-                  </ErrorMessage>
-                </div>
-                <div className="w-full  mt-2 lg:w-1/4 px-3">
-                  <label
-                    className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                    htmlFor="joiningDate"
-                  >
-                    JOINING DATE
-                  </label>
-                  <Field
-                    className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                    id="joiningDate"
-                    name="joiningDate"
-                    type="date"
-                    // placeholder="42***-*******-*"
-                  />
-                  <ErrorMessage name="joiningDate">
-                    {(errorMsg) => (
-                      <span className="text-red-500 text-sm">{errorMsg}</span>
-                    )}
-                  </ErrorMessage>
-                </div>
-                <div className="w-full mt-2 lg:w-1/4 px-3">
-                  <label
-                    className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                    htmlFor="password"
-                  >
-                    Password
-                  </label>
-                  <Field
-                    className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                    id="password"
-                    name="password"
-                    type="password"
-                    // placeholder="42***-*******-*"
-                  />
-                  <ErrorMessage name="password">
-                    {(errorMsg) => (
-                      <span className="text-red-500 text-sm">{errorMsg}</span>
-                    )}
-                  </ErrorMessage>
-                </div>
-                <div className="w-full mt-2 lg:w-3/4 px-3">
-                  <label
-                    className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                    htmlFor="address"
-                  >
-                    Address
-                  </label>
-                  <Field
-                    className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                    id="address"
-                    name="address"
-                    type="text"
-                    // placeholder="42***-*******-*"
-                  />
-                  <ErrorMessage name="address">
-                    {(errorMsg) => (
-                      <span className="text-red-500 text-sm">{errorMsg}</span>
-                    )}
-                  </ErrorMessage>
-                </div>
-              </div>
-              <label className="text-sm m-2">Vehicle Info</label>
-              <div className="w-full flex rounded-2 flex-wrap border-2 p-2">
-                <div className="w-full mt-2 lg:w-1/4 px-3">
-                  <label
-                    className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                    htmlFor="vehicleName"
-                  >
-                    Vehicle Name
-                  </label>
-                  <Field
-                    className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                    id="vehicleName"
-                    name="vehicleName"
-                    type="text"
-                    // placeholder="42***-*******-*"
-                  />
-                  <ErrorMessage name="vehicleName">
-                    {(errorMsg) => (
-                      <span className="text-red-500 text-sm">{errorMsg}</span>
-                    )}
-                  </ErrorMessage>
-                </div>
-                <div className="w-full  mt-2 lg:w-1/4 px-3">
-                  <label
-                    className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                    htmlFor="vehicleNo"
-                  >
-                    Vehicle #
-                  </label>
-                  <Field
-                    className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                    id="vehicleNo"
-                    name="vehicleNo"
-                    type="text"
-                    // placeholder="42***-*******-*"
-                  />
-                  <ErrorMessage name="vehicleNo">
-                    {(errorMsg) => (
-                      <span className="text-red-500 text-sm">{errorMsg}</span>
-                    )}
-                  </ErrorMessage>
-                </div>
-                <div className="w-full  mt-2 lg:w-1/4 px-3">
-                  <label
-                    className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                    htmlFor="licenseNo"
-                  >
-                    License #
-                  </label>
-                  <Field
-                    className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                    id="licenseNo"
-                    name="licenseNo"
-                    type="text"
-                    // placeholder="42***-*******-*"
-                  />
-                  <ErrorMessage name="licenseNo">
-                    {(errorMsg) => (
-                      <span className="text-red-500 text-sm">{errorMsg}</span>
-                    )}
-                  </ErrorMessage>
-                </div>
-                <div className="w-full  mt-2 lg:w-1/4 px-3">
-                  <label
-                    className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                    htmlFor="licenseIssue"
-                  >
-                    LICENSE ISSUE DATE
-                  </label>
-                  <Field
-                    className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                    id="licenseIssue"
-                    name="licenseIssue"
-                    type="date"
-                    // placeholder="42***-*******-*"
-                  />
-                  <ErrorMessage name="licenseIssue">
-                    {(errorMsg) => (
-                      <span className="text-red-500 text-sm">{errorMsg}</span>
-                    )}
-                  </ErrorMessage>
-                </div>
-                <div className="w-full  mt-2 lg:w-1/4 px-3">
-                  <label
-                    className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                    htmlFor="licenseExpiry"
-                  >
-                    LICENSE EXPIRY DATE
-                  </label>
-                  <Field
-                    className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                    id="licenseExpiry"
-                    name="licenseExpiry"
-                    type="date"
-                    // placeholder="42***-*******-*"
-                  />
-                  <ErrorMessage name="licenseExpiry">
-                    {(errorMsg) => (
-                      <span className="text-red-500 text-sm">{errorMsg}</span>
-                    )}
-                  </ErrorMessage>
-                </div>
-                <div className="w-full mt-2 lg:w-1/4 px-3">
-                  <label
-                    className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                    htmlFor="model"
-                  >
-                    Model
-                  </label>
-                  <Field
-                    className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                    id="model"
-                    name="model"
-                    type="text"
-                    // placeholder="42***-*******-*"
-                  />
-                  <ErrorMessage name="model">
-                    {(errorMsg) => (
-                      <span className="text-red-500 text-sm">{errorMsg}</span>
-                    )}
-                  </ErrorMessage>
-                </div>
-                <div className="w-full mt-2 lg:w-1/4 px-3">
-                  <label
-                    className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                    htmlFor="make"
-                  >
-                    Company Make Name
-                  </label>
-                  <Field
-                    as="select"
-                    id="make"
-                    name="make"
-                    className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                    data-te-select-init
-                  >
-                    <option value="">Select Option</option>
-                    <option value="toyota">Toyota</option>
-                    <option value="suzuki">Suzuki</option>
-                    <option value="changan">Changan</option>
-                    <option value="honda">Honda</option>
-                  </Field>
-                  <ErrorMessage name="salaryType">
-                    {(errorMsg) => (
-                      <span className="text-red-500 text-sm">{errorMsg}</span>
-                    )}
-                  </ErrorMessage>
-                </div>
-              </div>
-              <label className="text-sm m-2">Salary Info</label>
-              <div className="w-full flex rounded-2 flex-wrap border-2 p-2">
-                <div className="w-full mt-2 lg:w-1/4 px-3">
-                  <label
-                    className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                    htmlFor="salary"
-                  >
-                    Salary
-                  </label>
-                  <Field
-                    className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                    id="salary"
-                    name="salary"
-                    type="number"
-                    // placeholder="42***-*******-*"
-                  />
-                  <ErrorMessage name="salary">
-                    {(errorMsg) => (
-                      <span className="text-red-500 text-sm">{errorMsg}</span>
-                    )}
-                  </ErrorMessage>
-                </div>
-                <div className="w-full mt-2 lg:w-1/4 px-3">
-                  <label
-                    className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                    htmlFor="salaryType"
-                  >
-                    Salary Type
-                  </label>
-                  <Field
-                    as="select"
-                    id="salaryType"
-                    name="salaryType"
-                    className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                    data-te-select-init
-                  >
-                    <option value="">Select Option</option>
-                    <option value="advance">Advance</option>
-                    <option value="monthEnd">Month End</option>
-                  </Field>
-                  <ErrorMessage name="salaryType">
-                    {(errorMsg) => (
-                      <span className="text-red-500 text-sm">{errorMsg}</span>
-                    )}
-                  </ErrorMessage>
-                </div>
-              </div>
-              <div className="w-full mt-2 lg:w-full px-3">
-                <label
-                  className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                  htmlFor="comment"
-                >
-                  Comments
-                </label>
-                <textarea
-                  rows="6"
-                  cols="50"
-                  id="comment"
-                  name="comment"
-                  className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                  // id="grid-last-name"
-                  // type="textarea"
-                  // placeholder="42***-*******-*"
-                />
-              </div>
+            <div className="w-full  mt-2 lg:w-1/4 px-3">
+              <Textfield2
+                setFocus={setFocus}
+                register={register}
+                error={errors}
+                name={"lastName"}
+                label={"Last Name"}
+                type={"text"}
+              />
             </div>
-          </Form>
-        )}
-      </Formik>
+            <div className="w-full  mt-2 lg:w-1/4 px-3">
+              <Textfield2
+                setFocus={setFocus}
+                register={register}
+                error={errors}
+                name={"dateOfBirth"}
+                label={"Date of Birth"}
+                type={"date"}
+              />
+            </div>
+            <div className="w-full  mt-2 lg:w-1/4 px-3">
+              <Textfield2
+                setFocus={setFocus}
+                register={register}
+                error={errors}
+                name={"cnicNo"}
+                label={"CNIC No"}
+                type={"number"}
+              />
+            </div>
+            <div className="w-full  mt-2 lg:w-1/4 px-3">
+              <Textfield2
+                setFocus={setFocus}
+                error={errors}
+                register={register}
+                name={"cnicExpiry"}
+                label={"CNIC Expiry"}
+                type={"date"}
+              />
+            </div>
+            <div className="w-full  mt-2 lg:w-1/4 px-3">
+              <Textfield2
+                setFocus={setFocus}
+                error={errors}
+                register={register}
+                name={"contactOne"}
+                label={"Contact # 1*"}
+                type={"tel"}
+              />
+            </div>
+            <div className="w-full  mt-2 lg:w-1/4 px-3">
+              <Textfield2
+                setFocus={setFocus}
+                register={register}
+                error={errors}
+                name={"contactTwo"}
+                label={"Contact # 2"}
+                type={"tel"}
+              />
+            </div>
+            <div className="w-full  mt-2 lg:w-1/4 px-3">
+              <Textfield2
+                setFocus={setFocus}
+                register={register}
+                error={errors}
+                name={"joiningDate"}
+                label={"JOINING DATE"}
+                type={"date"}
+              />
+            </div>
+            <div className="w-full mt-2 lg:w-1/4 px-3">
+              <Textfield2
+                setFocus={setFocus}
+                register={register}
+                error={errors}
+                name={"password"}
+                label={"Password"}
+                type={"password"}
+              />
+            </div>
+            <div className="w-full mt-2 lg:w-3/4 px-3">
+              <Textfield2
+                setFocus={setFocus}
+                register={register}
+                error={errors}
+                name={"address"}
+                label={"Address"}
+                type={"text"}
+              />
+            </div>
+          </div>
+          <label className="text-sm m-2">Vehicle Info</label>
+          <div className="w-full flex rounded-2 flex-wrap border-2 p-2">
+            <div className="w-full mt-2 lg:w-1/4 px-3">
+              <Textfield2
+                register={register}
+                setFocus={setFocus}
+                error={errors}
+                name={"vehicleName"}
+                label={"Vehicle Name"}
+                type={"text"}
+              />
+            </div>
+            <div className="w-full  mt-2 lg:w-1/4 px-3">
+              <Textfield2
+                error={errors}
+                setFocus={setFocus}
+                register={register}
+                name={"vehicleNo"}
+                label={"Vehicle #"}
+                type={"text"}
+              />
+            </div>
+            <div className="w-full  mt-2 lg:w-1/4 px-3">
+              <Textfield2
+                register={register}
+                setFocus={setFocus}
+                error={errors}
+                name={"licenseNo"}
+                label={"License #"}
+                type={"text"}
+              />
+            </div>
+            <div className="w-full  mt-2 lg:w-1/4 px-3">
+              <Textfield2
+                register={register}
+                setFocus={setFocus}
+                error={errors}
+                name={"licenseIssue"}
+                label={"LICENSE ISSUE DATE"}
+                type={"date"}
+              />
+            </div>
+            <div className="w-full  mt-2 lg:w-1/4 px-3">
+              <Textfield2
+                register={register}
+                setFocus={setFocus}
+                error={errors}
+                name={"licenseExpiry"}
+                label={"LICENSE EXPIRY DATE"}
+                type={"date"}
+              />
+            </div>
+            <div className="w-full mt-2 lg:w-1/4 px-3">
+              <Textfield2
+                register={register}
+                setFocus={setFocus}
+                error={errors}
+                name={"model"}
+                label={"Model"}
+                type={"text"}
+              />
+            </div>
+            <div className="w-full mt-2 lg:w-1/4 px-3">
+              <SelectInput
+                label={"Company Make Name"}
+                name={"make"}
+                setFocus={setFocus}
+                showDefaultOption={true}
+                error={errors}
+                register={register}
+                options={[
+                  {
+                    value: "toyota",
+                    label: "Toyota",
+                  },
+                  {
+                    value: "suzuki",
+                    label: "Suzuki",
+                  },
+                  {
+                    value: "changan",
+                    label: "Changan",
+                  },
+                  {
+                    value: "honda",
+                    label: "Honda",
+                  },
+                ]}
+              />
+            </div>
+          </div>
+          <label className="text-sm m-2">Salary Info</label>
+          <div className="w-full flex rounded-2 flex-wrap border-2 p-2">
+            <div className="w-full mt-2 lg:w-1/4 px-3">
+              <Textfield2
+                setFocus={setFocus}
+                register={register}
+                error={errors}
+                name={"salary"}
+                label={"Salary"}
+                type={"number"}
+              />
+            </div>
+            <div className="w-full mt-2 lg:w-1/4 px-3">
+              <SelectInput
+                label={"Salary Type"}
+                setFocus={setFocus}
+                name={"salaryType"}
+                showDefaultOption={true}
+                error={errors}
+                register={register}
+                options={[
+                  {
+                    value: "advance",
+                    label: "Advance",
+                  },
+                  {
+                    value: "monthEnd",
+                    label: "Month End",
+                  },
+                ]}
+              />
+            </div>
+          </div>
+          <label className="text-sm m-2">Shifts Info</label>
+          <div className="w-full flex rounded-2 flex-wrap border-2 p-2">
+            <div className="w-full mt-2 lg:w-1/4 px-3">
+              <Textfield2
+                setFocus={setFocus}
+                register={register}
+                error={errors}
+                name={"shifts"}
+                label={"No of Shifts"}
+                type={"number"}
+              />
+            </div>
+          </div>
+          <div className="w-full mt-2 lg:w-full px-3">
+            <TextArea
+              register={register}
+              setFocus={setFocus}
+              label={"Comments"}
+              col={"3"}
+              row={"6"}
+              name={"comment"}
+              error={errors}
+            />
+          </div>
+        </div>
+      </form>
     </>
     // </Dashboard>
   );
