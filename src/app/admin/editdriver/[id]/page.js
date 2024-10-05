@@ -39,21 +39,22 @@ export default function Editdriver() {
     }
   };
   const noOfShifts = watch("noOfShifts");
+  const shifts = watch("shifts");
   useEffect(() => {
     if (noOfShifts < 5) {
-      let shifts = Array.from({ length: noOfShifts }, (e, i) => ({
+      let shiftsArr = Array.from({ length: noOfShifts }, (e, i) => ({
         shift: `SHIFT_${i + 1}`,
-        checkInTime: "",
-        checkOutTime: "",
+        checkInTime: shifts[i]?.checkInTime ? shifts[i]?.checkInTime : "",
+        checkOutTime: shifts[i]?.checkInTime ? shifts[i]?.checkOutTime : "",
       }));
-      setValue("shifts", shifts);
+      setValue("shifts", shiftsArr);
     } else if (noOfShifts > 4) {
-      let shifts = Array.from({ length: 4 }, (e, i) => ({
+      let shiftsArr = Array.from({ length: 4 }, (e, i) => ({
         shift: `SHIFT_${i + 1}`,
-        checkInTime: "",
-        checkOutTime: "",
+        checkInTime: shifts[i]?.checkInTime ? shifts[i]?.checkInTime : "",
+        checkOutTime: shifts[i]?.checkInTime ? shifts[i]?.checkOutTime : "",
       }));
-      setValue("shifts", shifts);
+      setValue("shifts", shiftsArr);
       setValue("noOfShifts", 4);
     } else {
       setValue("shifts", []);
@@ -67,7 +68,31 @@ export default function Editdriver() {
           let updateval = { ...driverFormIntVal, ...data };
           console.log("updateval", updateval);
           reset(updateval);
-          setValue("salaryInfo" , updateval.salaryInfo[0])
+          setValue("salaryInfo", updateval.salaryInfo[0]);
+          setValue(
+            "cnicExpiry",
+            new Date(updateval?.cnicExpiry).toISOString().split("T")[0]
+          );
+          setValue(
+            "dateOfBirth",
+            new Date(updateval?.dateOfBirth).toISOString().split("T")[0]
+          );
+          setValue(
+            "joiningDate",
+            new Date(updateval?.joiningDate).toISOString().split("T")[0]
+          );
+          setValue(
+            "licenseInfo.licenseIssue",
+            new Date(updateval?.licenseInfo?.licenseIssue)
+              .toISOString()
+              .split("T")[0]
+          );
+          setValue(
+            "licenseInfo.licenseExpiry",
+            new Date(updateval?.licenseInfo?.licenseExpiry)
+              .toISOString()
+              .split("T")[0]
+          );
         }
       } catch (error) {
         console.error("Error fetching data:", error);

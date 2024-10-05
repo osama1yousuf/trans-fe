@@ -290,7 +290,7 @@ export default function Dashboard({ children }) {
                     <h1 className="text-xl font-extrabold">
                       Transport Ease
                     </h1>
-                    <h2 className="text-md font-bold">{activeTab}</h2>
+                    {/* <h2 className="text-md font-bold">{activeTab}</h2> */}
                   </div>
                   {/* <h2 className="font-normal text-2xl leading-6 text-gray-800">OvonRueden</h2> */}
                 </div>
@@ -302,7 +302,7 @@ export default function Dashboard({ children }) {
                   >
                     {/* <BsPersonCircle className="text-gray-800" size={40} /> */}
                     <div className="relative inline-flex items-center justify-center w-14 h-14 overflow-hidden bg-gray-300 rounded-full dark:bg-gray-600">
-                      <span className="font-extrabold text-xl text-gray-600 dark:text-gray-300">
+                      <span className="font-extrabold text-xl text-gray-600 dark:l">
                         J
                       </span>
                     </div>

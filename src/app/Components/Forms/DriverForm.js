@@ -40,7 +40,7 @@ const DriverForm = ({
               errors?.password ||
               errors?.address
                 ? "border-2 border-red-600 my-1"
-                : "border-2 border-gray-600 my-1"
+                : "border-2 border-gray-300 rounded-lg my-1"
             }
             value="item-1"
           >
@@ -155,7 +155,7 @@ const DriverForm = ({
             className={
               errors?.vehicleInfo
                 ? "border-2 border-red-600 my-1"
-                : "border-2 border-gray-600 my-1"
+                : "border-2 border-gray-300 rounded-lg my-1"
             }
             value="item-2"
           >
@@ -255,7 +255,7 @@ const DriverForm = ({
             className={
               errors?.salaryInfo
                 ? "border-2 border-red-600 my-1"
-                : "border-2 border-gray-600 my-1"
+                : "border-2 border-gray-300 rounded-lg my-1"
             }
             value="item-3"
           >
@@ -297,7 +297,7 @@ const DriverForm = ({
             className={
               errors?.shifts || errors?.noOfShifts
                 ? "border-2 border-red-600 my-1"
-                : "border-2 border-gray-600 my-1"
+                : "border-2 border-gray-300 rounded-lg my-1"
             }
             value="item-4"
           >
@@ -317,8 +317,8 @@ const DriverForm = ({
               {watch("noOfShifts") > 0 &&
                 watch("shifts").map((e, i) => {
                   return (
-                    <>
-                      <div className="w-full mt-2 lg:w-1/4 px-3">
+                    <div key={i} className="w-full gap-2 px-3 flex mt-2 lg:w-1/4">
+                      <div className="w-1/2">
                         <Textfield2
                           setFocus={setFocus}
                           register={register}
@@ -328,12 +328,11 @@ const DriverForm = ({
                             errors?.shifts[i]?.checkInTime
                           }
                           name={`shifts.${i}.checkInTime`}
-                          label={`CheckIn ${i + 1}`}
+                          label={`Shift-${i + 1}`}
                           type={"time"}
                         />
                       </div>
-
-                      <div className="w-full mt-2 lg:w-1/4 px-3">
+                      <div className="w-1/2 mt-4">
                         <Textfield2
                           setFocus={setFocus}
                           register={register}
@@ -343,11 +342,11 @@ const DriverForm = ({
                             errors?.shifts[i]?.checkOutTime
                           }
                           name={`shifts.${i}.checkOutTime`}
-                          label={`CheckOut ${i + 1}`}
+                          label={``}
                           type={"time"}
                         />
                       </div>
-                    </>
+                    </div>
                   );
                 })}
             </AccordionContent>
@@ -356,7 +355,7 @@ const DriverForm = ({
             className={
               errors?.comment
                 ? "border-2 border-red-600 my-1"
-                : "border-2 border-gray-600 my-1"
+                : "border-2 border-gray-300 rounded-lg my-1"
             }
             value="item-5"
           >

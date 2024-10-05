@@ -139,10 +139,10 @@ export default function AttendanceMark() {
 
   return (
     <>
-      <div className="fixed left-0 right-0 z-10 p-2 sm:w-[99.5%] rounded-md w-[99%]  m-auto bg-black shadow-md">
-        <div className="container mx-auto px-4 py-2 flex justify-between items-center">
-          <h1 className="text-2xl text-white font-bold">Daily Attendance</h1>
-          <div className="text-xl text-white font-semibold">{formatTime(currentTime)}</div>
+      <div className="fixed right-1 z-10 p-1 rounded-md bg-[#811630]">
+        <div className="mx-auto p-2">
+          {/* <h1 className="text-2xl text-white font-bold">Daily Attendance</h1> */}
+          <div className="text-sm text-white font-semibold">{formatTime(currentTime)}</div>
         </div>
       </div>
       <div className="container relative mx-auto p-2 pt-8">
