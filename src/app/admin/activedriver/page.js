@@ -77,7 +77,7 @@ export default function ActiveDriver() {
     },
     {
       name: "Joining Date",
-      selector: (row) => row.joiningDate,
+      selector: (row) => new Date(row.joiningDate).toDateString(),
     },
     {
       name: "Status",
