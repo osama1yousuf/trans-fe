@@ -11,7 +11,12 @@ export const validateDriverSchema = Yup.object().shape({
   contactOne: Yup.string()
     .length(11, "Phone Number Invalid")
     .required("Phone Number required"),
-  contactTwo: Yup.string().length(11, "Phone Number Invalid"),
+  contactTwo: Yup.string()
+    .nullable() // Allow the field to be null
+    .test("length", "Phone Number Invalid", (value) => {
+      // Check if the value is provided and has a length of 11
+      return value === null || value.length === 11;
+    }),
   password: Yup.string()
     .min(8, "Password should be at least 8 characters")
     .required("Password is required"),
@@ -24,7 +29,17 @@ export const validateDriverSchema = Yup.object().shape({
     model: Yup.string().required("Vehicle model required"),
     make: Yup.string()
       .oneOf(
-        ["toyota", "suzuki", "changan", "honda"],
+        [
+          "daihatsu_hijet",
+          "suzuki_alto",
+          "suzuki_cultus",
+          "daihatsu_mira",
+          "daihatsu_copen",
+          "toyota_hiace",
+          "hino_bus",
+          "toyota_corolla",
+          "suzuki_apv",
+        ],
         "Invalid option selected"
       )
       .required("Please select an option"),
@@ -39,24 +54,24 @@ export const validateDriverSchema = Yup.object().shape({
   }),
 
   // Salary Info Validation
-  salaryInfo: Yup.object().shape({
-    salary: Yup.string().required("Salary amount is required"),
-    salaryType: Yup.string()
-      .oneOf(["advance", "monthEnd"], "Invalid option selected")
-      .required("Please select an option"),
-  }),
+  salaryInfo: Yup.array().of(
+    Yup.object().shape({
+      salary: Yup.string().required("Salary amount is required"),
+      salaryType: Yup.string()
+        .oneOf(["advance", "monthEnd"], "Invalid option selected")
+        .required("Please select an option"),
+    })
+  ),
 
   // Optional fields
   comment: Yup.string(),
-  shifts: Yup.array()
-    .of(
-      Yup.object().shape({
-        shift: Yup.string(),
-        checkInTime: Yup.string().required("Shift start date is required"),
-        checkOutTime: Yup.string().required("Shift end date is required"),
-      })
-    )
-    .min(1, "At least one shift is required"),
+  shifts: Yup.array().of(
+    Yup.object().shape({
+      shift: Yup.string(),
+      checkInTime: Yup.string().required("Shift start date is required"),
+      checkOutTime: Yup.string().required("Shift end date is required"),
+    })
+  ),
   noOfShifts: Yup.number()
     .nullable("Number of shifts is required")
     .min(1, "Minimum number of shifts is 1")

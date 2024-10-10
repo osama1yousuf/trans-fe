@@ -19,6 +19,7 @@ const DriverForm = ({
 }) => {
   return (
     <form id={formId} onSubmit={handleSubmit}>
+      {console.log("err", errors)}
       <div className="flex  flex-wrap">
         {/* <div> */}
         <Accordion
@@ -231,20 +232,40 @@ const DriverForm = ({
                   register={register}
                   options={[
                     {
-                      value: "toyota",
-                      label: "Toyota",
+                      value: "daihatsu_hijet",
+                      label: "Daihatsu Hijet",
                     },
                     {
-                      value: "suzuki",
-                      label: "Suzuki",
+                      value: "suzuki_alto",
+                      label: "Suzuki Alto",
                     },
                     {
-                      value: "changan",
-                      label: "Changan",
+                      value: "suzuki_cultus",
+                      label: "Suzuki Cultus",
                     },
                     {
-                      value: "honda",
-                      label: "Honda",
+                      value: "daihatsu_mira",
+                      label: "Daihatsu Mira",
+                    },
+                    {
+                      value: "daihatsu_copen",
+                      label: "Daihatsu Copen",
+                    },
+                    {
+                      value: "toyota_hiace",
+                      label: "Toyota Hiace",
+                    },
+                    {
+                      value: "hino_bus",
+                      label: "Hino Bus",
+                    },
+                    {
+                      value: "toyota_corolla",
+                      label: "Toyota Corolla",
+                    },
+                    {
+                      value: "suzuki_apv",
+                      label: "Suzuki APV",
                     },
                   ]}
                 />
@@ -266,7 +287,7 @@ const DriverForm = ({
                   setFocus={setFocus}
                   register={register}
                   error={errors?.salaryInfo?.salary}
-                  name={"salaryInfo.salary"}
+                  name={"salaryInfo[0].salary"}
                   label={"Salary"}
                   type={"number"}
                 />
@@ -275,7 +296,7 @@ const DriverForm = ({
                 <SelectInput
                   label={"Salary Type"}
                   setFocus={setFocus}
-                  name={"salaryInfo.salaryType"}
+                  name={"salaryInfo[0].salaryType"}
                   showDefaultOption={true}
                   error={errors?.salaryInfo?.salaryType}
                   register={register}
@@ -317,7 +338,10 @@ const DriverForm = ({
               {watch("noOfShifts") > 0 &&
                 watch("shifts").map((e, i) => {
                   return (
-                    <div key={i} className="w-full gap-2 px-3 flex mt-2 lg:w-1/4">
+                    <div
+                      key={i}
+                      className="w-full gap-2 px-3 flex mt-2 lg:w-1/4"
+                    >
                       <div className="w-1/2">
                         <Textfield2
                           setFocus={setFocus}
