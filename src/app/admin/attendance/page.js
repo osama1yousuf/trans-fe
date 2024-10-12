@@ -26,23 +26,36 @@ export default function Attendance() {
         date.setUTCHours(0, 0, 0, 0);
         return date.toISOString();
       })(),
+      toDate: (function () {
+        let date = new Date();
+        date.setUTCHours(0, 0, 0, 0);
+        return date.toISOString();
+      })(),
     },
   });
   const [data, setData] = useState([]);
-  const getAttendance = async (filter) => {
-    let res = await getDriverAttendanceForAdmin(filter);
+  const getAttendance = async (fromDate, toDate) => {
+    let res = await getDriverAttendanceForAdmin(fromDate, toDate);
     console.log("res", res);
 
     setData(res);
   };
   const fromDate = watch("fromDate");
+  const toDate = watch("toDate");
   useEffect(() => {
     // getAttendance();
     let from_date = new Date(fromDate).setUTCHours(0, 0, 0, 0);
-    if (from_date) {
-      getAttendance(new Date(from_date).toISOString());
+    let to_date = new Date(toDate).setUTCHours(0, 0, 0, 0);
+    console.log("from_date", from_date, to_date);
+    if (from_date || toDate) {
+      setTimeout(() => {
+        getAttendance(
+          new Date(from_date).toISOString(),
+          new Date(to_date).toISOString()
+        );
+      }, 1000);
     }
-  }, [fromDate]);
+  }, [fromDate, toDate]);
   return (
     <div className="p-4">
       <Accordion type="single" collapsible className="w-full">
@@ -56,6 +69,15 @@ export default function Attendance() {
               <Textfield2
                 label={"From Date"}
                 name={"fromDate"}
+                setFocus={setFocus}
+                register={register}
+                type={"date"}
+              />
+            </div>
+            <div className="w-full lg:w-1/4  px-3">
+              <Textfield2
+                label={"To Date"}
+                name={"toDate"}
                 setFocus={setFocus}
                 register={register}
                 type={"date"}

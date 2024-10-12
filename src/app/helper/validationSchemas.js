@@ -34,11 +34,12 @@ export const validateDriverSchema = Yup.object().shape({
           "suzuki_alto",
           "suzuki_cultus",
           "daihatsu_mira",
-          "daihatsu_copen",
+          "coaster",
           "toyota_hiace",
           "hino_bus",
           "toyota_corolla",
           "suzuki_apv",
+          "suzuki_bolan"
         ],
         "Invalid option selected"
       )

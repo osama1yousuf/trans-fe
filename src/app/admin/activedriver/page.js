@@ -9,10 +9,21 @@ import axiosInstance from "@/interceptor/axios_inteceptor";
 import { toast } from "react-toastify";
 import Loader from "@/app/Components/Loader";
 import { useUserValidator } from "@/interceptor/userValidate";
-
+import Textfield2 from "@/app/Components/TextField2";
+import { useForm } from "react-hook-form";
 
 export default function ActiveDriver() {
   // useUserValidator("superadmin")
+  const {
+    register,
+    watch,
+    setFocus,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      search: "",
+    },
+  });
   const router = useRouter();
   const [data, setData] = useState([]);
   const [showModal, setShowModal] = useState(false);
@@ -37,15 +48,15 @@ export default function ActiveDriver() {
               <BiEdit />
             </button>
           </span>
-          <span title="Edit Driver Assignment">
+          {/* <span title="Edit Driver Assignment">
             <button
               onClick={(e) => handleEditAssign(row)}
               className="bg-blue-500 hover:bg-blue-700 text-white  p-1 rounded"
             >
               <BsPersonPlusFill />
             </button>
-          </span>
-          <span title="Driver Challan Generate">
+          </span> */}
+          {/* <span title="Driver Challan Generate">
             <button
               onClick={(e) => {
                 setShowModal(true);
@@ -59,13 +70,13 @@ export default function ActiveDriver() {
               {" "}
               <MdOutlinePayment />
             </button>
-          </span>
+          </span> */}
         </div>
       ),
     },
     {
       name: "Name",
-      selector: (row) => row.firstName,
+      selector: (row) => row?.firstName + " " + row?.lastName,
     },
     {
       name: "Mobile #",
@@ -119,9 +130,11 @@ export default function ActiveDriver() {
     }
   };
 
-  async function getDriver() {
+  async function getDriver(search) {
     try {
-      let response = await axiosInstance.get("/driver?status=active");
+      let response = await axiosInstance.get(
+        `/driver?status=active&search=${search}`
+      );
       console.log(response.data);
       setData(response.data);
     } catch (e) {
@@ -143,9 +156,12 @@ export default function ActiveDriver() {
       toast.error(e.data);
     }
   };
+  const search = watch("search");
   useEffect(() => {
-    getDriver();
-  }, []);
+    setTimeout(() => {
+      getDriver(search);
+    }, 1000);
+  }, [search]);
 
   return (
     // <Dashboard >
@@ -203,13 +219,23 @@ export default function ActiveDriver() {
           </div>
         </div>
       )}
+      <div className="w-full mt-2 lg:w-1/4 px-3">
+        <Textfield2
+          register={register}
+          setFocus={setFocus}
+          error={''}
+          name={"search"}
+          label={"Search By Name"}
+          type={"text"}
+        />
+      </div>
       <div className="z-0">
         <Suspense fallback={<Loader />} />
         <DataTable
           pagination
           paginationPerPage={10}
           fixedHeader
-           title="Active Driver List"
+          title="Active Driver List"
           //  fixedHeader
           columns={columns}
           data={data}

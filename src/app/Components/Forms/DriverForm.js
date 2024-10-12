@@ -233,8 +233,12 @@ const DriverForm = ({
                   options={[
                     {
                       value: "daihatsu_hijet",
-                      label: "Daihatsu Hijet",
+                      label: "Every Hijet",
                     },
+                    {
+                      value: "suzuki_bolan",
+                      label: "Suzuki Bolan",
+                      },                      
                     {
                       value: "suzuki_alto",
                       label: "Suzuki Alto",
@@ -245,11 +249,11 @@ const DriverForm = ({
                     },
                     {
                       value: "daihatsu_mira",
-                      label: "Daihatsu Mira",
+                      label: "Mira",
                     },
                     {
-                      value: "daihatsu_copen",
-                      label: "Daihatsu Copen",
+                      value: "coaster",
+                      label: "Coaster",
                     },
                     {
                       value: "toyota_hiace",

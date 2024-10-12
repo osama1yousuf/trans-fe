@@ -68,7 +68,9 @@ export default function Editdriver() {
           let updateval = { ...driverFormIntVal, ...data };
           console.log("updateval", updateval);
           reset(updateval);
-          // setValue("salaryInfo", updateval.salaryInfo[0]);
+          setValue("salaryInfo", [
+            updateval.salaryInfo[updateval.salaryInfo.length - 1],
+          ]);
           setValue(
             "cnicExpiry",
             new Date(updateval?.cnicExpiry).toISOString().split("T")[0]
