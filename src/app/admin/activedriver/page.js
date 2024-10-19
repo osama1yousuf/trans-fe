@@ -11,6 +11,7 @@ import Loader from "@/app/Components/Loader";
 import { useUserValidator } from "@/interceptor/userValidate";
 import Textfield2 from "@/app/Components/TextField2";
 import { useForm } from "react-hook-form";
+import { TableComp } from "@/app/Components/DataTable";
 
 export default function ActiveDriver() {
   // useUserValidator("superadmin")
@@ -25,8 +26,9 @@ export default function ActiveDriver() {
     },
   });
   const router = useRouter();
-  const [data, setData] = useState([]);
+  const [data, setData] = useState(null);
   const [showModal, setShowModal] = useState(false);
+
   const [challanData, setChallanData] = useState({
     customerId: null,
     driverId: null,
@@ -130,10 +132,10 @@ export default function ActiveDriver() {
     }
   };
 
-  async function getDriver(search) {
+  async function getDriver(search, page) {
     try {
       let response = await axiosInstance.get(
-        `/driver?status=active&search=${search}`
+        `/driver?status=active&search=${search}&limit=${10}&offset=${page * 10}`
       );
       console.log(response.data);
       setData(response.data);
@@ -157,11 +159,6 @@ export default function ActiveDriver() {
     }
   };
   const search = watch("search");
-  useEffect(() => {
-    setTimeout(() => {
-      getDriver(search);
-    }, 1000);
-  }, [search]);
 
   return (
     // <Dashboard >
@@ -223,22 +220,20 @@ export default function ActiveDriver() {
         <Textfield2
           register={register}
           setFocus={setFocus}
-          error={''}
+          error={""}
           name={"search"}
           label={"Search By Name"}
           type={"text"}
         />
       </div>
       <div className="z-0">
-        <Suspense fallback={<Loader />} />
-        <DataTable
-          pagination
-          paginationPerPage={10}
-          fixedHeader
-          title="Active Driver List"
-          //  fixedHeader
+        <TableComp
           columns={columns}
+          count={data?.count || 0}
           data={data}
+          title={"Active Driver List"}
+          getFunc={getDriver}
+          search={search}
         />
       </div>
     </div>

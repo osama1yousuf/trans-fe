@@ -21,41 +21,45 @@ export default function Attendance() {
     formState: {},
   } = useForm({
     defaultValues: {
-      fromDate: (function () {
-        let date = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
-        date.setUTCHours(0, 0, 0, 0);
-        return date.toISOString();
-      })(),
-      toDate: (function () {
-        let date = new Date();
-        date.setUTCHours(0, 0, 0, 0);
-        return date.toISOString();
-      })(),
+      search: {
+        type: "",
+        driverIds: [],
+        fromDate: (function () {
+          let date = new Date(
+            new Date().getFullYear(),
+            new Date().getMonth(),
+            1
+          );
+          date.setUTCHours(0, 0, 0, 0);
+          return date.toISOString();
+        })(),
+        toDate: (function () {
+          let date = new Date();
+          date.setUTCHours(0, 0, 0, 0);
+          return date.toISOString();
+        })(),
+      },
     },
   });
-  const [data, setData] = useState([]);
-  const getAttendance = async (fromDate, toDate) => {
-    let res = await getDriverAttendanceForAdmin(fromDate, toDate);
+  const [data, setData] = useState("");
+  const getAttendance = async (search, page) => {
+    let from_date = search?.fromDate
+      ? new Date(search.fromDate).setUTCHours(0, 0, 0, 0)
+      : "";
+    let to_date = search?.toDate
+      ? new Date(search.toDate).setUTCHours(0, 0, 0, 0)
+      : "";
+    let searchBody = {
+      driverIds: search?.driverIds?.length > 0 ? search.driverIds : "",
+      fromDate: new Date(from_date).toISOString(),
+      toDate: new Date(to_date).toISOString(),
+      type: search?.type ?? "",
+    };
+    let res = await getDriverAttendanceForAdmin(searchBody, page);
     console.log("res", res);
-
     setData(res);
   };
-  const fromDate = watch("fromDate");
-  const toDate = watch("toDate");
-  useEffect(() => {
-    // getAttendance();
-    let from_date = new Date(fromDate).setUTCHours(0, 0, 0, 0);
-    let to_date = new Date(toDate).setUTCHours(0, 0, 0, 0);
-    console.log("from_date", from_date, to_date);
-    if (from_date || toDate) {
-      setTimeout(() => {
-        getAttendance(
-          new Date(from_date).toISOString(),
-          new Date(to_date).toISOString()
-        );
-      }, 1000);
-    }
-  }, [fromDate, toDate]);
+  const search = watch("search");
   return (
     <div className="p-4">
       <Accordion type="single" collapsible className="w-full">
@@ -90,11 +94,14 @@ export default function Attendance() {
         </AccordionItem>
       </Accordion>
       <div className="w-full">
-        <TableComp
+        {/* <TableComp
           columns={attendanceColForAdmin}
-          // title={"Attendance Record"}
+          count={data?.length || 0}
           data={data}
-        />
+          getFunc={getAttendance}
+          search={search}
+          title={"Attendance Record"}
+        /> */}
       </div>
     </div>
   );

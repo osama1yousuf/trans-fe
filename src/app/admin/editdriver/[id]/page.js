@@ -21,7 +21,7 @@ export default function Editdriver() {
     reset,
     setFocus,
     handleSubmit,
-    formState: { errors },
+    formState: { errors , isSubmitting },
   } = useForm({
     defaultValues: driverFormIntVal,
     resolver: yupResolver(validateDriverSchema),
@@ -107,7 +107,7 @@ export default function Editdriver() {
         <button
           type="submit"
           form="driverEdit"
-          // disabled={isSubmitting}
+          disabled={isSubmitting}
           className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
         >
           UPDATE

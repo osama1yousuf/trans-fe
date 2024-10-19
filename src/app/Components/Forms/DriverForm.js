@@ -19,7 +19,6 @@ const DriverForm = ({
 }) => {
   return (
     <form id={formId} onSubmit={handleSubmit}>
-      {console.log("err", errors)}
       <div className="flex  flex-wrap">
         {/* <div> */}
         <Accordion
