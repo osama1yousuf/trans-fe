@@ -67,12 +67,12 @@ export default function Attendance() {
         />
       </div>
       <div className="w-full">
-        <TableComp
+        {/* <TableComp
           count={data?.count || 0}
           columns={attendanceCol}
           title={"Attendance Record"}
           data={data}
-        />
+        /> */}
       </div>
     </div>
   );
