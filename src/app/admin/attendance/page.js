@@ -60,6 +60,9 @@ export default function Attendance() {
     setData(res);
   };
   const search = watch("search");
+  useEffect(() => {
+    getAttendance(search, 0);
+  }, [search]);
   return (
     <div className="p-4">
       <Accordion type="single" collapsible className="w-full">
