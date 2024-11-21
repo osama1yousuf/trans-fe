@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import axiosInstance from "@/interceptor/axios_inteceptor";
 import { toast } from "react-toastify";
 import { useUserValidator } from "@/interceptor/userValidate";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import DriverForm from "@/app/Components/Forms/DriverForm";
 import { validateDriverSchema } from "@/app/helper/validationSchemas";
 import { driverFormIntVal } from "@/app/helper/IntialValues";
@@ -21,16 +21,30 @@ export default function Editdriver() {
     reset,
     setFocus,
     handleSubmit,
-    formState: { errors , isSubmitting },
+    formState: { errors, isSubmitting },
   } = useForm({
     defaultValues: driverFormIntVal,
     resolver: yupResolver(validateDriverSchema),
   });
 
+  const [file, setFile] = useState(null);
+
   const onSubmit = async (values) => {
     try {
-      const responsne = await axiosInstance.put(`/driver/${id}`, values);
-      console.log("responsne", responsne);
+      const formData = new FormData();
+
+      Object.keys(values).forEach(key => {
+        if (typeof values[key] === 'object') {
+          formData.append(key, JSON.stringify(values[key]));
+        } else {
+          formData.append(key, values[key]);
+        }
+      });
+
+      if (file) {
+        formData.append('image', file);
+      }
+      const response = await axiosInstance.put(`/driver/${id}`, formData);
       toast.success("Driver updated successfully", { autoClose: 1000 });
       router.push("/admin/activedriver");
     } catch (e) {
@@ -65,8 +79,9 @@ export default function Editdriver() {
       try {
         const { data } = await axiosInstance.get(`/driver/${id}`);
         if (data) {
+          const image = data.image.length ? JSON.parse(data.image) : null
+          setFile(image);
           let updateval = { ...driverFormIntVal, ...data };
-          console.log("updateval", updateval);
           reset(updateval);
           setValue("salaryInfo", [
             updateval.salaryInfo[updateval.salaryInfo.length - 1],
@@ -120,6 +135,8 @@ export default function Editdriver() {
         setFocus={setFocus}
         register={register}
         watch={watch}
+        setFile={setFile}
+        file={file}
       />
     </div>
   );

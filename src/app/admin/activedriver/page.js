@@ -12,6 +12,8 @@ import { useUserValidator } from "@/interceptor/userValidate";
 import Textfield2 from "@/app/Components/TextField2";
 import { useForm } from "react-hook-form";
 import { TableComp } from "@/app/Components/DataTable";
+import { EyeIcon } from "lucide-react";
+import * as Avatar from "@radix-ui/react-avatar";
 
 export default function ActiveDriver() {
   // useUserValidator("superadmin")
@@ -35,6 +37,21 @@ export default function ActiveDriver() {
     challanType: "DRIVER",
     challanDate: null,
   });
+
+  const handleImageClick = (image) => {
+    console.log(image, "check image")
+  }
+  const handleSource = (image) => {
+    if (image.length) {
+      image = JSON.parse(image);
+      if (image && image.buffer && image.buffer.data) {
+        const base64Image = Buffer.from(image.buffer.data).toString('base64');
+        const preview = `data:${image.mimetype};base64,${base64Image}`;
+        // return "https://images.unsplash.com/photo-1492633423870-43d1cd2775eb?&w=128&h=128&dpr=2&q=80"
+        return preview;
+      }
+    }
+  }
   const columns = [
     {
       name: "Actions",
@@ -74,6 +91,21 @@ export default function ActiveDriver() {
             </button>
           </span> */}
         </div>
+      ),
+    },
+    {
+      name: "Image",
+      cell: (row) => (
+        <Avatar.Root className="AvatarRoot">
+          <Avatar.Image
+            className="AvatarImage w-16 h-10"
+            src={handleSource(row.image)}
+            alt="Colm Tuite"
+          />
+          <Avatar.Fallback className="AvatarFallback" delayMs={600}>
+            N/A
+          </Avatar.Fallback>
+        </Avatar.Root>
       ),
     },
     {

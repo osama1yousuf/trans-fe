@@ -6,6 +6,7 @@ import { useUserValidator } from "@/interceptor/userValidate";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
+import * as Avatar from "@radix-ui/react-avatar";
 
 export default function InactiveDriver() {
   // useUserValidator("superadmin");
@@ -20,6 +21,21 @@ export default function InactiveDriver() {
     },
   });
   const columns = [
+    {
+      name: "Image",
+      cell: (row) => (
+        <Avatar.Root className="AvatarRoot">
+          <Avatar.Image
+            className="AvatarImage w-16 h-10"
+            src={handleSource(row.image)}
+            alt="Colm Tuite"
+          />
+          <Avatar.Fallback className="AvatarFallback" delayMs={600}>
+            N/A
+          </Avatar.Fallback>
+        </Avatar.Root>
+      ),
+    },
     {
       name: "Name",
       selector: (row) => row.firstName,
