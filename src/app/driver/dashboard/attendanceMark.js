@@ -45,10 +45,13 @@ export default function AttendanceMark() {
       setCurrentTime(new Date());
     }, 1000);
 
+    console.log("ttt" , JSON.parse(localStorage.getItem("user"))?.noOfShifts);    
     return () => {
       clearInterval(timer);
     };
   }, []);
+
+  
 
   const handleCheckIn = async (shiftIndex) => {
     setLoadingState(prev => {
@@ -147,7 +150,7 @@ export default function AttendanceMark() {
       </div>
       <div className="container relative mx-auto p-2 pt-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-16">
-          {["", "", ""].map((shift, index) => (
+          {Array.from({ length: JSON.parse(localStorage.getItem("user"))?.noOfShifts }, (_, index) => (
             <Card key={index}>
               <CardHeader>
                 <CardTitle>Shift {index + 1}</CardTitle>
