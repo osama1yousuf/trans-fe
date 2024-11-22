@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import axiosInstance from "@/interceptor/axios_inteceptor";
 import { toast } from "react-toastify";
 import { useUserValidator } from "@/interceptor/userValidate";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import DriverForm from "@/app/Components/Forms/DriverForm";
 import { validateDriverSchema } from "@/app/helper/validationSchemas";
 import { driverFormIntVal } from "@/app/helper/IntialValues";
@@ -25,10 +25,26 @@ export default function Createdriver() {
     resolver: yupResolver(validateDriverSchema),
   });
 
+  const [file, setFile] = useState(null);
+
   const onSubmit = async (values) => {
     console.log("values", values);
     try {
-      const responsne = await axiosInstance.post("/driver", values);
+      const formData = new FormData();
+
+      Object.keys(values).forEach(key => {
+        if (typeof values[key] === 'object') {
+          formData.append(key, JSON.stringify(values[key]));
+        } else {
+          formData.append(key, values[key]);
+        }
+      });
+
+      if (file) {
+        formData.append('image', file);
+      }
+
+      const responsne = await axiosInstance.post("/driver", formData);
       console.log("responsne", responsne);
       toast.success("Driver created successfully", { autoClose: 1000 });
       router.push("/admin/activedriver");
@@ -79,6 +95,8 @@ export default function Createdriver() {
         setFocus={setFocus}
         register={register}
         watch={watch}
+        setFile={setFile}
+        file={file}
       />
     </div>
   );

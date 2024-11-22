@@ -7,6 +7,8 @@ import {
 import Textfield2 from "../TextField2";
 import SelectInput from "../SelectInput";
 import TextArea from "../TextArea";
+import { useEffect, useState } from "react";
+import path from "path";
 
 const DriverForm = ({
   handleSubmit,
@@ -16,7 +18,29 @@ const DriverForm = ({
   watch,
   formId,
   showPassField,
+  setFile,
+  file
 }) => {
+  const [imagePreview, setImagePreview] = useState(null);
+  useEffect(() => {
+    if (file && file.buffer && file.buffer.data) {
+      const base64Image = Buffer.from(file.buffer.data).toString('base64');
+      setImagePreview(`data:${file.mimetype};base64,${base64Image}`);
+    }
+  }, [file])
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+      setFile(file);
+    }
+  };
+
+
   return (
     <form id={formId} onSubmit={handleSubmit}>
       <div className="flex  flex-wrap">
@@ -30,15 +54,15 @@ const DriverForm = ({
           <AccordionItem
             className={
               errors?.firstName ||
-              errors.lastName ||
-              errors.dateOfBirth ||
-              errors.cnicNo ||
-              errors.cnicExpiry ||
-              errors?.contactOne ||
-              errors?.contactTwo ||
-              errors?.joiningDate ||
-              errors?.password ||
-              errors?.address
+                errors.lastName ||
+                errors.dateOfBirth ||
+                errors.cnicNo ||
+                errors.cnicExpiry ||
+                errors?.contactOne ||
+                errors?.contactTwo ||
+                errors?.joiningDate ||
+                errors?.password ||
+                errors?.address
                 ? "border-2 border-red-600 my-1"
                 : "border-2 border-gray-300 rounded-lg my-1"
             }
@@ -76,6 +100,29 @@ const DriverForm = ({
                   type={"date"}
                 />
               </div>
+              {/* Image Preview */}
+              <div className="w-full  mt-2 lg:w-1/4 px-3">
+                <div className="flex flex-col items-start">
+                  <label htmlFor="image-upload" className="block mb-2 text-xs font-sm text-gray-700 :text-white">
+                    Upload an Image
+                  </label>
+                  <input
+                    id="image-upload"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border file:border-gray-300 file:text-sm file:font-semibold file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200"
+                  />
+                  {imagePreview && (
+                    <img
+                      src={imagePreview}
+                      alt="Preview"
+                      className="mt-4 h-40 w-40 object-cover rounded-md border border-gray-300"
+                    />
+                  )}
+                </div>
+              </div>
+              {/*  */}
               <div className="w-full  mt-2 lg:w-1/4 px-3">
                 <Textfield2
                   setFocus={setFocus}
@@ -84,16 +131,6 @@ const DriverForm = ({
                   name={"cnicNo"}
                   label={"CNIC No"}
                   type={"number"}
-                />
-              </div>
-              <div className="w-full  mt-2 lg:w-1/4 px-3">
-                <Textfield2
-                  setFocus={setFocus}
-                  error={errors?.cnicExpiry}
-                  register={register}
-                  name={"cnicExpiry"}
-                  label={"CNIC Expiry"}
-                  type={"date"}
                 />
               </div>
               <div className="w-full  mt-2 lg:w-1/4 px-3">
@@ -237,7 +274,7 @@ const DriverForm = ({
                     {
                       value: "suzuki_bolan",
                       label: "Suzuki Bolan",
-                      },                      
+                    },
                     {
                       value: "suzuki_alto",
                       label: "Suzuki Alto",

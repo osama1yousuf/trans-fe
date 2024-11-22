@@ -38,6 +38,7 @@ export const TableComp = ({ columns, data, title, getFunc, search, count }) => {
 
   return (
     <div className="z-0">
+      {console.log(data, "datadata")}
       <Suspense fallback={<Loader />} />
       <DataTable
         title={title}
