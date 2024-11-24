@@ -6,7 +6,7 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(
   (config) => {
-    const userAccessToken = localStorage.getItem('token');
+    const userAccessToken = window.localStorage.getItem('token');
     console.log(userAccessToken, "check userAccessToken");
 
     if (userAccessToken) {

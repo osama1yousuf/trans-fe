@@ -10,7 +10,7 @@ export default function Setting() {
     formState: { errors },
     setFocus,
   } = useForm();
-  const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
+  const [user, setUser] = useState(JSON.parse(window.localStorage.getItem("user")));
 
   return (
     <div className="p-4 m-auto">

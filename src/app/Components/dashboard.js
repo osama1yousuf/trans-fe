@@ -226,18 +226,18 @@ export default function Dashboard({ children }) {
                   >
                     <Avatar className="w-14 h-14">
                       <AvatarImage
-                        src={`https://api.dicebear.com/6.x/initials/svg?seed=${JSON.parse(localStorage.getItem("user"))?.firstName}%20${JSON.parse(localStorage.getItem("user"))?.lastName}`}
+                        src={`https://api.dicebear.com/6.x/initials/svg?seed=${JSON.parse(window.localStorage.getItem("user"))?.firstName}%20${JSON.parse(localStorage.getItem("user"))?.lastName}`}
                         alt={`${
-                          JSON.parse(localStorage.getItem("user"))?.firstName
+                          JSON.parse(window.localStorage.getItem("user"))?.firstName
                         } ${
-                          JSON.parse(localStorage.getItem("user"))?.lastName
+                          JSON.parse(window.localStorage.getItem("user"))?.lastName
                         }`}
                       />
                       <AvatarFallback>
-                        {JSON.parse(localStorage.getItem("user"))
+                        {JSON.parse(window.localStorage.getItem("user"))
                           ?.firstName.charAt(0)
                           .toUpperCase()}
-                        {JSON.parse(localStorage.getItem("user"))
+                        {JSON.parse(window.localStorage.getItem("user"))
                           ?.lastName.charAt(0)
                           .toUpperCase()}
                       </AvatarFallback>

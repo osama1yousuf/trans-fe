@@ -43,9 +43,9 @@ export default function Login() {
       if (response.status == 201) {
         let { token, role, user } = response?.data;
         console.log("res", user);
-        localStorage.setItem("token", token);
-        localStorage.setItem("userType", role);
-        localStorage.setItem("user", JSON.stringify(user));
+        window.localStorage.setItem("token", token);
+        window.localStorage.setItem("userType", role);
+        window.localStorage.setItem("user", JSON.stringify(user));
         toast.success("Login successfully", { autoClose: 1000 });
         router.push("/dashboard");
       }

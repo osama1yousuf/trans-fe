@@ -49,7 +49,7 @@ export default function Editdriver() {
       router.push("/admin/activedriver");
     } catch (e) {
       console.log("error", e?.response?.data?.message[0]);
-      toast.error(e?.response?.data?.message[0], { autoClose: 1000 });
+      toast.error(e?.response?.data?.message, { autoClose: 1000 });
     }
   };
   const noOfShifts = watch("noOfShifts");
