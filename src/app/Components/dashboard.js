@@ -5,7 +5,7 @@ import { FaAlignLeft, FaRegTimesCircle } from "react-icons/fa";
 import { useWindowSize } from "@uidotdev/usehooks";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { usePathname } from "next/navigation";
-import { ChevronDownIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
+import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
 import { useRouter } from "next/navigation";
 import axiosInstance from "@/interceptor/axios_inteceptor";
 import Image from "next/image";
@@ -14,9 +14,9 @@ import Loader from "./Loader";
 import LocationModel from "./LocationModal";
 export default function Dashboard({ children }) {
   const [expandedItems, setExpandedItems] = useState({});
-
+  const [user, setUser] = useState(null);
   const toggleExpand = (name) => {
-    setExpandedItems(prev => ({ ...prev, [name]: !prev[name] }));
+    setExpandedItems((prev) => ({ ...prev, [name]: !prev[name] }));
   };
 
   const size = useWindowSize();
@@ -189,7 +189,9 @@ export default function Dashboard({ children }) {
   const profileSetting = () => {
     setProfileModal(!profileModal);
   };
-
+  useEffect(() => {
+    setUser(JSON.parse(localStorage.getItem("user")));
+  }, []);
   return (
     <>
       {pathname !== "/" && pathname !== "/signUp" ? (
@@ -219,27 +221,19 @@ export default function Dashboard({ children }) {
                   </div>
                 </div>
 
-                {/* <div className="relative">
+                <div className="relative">
                   <button
                     onClick={profileSetting}
                     className="relative inline-flex mt-1 justify-end  cursor-pointer "
                   >
                     <Avatar className="w-14 h-14">
                       <AvatarImage
-                        src={`https://api.dicebear.com/6.x/initials/svg?seed=${JSON.parse(localStorage.getItem("user"))?.firstName}%20${JSON.parse(localStorage.getItem("user"))?.lastName}`}
-                        alt={`${
-                          JSON.parse(localStorage.getItem("user"))?.firstName
-                        } ${
-                          JSON.parse(localStorage.getItem("user"))?.lastName
-                        }`}
+                        src={`https://api.dicebear.com/6.x/initials/svg?seed=${user?.firstName}%20${user?.lastName}`}
+                        alt={`${user?.firstName} ${user?.lastName}`}
                       />
                       <AvatarFallback>
-                        {JSON.parse(localStorage.getItem("user"))
-                          ?.firstName.charAt(0)
-                          .toUpperCase()}
-                        {JSON.parse(  .getItem("user"))
-                          ?.lastName.charAt(0)
-                          .toUpperCase()}
+                        {user?.firstName.charAt(0).toUpperCase()}
+                        {user?.lastName.charAt(0).toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
                   </button>
@@ -269,7 +263,7 @@ export default function Dashboard({ children }) {
                       </ul>
                     </div>
                   )}
-                </div> */}
+                </div>
               </nav>
             </div>
           </div>
