@@ -21,7 +21,7 @@ export default function Setting() {
       <UserProfile
         firstName={user?.firstName}
         lastName={user?.lastName}
-        contactOne={user.contactOne}
+        contactOne={user?.contactOne}
         joiningDate={new Date(user?.joiningDate).toDateString()}
         vehicleName={user?.vehicleInfo?.vehicleName}
       />

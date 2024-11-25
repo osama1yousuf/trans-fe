@@ -237,7 +237,7 @@ export default function Dashboard({ children }) {
                         {JSON.parse(localStorage.getItem("user"))
                           ?.firstName.charAt(0)
                           .toUpperCase()}
-                        {JSON.parse(localStorage.getItem("user"))
+                        {JSON.parse(  .getItem("user"))
                           ?.lastName.charAt(0)
                           .toUpperCase()}
                       </AvatarFallback>
