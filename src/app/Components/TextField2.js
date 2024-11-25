@@ -8,6 +8,7 @@ export default function Textfield2({
   error,
   register,
   setFocus,
+  autoComplete="" 
 }) {
   const handleFocus = (field) => {
     setFocus(field);
@@ -31,6 +32,7 @@ export default function Textfield2({
         {error && <MdError className="text-red-500" />}
       </div>
       <input
+      autoComplete={autoComplete}
         type={type}
         onFocus={() => handleFocus(name)}
         {...inputProps}

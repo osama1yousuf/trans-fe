@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import axios from "axios";
 import * as Yup from "yup";
@@ -74,7 +73,7 @@ export default function Login() {
             <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl :text-white">
               Sign in to your account
             </h1>
-            <form onSubmit={handleSubmit(onSubmit)}>
+            <form method="POST" onSubmit={handleSubmit(onSubmit)}>
               <div className="mt-6">
                 <Textfield2
                   setFocus={setFocus}
@@ -83,6 +82,7 @@ export default function Login() {
                   name={"contactOne"}
                   label={"Contact"}
                   type={"text"}
+                  autoComplete="username"
                 />
               </div>
               <div className="mt-6">
@@ -93,6 +93,7 @@ export default function Login() {
                   name={"password"}
                   label={"Password"}
                   type={"password"}
+                  autoComplete="current-password"
                 />
               </div>
               <button

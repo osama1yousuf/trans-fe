@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Textfield2 from "../Components/TextField2";
 import UserProfile from "./UserProfile";
 import { useForm } from "react-hook-form";
@@ -10,7 +10,10 @@ export default function Setting() {
     formState: { errors },
     setFocus,
   } = useForm();
-  const [user, setUser] = useState(JSON.parse(window.localStorage.getItem("user")));
+  const [user, setUser] = useState(null);
+  useEffect(() => {
+    setUser(JSON.parse(window.localStorage.getItem("user")));
+  }, []);
 
   return (
     <div className="p-4 m-auto">
