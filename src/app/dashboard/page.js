@@ -8,7 +8,7 @@ import DriverDashboard from "../driver/dashboard/driverDashboard";
 export default function Dashboard() {
     const [dashboardType , setDasboardType] = useState()
   useEffect(() => {
-    let userType = window.localStorage.getItem("userType")
+    let userType = localStorage.getItem("userType")
     if (userType) {
         setDasboardType(userType)
     }

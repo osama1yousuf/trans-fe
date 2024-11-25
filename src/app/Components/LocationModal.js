@@ -158,7 +158,7 @@ export default function Dashboard({ children }) {
   ]
 
   useEffect(() => {
-    if (window.localStorage.getItem("token")) {
+    if (localStorage.getItem("token")) {
       const userType = localStorage.getItem("userType")
       let initialTabs = []
 
