@@ -344,7 +344,7 @@ export default function ActiveDriver() {
                             {item.image.length ? (
                               <div className="ml-4 flex-shrink-0">
                                 <Image
-                                  src={handleSource(item.image)}
+                                  src={item.image}
                                   alt={`Image for ${item._id}`}
                                   width={80}
                                   height={80}
