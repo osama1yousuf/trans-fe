@@ -35,13 +35,9 @@ const SelectInput = ({
           </option>
         ))}
       </select>
-<<<<<<< HEAD
-      {/* {error && <span className="text-red-500 text-xs">{error.message}</span>} */}
-=======
       {/* {error && (
         <span className="text-red-500 text-xs">{error.message}</span>
       )} */}
->>>>>>> d6c654320a0d333355f9a667f4938da6bcd25a22
     </>
   );
 };
