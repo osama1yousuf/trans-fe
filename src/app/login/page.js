@@ -45,8 +45,8 @@ export default function Login() {
         localStorage.setItem("token", token);
         localStorage.setItem("userType", role);
         localStorage.setItem("user", JSON.stringify(user));
-        toast.success("Login successfully", { autoClose: 1000 });
         router.push("/dashboard");
+        toast.success("Login successfully", { autoClose: 1000 });
       }
     } catch (e) {
       console.log("error", e);
