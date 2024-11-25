@@ -7,6 +7,8 @@ import {
 import Textfield2 from "../TextField2";
 import SelectInput from "../SelectInput";
 import TextArea from "../TextArea";
+import { useEffect, useState } from "react";
+import path from "path";
 
 const DriverForm = ({
   handleSubmit,
@@ -16,7 +18,29 @@ const DriverForm = ({
   watch,
   formId,
   showPassField,
+  setFile,
+  file
 }) => {
+  const [imagePreview, setImagePreview] = useState(null);
+  useEffect(() => {
+    if (file && file.buffer && file.buffer.data) {
+      const base64Image = Buffer.from(file.buffer.data).toString('base64');
+      setImagePreview(`data:${file.mimetype};base64,${base64Image}`);
+    }
+  }, [file])
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+      setFile(file);
+    }
+  };
+
+
   return (
     <form id={formId} onSubmit={handleSubmit}>
       <div className="flex  flex-wrap">
@@ -30,15 +54,15 @@ const DriverForm = ({
           <AccordionItem
             className={
               errors?.firstName ||
-              errors.lastName ||
-              errors.dateOfBirth ||
-              errors.cnicNo ||
-              errors.cnicExpiry ||
-              errors?.contactOne ||
-              errors?.contactTwo ||
-              errors?.joiningDate ||
-              errors?.password ||
-              errors?.address
+                errors.lastName ||
+                errors.dateOfBirth ||
+                errors.cnicNo ||
+                errors.cnicExpiry ||
+                errors?.contactOne ||
+                errors?.contactTwo ||
+                errors?.joiningDate ||
+                errors?.password ||
+                errors?.address
                 ? "border-2 border-red-600 my-1"
                 : "border-2 border-gray-300 rounded-lg my-1"
             }
@@ -76,6 +100,29 @@ const DriverForm = ({
                   type={"date"}
                 />
               </div>
+              {/* Image Preview */}
+              <div className="w-full  mt-2 lg:w-1/4 px-3">
+                <div className="flex flex-col items-start">
+                  <label htmlFor="image-upload" className="block mb-2 text-xs font-sm text-gray-700 :text-white">
+                    Upload an Image
+                  </label>
+                  <input
+                    id="image-upload"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border file:border-gray-300 file:text-sm file:font-semibold file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200"
+                  />
+                  {imagePreview && (
+                    <img
+                      src={imagePreview}
+                      alt="Preview"
+                      className="mt-4 h-40 w-40 object-cover rounded-md border border-gray-300"
+                    />
+                  )}
+                </div>
+              </div>
+              {/*  */}
               <div className="w-full  mt-2 lg:w-1/4 px-3">
                 <Textfield2
                   setFocus={setFocus}
@@ -84,16 +131,6 @@ const DriverForm = ({
                   name={"cnicNo"}
                   label={"CNIC No"}
                   type={"number"}
-                />
-              </div>
-              <div className="w-full  mt-2 lg:w-1/4 px-3">
-                <Textfield2
-                  setFocus={setFocus}
-                  error={errors?.cnicExpiry}
-                  register={register}
-                  name={"cnicExpiry"}
-                  label={"CNIC Expiry"}
-                  type={"date"}
                 />
               </div>
               <div className="w-full  mt-2 lg:w-1/4 px-3">
@@ -231,20 +268,44 @@ const DriverForm = ({
                   register={register}
                   options={[
                     {
-                      value: "toyota",
-                      label: "Toyota",
+                      value: "daihatsu_hijet",
+                      label: "Every Hijet",
                     },
                     {
-                      value: "suzuki",
-                      label: "Suzuki",
+                      value: "suzuki_bolan",
+                      label: "Suzuki Bolan",
                     },
                     {
-                      value: "changan",
-                      label: "Changan",
+                      value: "suzuki_alto",
+                      label: "Suzuki Alto",
                     },
                     {
-                      value: "honda",
-                      label: "Honda",
+                      value: "suzuki_cultus",
+                      label: "Suzuki Cultus",
+                    },
+                    {
+                      value: "daihatsu_mira",
+                      label: "Mira",
+                    },
+                    {
+                      value: "coaster",
+                      label: "Coaster",
+                    },
+                    {
+                      value: "toyota_hiace",
+                      label: "Toyota Hiace",
+                    },
+                    {
+                      value: "hino_bus",
+                      label: "Hino Bus",
+                    },
+                    {
+                      value: "toyota_corolla",
+                      label: "Toyota Corolla",
+                    },
+                    {
+                      value: "suzuki_apv",
+                      label: "Suzuki APV",
                     },
                   ]}
                 />
@@ -266,7 +327,7 @@ const DriverForm = ({
                   setFocus={setFocus}
                   register={register}
                   error={errors?.salaryInfo?.salary}
-                  name={"salaryInfo.salary"}
+                  name={"salaryInfo[0].salary"}
                   label={"Salary"}
                   type={"number"}
                 />
@@ -275,7 +336,7 @@ const DriverForm = ({
                 <SelectInput
                   label={"Salary Type"}
                   setFocus={setFocus}
-                  name={"salaryInfo.salaryType"}
+                  name={"salaryInfo[0].salaryType"}
                   showDefaultOption={true}
                   error={errors?.salaryInfo?.salaryType}
                   register={register}
@@ -317,7 +378,10 @@ const DriverForm = ({
               {watch("noOfShifts") > 0 &&
                 watch("shifts").map((e, i) => {
                   return (
-                    <div key={i} className="w-full gap-2 px-3 flex mt-2 lg:w-1/4">
+                    <div
+                      key={i}
+                      className="w-full gap-2 px-3 flex mt-2 lg:w-1/4"
+                    >
                       <div className="w-1/2">
                         <Textfield2
                           setFocus={setFocus}

@@ -1,19 +1,56 @@
-"use client"
-import { Suspense } from "react";
+"use client";
+import { Suspense, useEffect, useState } from "react";
 import Loader from "@/app/Components/Loader";
 import DataTable from "react-data-table-component";
-export const TableComp = ({ columns, data, title }) => {
+
+export const TableComp = ({ columns, data, title, getFunc, search, count }) => {
+  const [loading, setLoading] = useState(false);
+  const [page, setPage] = useState(0);
+  const [perPage, setPerPage] = useState(10);
+
+  // Effect to handle search changes with a debounce
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      const fetchData = async () => {
+        setLoading(true);
+        setPage(0); // Reset to page 0 on new search
+        await getFunc(search, 0);
+        setLoading(false);
+      };
+
+      fetchData();
+    }, 1000); // 1 second delay
+
+    return () => {
+      clearTimeout(handler); // Cleanup on unmount or search change
+    };
+  }, [search]); // Dependency array includes getFunc
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      await getFunc(search, page);
+      setLoading(false);
+    };
+
+    fetchData();
+  }, [page, search]); // Watch page and search
+
   return (
     <div className="z-0">
+      {console.log(data, "datadata")}
       <Suspense fallback={<Loader />} />
       <DataTable
-        pagination
-        paginationPerPage={10}
-        fixedHeader
         title={title}
-        //  fixedHeader
+        data={data?.data.length > 0 ? data.data : []}
         columns={columns}
-        data={data}
+        progressPending={loading}
+        pagination
+        paginationServer
+        paginationTotalRows={count}
+        paginationPerPage={perPage}
+        fixedHeader
+        onChangePage={(e) => setPage(e)}
       />
     </div>
   );

@@ -6,8 +6,9 @@ const Button = ({ onClick, disabled, className, children }) => (
   <button
     onClick={onClick}
     disabled={disabled}
-    className={`w-full font-bold py-2 px-4 rounded ${className} ${disabled ? "opacity-50 cursor-not-allowed" : ""
-      }`}
+    className={`w-full font-bold py-2 px-4 rounded ${className} ${
+      disabled ? "opacity-50 cursor-not-allowed" : ""
+    }`}
   >
     {children}
   </button>
@@ -45,19 +46,20 @@ export default function AttendanceMark() {
       setCurrentTime(new Date());
     }, 1000);
 
+    console.log("ttt", JSON.parse(localStorage.getItem("user"))?.noOfShifts);
     return () => {
       clearInterval(timer);
     };
   }, []);
 
   const handleCheckIn = async (shiftIndex) => {
-    setLoadingState(prev => {
+    setLoadingState((prev) => {
       const newState = [...prev];
       newState[shiftIndex] = true;
       return newState;
     });
     await postAttendanceStatus("CHECK_IN", `SHIFT_${shiftIndex + 1}`);
-    setLoadingState(prev => {
+    setLoadingState((prev) => {
       const newState = [...prev];
       newState[shiftIndex] = false;
       return newState;
@@ -65,13 +67,13 @@ export default function AttendanceMark() {
   };
 
   const handleCheckOut = async (shiftIndex) => {
-    setLoadingState(prev => {
+    setLoadingState((prev) => {
       const newState = [...prev];
       newState[shiftIndex] = true;
       return newState;
     });
     await postAttendanceStatus("CHECK_OUT", `SHIFT_${shiftIndex + 1}`);
-    setLoadingState(prev => {
+    setLoadingState((prev) => {
       const newState = [...prev];
       newState[shiftIndex] = false;
       return newState;
@@ -142,122 +144,140 @@ export default function AttendanceMark() {
       <div className="fixed right-1 z-10 p-1 rounded-md bg-[#811630]">
         <div className="mx-auto p-2">
           {/* <h1 className="text-2xl text-white font-bold">Daily Attendance</h1> */}
-          <div className="text-sm text-white font-semibold">{formatTime(currentTime)}</div>
+          <div className="text-sm text-white font-semibold">
+            {formatTime(currentTime)}
+          </div>
         </div>
       </div>
       <div className="container relative mx-auto p-2 pt-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-16">
-          {["", "", ""].map((shift, index) => (
-            <Card key={index}>
-              <CardHeader>
-                <CardTitle>Shift {index + 1}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="text-center text-sm font-bold">
-                    {shifts.find(
-                      (e) =>
-                        e.shift === `SHIFT_${index + 1}` && e.checkInTime !== null
-                    ) &&
+          {Array.from(
+            {
+              length: 3,
+              // JSON.parse(localStorage.getItem("user"))?.noOfShifts
+            },
+            (_, index) => (
+              <Card key={index}>
+                <CardHeader>
+                  <CardTitle>Shift {index + 1}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="text-center text-sm font-bold">
+                      {shifts.find(
+                        (e) =>
+                          e.shift === `SHIFT_${index + 1}` &&
+                          e.checkInTime !== null
+                      ) &&
                       shifts.find(
                         (e) =>
                           e.shift === `SHIFT_${index + 1}` &&
                           e.checkoutTime === null
                       )
-                      ? getTimeDiff(
+                        ? getTimeDiff(
+                            shifts.find(
+                              (e) =>
+                                e.shift === `SHIFT_${index + 1}` &&
+                                e.checkInTime !== null
+                            )?.checkInTime,
+                            currentTime
+                          )
+                        : shifts.find(
+                            (e) =>
+                              e.shift === `SHIFT_${index + 1}` &&
+                              e.checkInTime !== null
+                          ) &&
+                          shifts.find(
+                            (e) =>
+                              e.shift === `SHIFT_${index + 1}` &&
+                              e.checkoutTime !== null
+                          ) &&
+                          getTimeDiff(
+                            shifts.find(
+                              (e) =>
+                                e.shift === `SHIFT_${index + 1}` &&
+                                e.checkInTime !== null
+                            )?.checkInTime,
+                            shifts.find(
+                              (e) =>
+                                e.shift === `SHIFT_${index + 1}` &&
+                                e.checkoutTime !== null
+                            )?.checkoutTime
+                          )}
+                    </div>
+
+                    <Button
+                      onClick={() => handleCheckIn(index)}
+                      disabled={
+                        loadingState[index] ||
                         shifts.find(
                           (e) =>
                             e.shift === `SHIFT_${index + 1}` &&
                             e.checkInTime !== null
-                        )?.checkInTime,
-                        currentTime
-                      )
-                      : shifts.find(
-                        (e) =>
-                          e.shift === `SHIFT_${index + 1}` &&
-                          e.checkInTime !== null
-                      ) &&
-                      shifts.find(
-                        (e) =>
-                          e.shift === `SHIFT_${index + 1}` &&
-                          e.checkoutTime !== null
-                      ) &&
-                      getTimeDiff(
-                        shifts.find(
-                          (e) =>
-                            e.shift === `SHIFT_${index + 1}` &&
-                            e.checkInTime !== null
-                        )?.checkInTime,
+                        ) ||
                         shifts.find(
                           (e) =>
                             e.shift === `SHIFT_${index + 1}` &&
                             e.checkoutTime !== null
-                        )?.checkoutTime
-                      )}
-                  </div>
-
-                  <Button
-                    onClick={() => handleCheckIn(index)}
-                    disabled={
-                      loadingState[index] ||
-                      shifts.find(
+                        )
+                      }
+                      className="bg-green-500 hover:bg-green-600 text-white"
+                    >
+                      Check In -{" "}
+                      {shifts.find(
                         (e) =>
                           e.shift === `SHIFT_${index + 1}` &&
                           e.checkInTime !== null
-                      ) ||
-                      shifts.find(
-                        (e) =>
-                          e.shift === `SHIFT_${index + 1}` &&
-                          e.checkoutTime !== null
-                      )
-                    }
-                    className="bg-green-500 hover:bg-green-600 text-white"
-                  >
-                    Check In - {shifts.find(
-                      (e) =>
-                        e.shift === `SHIFT_${index + 1}` && e.checkInTime !== null
-                    ) && formatTime(new Date(shifts.find(
-                      (e) =>
-                        e.shift === `SHIFT_${index + 1}` && e.checkInTime !== null
-                    )?.checkInTime))}
-                  </Button>
-                  <Button
-                    onClick={() => handleCheckOut(index)}
-                    disabled={
-                      loadingState[index] ||
-                      shifts.find(
-                        (e) =>
-                          e.shift === `SHIFT_${index + 1}` &&
-                          e.checkInTime !== null &&
-                          e.checkoutTime !== null
-                      )
-                    }
-                    className="bg-red-500 hover:bg-red-600 text-white"
-                  >
-                    Check Out - {shifts.find(
-                      (e) =>
-                        e.shift === `SHIFT_${index + 1}` &&
-                        e.checkInTime !== null
-                    ) &&
-                      shifts.find(
-                        (e) =>
-                          e.shift === `SHIFT_${index + 1}` &&
-                          e.checkoutTime !== null
-                      ) && formatTime(
-                        new Date(
-                          shifts.find(
-                            (e) =>
-                              e.shift === `SHIFT_${index + 1}` &&
-                              e.checkInTime !== null
-                          )?.checkoutTime
+                      ) &&
+                        formatTime(
+                          new Date(
+                            shifts.find(
+                              (e) =>
+                                e.shift === `SHIFT_${index + 1}` &&
+                                e.checkInTime !== null
+                            )?.checkInTime
+                          )
+                        )}
+                    </Button>
+                    <Button
+                      onClick={() => handleCheckOut(index)}
+                      disabled={
+                        loadingState[index] ||
+                        shifts.find(
+                          (e) =>
+                            e.shift === `SHIFT_${index + 1}` &&
+                            e.checkInTime !== null &&
+                            e.checkoutTime !== null
                         )
-                      )}
-                  </Button>
-
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                      }
+                      className="bg-red-500 hover:bg-red-600 text-white"
+                    >
+                      Check Out -{" "}
+                      {shifts.find(
+                        (e) =>
+                          e.shift === `SHIFT_${index + 1}` &&
+                          e.checkInTime !== null
+                      ) &&
+                        shifts.find(
+                          (e) =>
+                            e.shift === `SHIFT_${index + 1}` &&
+                            e.checkoutTime !== null
+                        ) &&
+                        formatTime(
+                          new Date(
+                            shifts.find(
+                              (e) =>
+                                e.shift === `SHIFT_${index + 1}` &&
+                                e.checkInTime !== null
+                            )?.checkoutTime
+                          )
+                        )}
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            )
+          )}
         </div>
       </div>
     </>

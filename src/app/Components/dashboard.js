@@ -3,14 +3,22 @@ import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { FaAlignLeft, FaRegTimesCircle } from "react-icons/fa";
 import { useWindowSize } from "@uidotdev/usehooks";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { usePathname } from "next/navigation";
+import { ChevronDownIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 import { useRouter } from "next/navigation";
 import axiosInstance from "@/interceptor/axios_inteceptor";
-import { toast } from "react-toastify";
-import Image from "next/image"
-import logo from "../../assets/logo.png"
+import Image from "next/image";
+import logo from "../../assets/logo.png";
 import Loader from "./Loader";
+import LocationModel from "./LocationModal";
 export default function Dashboard({ children }) {
+  const [expandedItems, setExpandedItems] = useState({});
+
+  const toggleExpand = (name) => {
+    setExpandedItems(prev => ({ ...prev, [name]: !prev[name] }));
+  };
+
   const size = useWindowSize();
   const router = useRouter();
   let adminTab = [
@@ -61,11 +69,11 @@ export default function Dashboard({ children }) {
     //     },
     //   ],
     // },
-    {
-      name: "Location",
-      url: "admin/location",
-      active: false,
-    },
+    // {
+    //   name: "Location",
+    //   url: "admin/location",
+    //   active: false,
+    // },
     // {
     //   name: "Financial",
     //   url: "financial",
@@ -110,7 +118,7 @@ export default function Dashboard({ children }) {
   ];
   const pathname = usePathname();
   const [openTabs, setOpenTabs] = useState([]);
-  const [locationName, setLocationName] = useState("");
+
   const [activeTab, setActiveTab] = useState("Dashboard");
   const [sideBar, setSideBar] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -135,25 +143,7 @@ export default function Dashboard({ children }) {
   const handletoggle = () => {
     setSideBar(!sideBar);
   };
-  const handleLocation = async () => {
-    console.log("object", locationName);
-    if (locationName != "") {
-      try {
-        let body = {
-          location: locationName,
-        };
-        let response = await axiosInstance.post("/locations", body);
-        toast.success("Location added sucessfully");
-        setLocationName("");
-        setShowModal(false);
-      } catch (e) {
-        console.log(e.message);
-        toast.error(e.message);
-      }
-    } else {
-      setShowModal(false);
-    }
-  };
+
   const handleClick = (e) => {
     console.log(e);
     if (e.name !== "Location") {
@@ -180,7 +170,6 @@ export default function Dashboard({ children }) {
     }
   };
   useEffect(() => {
-    console.log("pathname", pathname);
     let initialTabs = [];
     if (localStorage.getItem("token")) {
       let userType = localStorage.getItem("userType");
@@ -203,69 +192,9 @@ export default function Dashboard({ children }) {
 
   return (
     <>
-      {pathname !== "/" &&
-      pathname !== "/signUp" &&
-      pathname !== "/member_signin" &&
-      pathname !== "/driver_signin" &&
-      pathname !== "/admin_signin" ? (
+      {pathname !== "/" && pathname !== "/signUp" ? (
         <>
-          {showModal ? (
-            <>
-              <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
-                <div className="relative w-auto my-6 mx-auto max-w-3xl">
-                  {/*content*/}
-                  <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
-                    {/*header*/}
-                    <div className="flex items-start justify-between p-5 border-b border-solid border-slate-200 rounded-t">
-                      <h3 className="text-3xl font-semibold">Add Location</h3>
-                      <button
-                        className="p-1 ml-auto bg-transparent border-0 text-black opacity-5 float-right text-3xl leading-none font-semibold outline-none focus:outline-none"
-                        onClick={() => setShowModal(false)}
-                      >
-                        <span className="bg-transparent text-black opacity-5 h-6 w-6 text-2xl block outline-none focus:outline-none">
-                          ×
-                        </span>
-                      </button>
-                    </div>
-                    {/*body*/}
-                    <div className="relative p-6 flex-auto">
-                      <label
-                        className="block mb-2 text-xs font-sm text-gray-700 :text-white"
-                        for=""
-                      >
-                        Name
-                      </label>
-                      <input
-                        type="text"
-                        value={locationName}
-                        onChange={(e) => setLocationName(e.target.value)}
-                        className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-xs rounded-md focus:ring-primary-600 focus:border-primary-600 block w-full p-2 :bg-gray-700 :border-gray-600 :placeholder-gray-400 :text-white :focus:ring-blue-500 :focus:border-blue-500"
-                        placeholder="Location"
-                      />
-                    </div>
-                    {/*footer*/}
-                    <div className="flex items-center justify-end p-6 border-t border-solid border-slate-200 rounded-b">
-                      <button
-                        className="text-red-500 background-transparent font-bold uppercase px-6 py-2 text-sm outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
-                        type="button"
-                        onClick={() => setShowModal(false)}
-                      >
-                        Close
-                      </button>
-                      <button
-                        className="bg-emerald-500 text-white active:bg-emerald-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
-                        type="button"
-                        onClick={handleLocation}
-                      >
-                        Save
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="opacity-25 fixed inset-0 z-40 bg-black"></div>
-            </>
-          ) : null}
+          {showModal ? <LocationModel setShowModal={setShowModal} /> : null}
           <div className="sticky top-0 z-40 left-0 w-full">
             <div className="bg-white rounded shadow-lg">
               <nav className="flex justify-between p-2">
@@ -279,37 +208,44 @@ export default function Dashboard({ children }) {
                   />
 
                   <div onClick={handletoggle} className="p-4 cursor-pointer">
-                    {pathname === "/driver/dashboard" ||
-                    pathname === "/member/dashboard" ? null : !sideBar ? (
+                    {!sideBar ? (
                       <FaRegTimesCircle size={24} />
                     ) : (
                       <FaAlignLeft size={24} />
                     )}
                   </div>
                   <div>
-                    <h1 className="text-xl font-extrabold">
-                      Transport Ease
-                    </h1>
-                    {/* <h2 className="text-md font-bold">{activeTab}</h2> */}
+                    <h1 className="text-xl font-extrabold">Transport Ease</h1>
                   </div>
-                  {/* <h2 className="font-normal text-2xl leading-6 text-gray-800">OvonRueden</h2> */}
                 </div>
 
-                <div className="relative">
+                {/* <div className="relative">
                   <button
                     onClick={profileSetting}
                     className="relative inline-flex mt-1 justify-end  cursor-pointer "
                   >
-                    {/* <BsPersonCircle className="text-gray-800" size={40} /> */}
-                    <div className="relative inline-flex items-center justify-center w-14 h-14 overflow-hidden bg-gray-300 rounded-full dark:bg-gray-600">
-                      <span className="font-extrabold text-xl text-gray-600 dark:l">
-                        J
-                      </span>
-                    </div>
+                    <Avatar className="w-14 h-14">
+                      <AvatarImage
+                        src={`https://api.dicebear.com/6.x/initials/svg?seed=${JSON.parse(localStorage.getItem("user"))?.firstName}%20${JSON.parse(localStorage.getItem("user"))?.lastName}`}
+                        alt={`${
+                          JSON.parse(localStorage.getItem("user"))?.firstName
+                        } ${
+                          JSON.parse(localStorage.getItem("user"))?.lastName
+                        }`}
+                      />
+                      <AvatarFallback>
+                        {JSON.parse(localStorage.getItem("user"))
+                          ?.firstName.charAt(0)
+                          .toUpperCase()}
+                        {JSON.parse(localStorage.getItem("user"))
+                          ?.lastName.charAt(0)
+                          .toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
                   </button>
 
                   {profileModal && (
-                    <div className="right-0 mt-2 w-48 absolute bg-gray-100 rounded shadow-lg z-50">
+                    <div className="right-0 mt-0 w-fit px-10 absolute bg-gray-100 rounded shadow-lg z-50">
                       <ul className="py-2">
                         <li
                           onClick={() => {
@@ -333,137 +269,187 @@ export default function Dashboard({ children }) {
                       </ul>
                     </div>
                   )}
-                </div>
-                {/* <div onClick={profileSetting} className="relative inline-flex justify-end w-12 h-12 cursor-pointer overflow-hidden bg-gray-100 rounded-full dark:bg-gray-600">
-                <span className="font-medium text-gray-600 dark:text-gray-300">U</span>
-                {
-                  profileModal &&
-                  <>
-                    <div
-                      className="overflow-y-auto bg-gray-600 top-6 absolute inset-0 z-50 outline-none focus:outline-none"
-                    >
-                      <div className="relative w-auto my-6 mx-auto max-w-3xl">
-                        WOrk
-                      </div>
-                    </div>
-                  </>
-                }
-              </div> */}
+                </div> */}
               </nav>
             </div>
           </div>
-          {pathname === "/driver/dashboard" ||
-          pathname === "/member/dashboard" ? (
-            ""
-          ) : (
-            <aside
-              id="sidebar-multi-level-sidebar"
-              className={`fixed top-18 left-0 z-40 w-64 h-screen transition-transform ${
-                sideBar ? "-translate-x-full" : "translate-x-0"
-              }  `}
-            >
-              <div className="h-full px-3 py-4 overflow-y-auto bg-white">
-                <ul className="space-y-2 pt-4 font-medium">
-                  {openTabs &&
-                    openTabs.map((val, index) => {
-                      return (
-                        <li key={index}>
-                          <Link
-                            href={
-                              !val.Content && val.name !== "Location"
-                                ? `/${val.url}`
-                                : ""
-                            }
-                            onClick={(e) => handleClick(val)}
-                            key={index}
-                            type="button"
-                            className={`flex items-center w-full p-1 text-sm ${
-                              activeTab == val.name
-                                ? "bg-gray-100"
-                                : "hover-bg-gray-100"
-                            } text-black transition duration-75 rounded-lg group  :text-black :hover:bg-gray-700`}
+
+          {/* <aside
+            id="sidebar-multi-level-sidebar"
+            className={`fixed top-18 left-0 z-40 w-fit h-screen transition-transform ${
+              sideBar ? "-translate-x-full" : "translate-x-0"
+            }  `}
+          >
+            <div className="h-full px-3 py-4 overflow-y-auto bg-white">
+              <ul className="space-y-2 pt-4 font-medium">
+                {openTabs &&
+                  openTabs.map((val, index) => {
+                    return (
+                      <li key={index}>
+                        <Link
+                          href={
+                            !val.Content && val.name !== "Location"
+                              ? `/${val.url}`
+                              : ""
+                          }
+                          onClick={(e) => handleClick(val)}
+                          key={index}
+                          type="button"
+                          className={`flex items-start w-full p-1 text-sm ${
+                            activeTab == val.name
+                              ? "bg-gray-100"
+                              : "hover-bg-gray-100"
+                          } text-black transition duration-75 px-10 py-4 rounded-lg group  :text-black :hover:bg-gray-700`}
+                        >
+                          <svg
+                            className="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 group-hover:text-gray-900 :text-gray-400 :group-hover:text-white"
+                            aria-hidden="true"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="currentColor"
+                            viewBox="0 0 18 21"
                           >
+                            <path d="M15 12a1 1 0 0 0 .962-.726l2-7A1 1 0 0 0 17 3H3.77L3.175.745A1 1 0 0 0 2.208 0H1a1 1 0 0 0 0 2h.438l.6 2.255v.019l2 7 .746 2.986A3 3 0 1 0 9 17a2.966 2.966 0 0 0-.184-1h2.368c-.118.32-.18.659-.184 1a3 3 0 1 0 3-3H6.78l-.5-2H15Z" />
+                          </svg>
+                          <span className="flex-1 ml-3 text-md text-left whitespace-nowrap">
+                            {val.name}
+                          </span>
+                          {val.Content && (
                             <svg
-                              className="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 group-hover:text-gray-900 :text-gray-400 :group-hover:text-white"
+                              className="w-3 h-3"
                               aria-hidden="true"
                               xmlns="http://www.w3.org/2000/svg"
-                              fill="currentColor"
-                              viewBox="0 0 18 21"
+                              fill="none"
+                              viewBox="0 0 10 6"
                             >
-                              <path d="M15 12a1 1 0 0 0 .962-.726l2-7A1 1 0 0 0 17 3H3.77L3.175.745A1 1 0 0 0 2.208 0H1a1 1 0 0 0 0 2h.438l.6 2.255v.019l2 7 .746 2.986A3 3 0 1 0 9 17a2.966 2.966 0 0 0-.184-1h2.368c-.118.32-.18.659-.184 1a3 3 0 1 0 3-3H6.78l-.5-2H15Z" />
+                              <path
+                                stroke="currentColor"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="m1 1 4 4 4-4"
+                              />
                             </svg>
-                            <span className="flex-1 ml-3 text-left whitespace-nowrap">
-                              {val.name}
-                            </span>
-                            {val.Content && (
-                              <svg
-                                className="w-3 h-3"
-                                aria-hidden="true"
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 10 6"
-                              >
-                                <path
-                                  stroke="currentColor"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="m1 1 4 4 4-4"
-                                />
-                              </svg>
-                            )}
-                          </Link>
-                          {val.Content && (
-                            <ul
-                              id="dropdown-example"
-                              className={`${
-                                val.active
-                                  ? `py-1 space-y-1`
-                                  : "hidden py-1 space-y-1"
-                              }`}
-                            >
-                              {val.Content &&
-                                val.Content.map((e, i) => {
-                                  return (
-                                    <li
-                                      key={i}
-                                      onClick={(v) => handleActive(e.name)}
-                                    >
-                                      <Link
-                                        href={`${`/${e.endpoints}`}`}
-                                        className={`flex items-center w-full p-1 text-sm text-black transition ${
-                                          activeTab == e.name
-                                            ? "bg-gray-100"
-                                            : "hover:bg-gray-100"
-                                        } duration-75 rounded-lg pl-8 group hover:bg-gray-100 :text-white :hover:bg-gray-700`}
-                                      >
-                                        {e.name}
-                                      </Link>
-                                    </li>
-                                  );
-                                })}
-                            </ul>
                           )}
-                        </li>
-                      );
-                    })}
-                </ul>
-              </div>
-            </aside>
-          )}
+                        </Link>
+                        {val.Content && (
+                          <ul
+                            id="dropdown-example"
+                            className={`${
+                              val.active
+                                ? `py-1 space-y-1`
+                                : "hidden py-1 space-y-1"
+                            }`}
+                          >
+                            {val.Content &&
+                              val.Content.map((e, i) => {
+                                return (
+                                  <li
+                                    key={i}
+                                    onClick={(v) => handleActive(e.name)}
+                                  >
+                                    <Link
+                                      href={`${`/${e.endpoints}`}`}
+                                      className={`flex items-center w-full p-1 text-sm text-black transition ${
+                                        activeTab == e.name
+                                          ? "bg-gray-100"
+                                          : "hover:bg-gray-100"
+                                      } duration-75 rounded-lg pl-8 group hover:bg-gray-100 :text-white :hover:bg-gray-700`}
+                                    >
+                                      {e.name}
+                                    </Link>
+                                  </li>
+                                );
+                              })}
+                          </ul>
+                        )}
+                      </li>
+                    );
+                  })}
+              </ul>
+            </div>
+          </aside> */}
+          <aside
+            className={`fixed top-18 left-0 z-40 w-64 h-screen transition-transform duration-300 ease-in-out ${
+              sideBar ? "-translate-x-full" : "translate-x-0"
+            } bg-white shadow-lg`}
+          >
+            <div className="h-full px-3 py-4 overflow-y-auto">
+              <nav className="space-y-1">
+                {openTabs &&
+                  openTabs.map((item, index) => (
+                    <div key={index} className="mb-2">
+                      <Link
+                        href={
+                          !item.Content && item.name !== "Location"
+                            ? `/${item.url}`
+                            : "#"
+                        }
+                        onClick={() => {
+                          handleClick(item);
+                          if (item.Content) toggleExpand(item.name);
+                        }}
+                        className={`flex items-center w-full p-2 text-base font-medium text-gray-900 rounded-lg transition-colors duration-150 ease-in-out ${
+                          activeTab === item.name
+                            ? "bg-gray-100 text-blue-600"
+                            : "hover:bg-gray-50"
+                        }`}
+                      >
+                        <span className="flex items-center justify-center w-8 h-8 text-lg text-gray-400">
+                          <svg
+                            className="w-5 h-5"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                              d="M4 6h16M4 12h16M4 18h16"
+                            ></path>
+                          </svg>
+                        </span>
+                        <span className="ml-3 flex-1">{item.name}</span>
+                        {item.Content &&
+                          (expandedItems[item.name] ? (
+                            <ChevronDownIcon className="w-5 h-5" />
+                          ) : (
+                            <ChevronRightIcon className="w-5 h-5" />
+                          ))}
+                      </Link>
+                      {item.Content && expandedItems[item.name] && (
+                        <ul className="mt-2 space-y-1">
+                          {item.Content.map((subItem, subIndex) => (
+                            <li key={subIndex}>
+                              <Link
+                                href={`/${subItem.endpoints}`}
+                                onClick={() => handleActive(subItem.name)}
+                                className={`flex items-center w-full p-2 text-sm font-medium text-gray-700 transition-colors duration-150 ease-in-out rounded-md pl-11 ${
+                                  activeTab === subItem.name
+                                    ? "bg-gray-100 text-blue-600"
+                                    : "hover:bg-gray-50"
+                                }`}
+                              >
+                                {subItem.name}
+                              </Link>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+                  ))}
+              </nav>
+            </div>
+          </aside>
         </>
       ) : null}
-      {pathname !== "/" &&
-      pathname !== "/signUp" &&
-      pathname !== "/member_signin" &&
-      pathname !== "/driver_signin" &&
-      pathname !== "/admin_signin" ? (
+      {pathname !== "/" && pathname !== "/signUp" ? (
         <div
           className={`p-1 ${
             sideBar
               ? "sm:ml-0"
-              : pathname === "/dashboard" ||
-                pathname === "/dashboard"
+              : pathname === "/dashboard" || pathname === "/dashboard"
               ? "sm:ml-0"
               : "sm:ml-64"
           }`}

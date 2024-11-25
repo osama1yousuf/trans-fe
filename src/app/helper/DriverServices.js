@@ -15,10 +15,14 @@ export const getDriverAttendance = async (date) => {
   }
 };
 
-export const getDriverAttendanceForAdmin = async (date) => {
+export const getDriverAttendanceForAdmin = async (searchBody, page) => {
   try {
     let { data } = await axiosInstance.get(
-      `/driver/attendance?fromDate=${date}`
+      `/driver/attendance?fromDate=${searchBody.fromDate}&toDate=${
+        searchBody.toDate
+      }&limit=10&offset=${page}&type=${
+        searchBody.type
+      }&driverIds=${searchBody?.driverIds.toString()}`
     );
 
     if (data.data.length > 0) {

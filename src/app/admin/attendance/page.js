@@ -21,28 +21,48 @@ export default function Attendance() {
     formState: {},
   } = useForm({
     defaultValues: {
-      fromDate: (function () {
-        let date = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
-        date.setUTCHours(0, 0, 0, 0);
-        return date.toISOString();
-      })(),
+      search: {
+        type: "",
+        driverIds: [],
+        fromDate: (function () {
+          let date = new Date(
+            new Date().getFullYear(),
+            new Date().getMonth(),
+            1
+          );
+          date.setUTCHours(0, 0, 0, 0);
+          return date.toISOString();
+        })(),
+        toDate: (function () {
+          let date = new Date();
+          date.setUTCHours(0, 0, 0, 0);
+          return date.toISOString();
+        })(),
+      },
     },
   });
-  const [data, setData] = useState([]);
-  const getAttendance = async (filter) => {
-    let res = await getDriverAttendanceForAdmin(filter);
+  const [data, setData] = useState("");
+  const getAttendance = async (search, page) => {
+    let from_date = search?.fromDate
+      ? new Date(search.fromDate).setUTCHours(0, 0, 0, 0)
+      : "";
+    let to_date = search?.toDate
+      ? new Date(search.toDate).setUTCHours(0, 0, 0, 0)
+      : "";
+    let searchBody = {
+      driverIds: search?.driverIds?.length > 0 ? search.driverIds : "",
+      fromDate: new Date(from_date).toISOString(),
+      toDate: new Date(to_date).toISOString(),
+      type: search?.type ?? "",
+    };
+    let res = await getDriverAttendanceForAdmin(searchBody, page);
     console.log("res", res);
-
     setData(res);
   };
-  const fromDate = watch("fromDate");
+  const search = watch("search");
   useEffect(() => {
-    // getAttendance();
-    let from_date = new Date(fromDate).setUTCHours(0, 0, 0, 0);
-    if (from_date) {
-      getAttendance(new Date(from_date).toISOString());
-    }
-  }, [fromDate]);
+    getAttendance(search, 0);
+  }, [search]);
   return (
     <div className="p-4">
       <Accordion type="single" collapsible className="w-full">
@@ -61,6 +81,15 @@ export default function Attendance() {
                 type={"date"}
               />
             </div>
+            <div className="w-full lg:w-1/4  px-3">
+              <Textfield2
+                label={"To Date"}
+                name={"toDate"}
+                setFocus={setFocus}
+                register={register}
+                type={"date"}
+              />
+            </div>
             <div className="w-full mt-5 lg:w-1/4 px-3">
               <SearchableSelect />
             </div>
@@ -68,11 +97,14 @@ export default function Attendance() {
         </AccordionItem>
       </Accordion>
       <div className="w-full">
-        <TableComp
+        {/* <TableComp
           columns={attendanceColForAdmin}
-          // title={"Attendance Record"}
+          count={data?.length || 0}
           data={data}
-        />
+          getFunc={getAttendance}
+          search={search}
+          title={"Attendance Record"}
+        /> */}
       </div>
     </div>
   );

@@ -1,5 +1,4 @@
 "use client";
-// import Dashboard from "../Components/Dashboard"
 import { useEffect, useState } from "react";
 import { BarChart } from "@/app/Components/BarChart";
 import { PieChart } from "@/app/Components/PieChart";

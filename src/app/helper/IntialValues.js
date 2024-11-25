@@ -23,10 +23,12 @@ export const driverFormIntVal = {
     model: "",
     make: "",
   },
-  salaryInfo: {
-    salary: null,
-    salaryType: "",
-  },
+  salaryInfo: [
+    {
+      salary: null,
+      salaryType: "",
+    },
+  ],
 
   shifts: [],
   noOfShifts: null,
