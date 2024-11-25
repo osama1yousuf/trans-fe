@@ -6,7 +6,7 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(
   (config) => {
-    const userAccessToken = window.localStorage.getItem('token');
+    const userAccessToken = localStorage.getItem("token");
     console.log(userAccessToken, "check userAccessToken");
 
     if (userAccessToken) {
@@ -15,8 +15,8 @@ axiosInstance.interceptors.request.use(
       // Token not available, redirect to login page
       console.log("Token not available, redirecting to login");
       localStorage.clear();
-      window.location.href = '/';
-      return Promise.reject('No token available');
+      window.location.href = "/";
+      return Promise.reject("No token available");
     }
 
     return config;
@@ -38,7 +38,7 @@ axiosInstance.interceptors.response.use(
       // Token is expired or unauthorized, clear token and redirect
       localStorage.clear();
       console.log("Unauthorized, redirecting to login");
-      window.location.href = '/';
+      window.location.href = "/";
       return Promise.reject(error);
     }
 

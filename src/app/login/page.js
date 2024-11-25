@@ -42,9 +42,9 @@ export default function Login() {
       if (response.status == 201) {
         let { token, role, user } = response?.data;
         console.log("res", user);
-        window.localStorage.setItem("token", token);
-        window.localStorage.setItem("userType", role);
-        window.localStorage.setItem("user", JSON.stringify(user));
+        localStorage.setItem("token", token);
+        localStorage.setItem("userType", role);
+        localStorage.setItem("user", JSON.stringify(user));
         toast.success("Login successfully", { autoClose: 1000 });
         router.push("/dashboard");
       }
@@ -82,7 +82,7 @@ export default function Login() {
                   name={"contactOne"}
                   label={"Contact"}
                   type={"text"}
-                  autoComplete="username"
+                  autoComplete="on"
                 />
               </div>
               <div className="mt-6">
@@ -93,7 +93,7 @@ export default function Login() {
                   name={"password"}
                   label={"Password"}
                   type={"password"}
-                  autoComplete="current-password"
+                  autoComplete="on"
                 />
               </div>
               <button

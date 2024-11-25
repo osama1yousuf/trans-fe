@@ -12,7 +12,7 @@ export default function Setting() {
   } = useForm();
   const [user, setUser] = useState(null);
   useEffect(() => {
-    setUser(JSON.parse(window.localStorage.getItem("user")));
+    setUser(JSON.parse(localStorage.getItem("user")));
   }, []);
 
   return (
