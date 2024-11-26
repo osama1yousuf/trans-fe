@@ -25,7 +25,7 @@ export default function Login() {
     register,
     setFocus,
     handleSubmit,
-
+    reset,
     formState: { errors, isSubmitting },
   } = useForm({
     defaultValues: {
@@ -45,14 +45,15 @@ export default function Login() {
         localStorage.setItem("token", token);
         localStorage.setItem("userType", role);
         localStorage.setItem("user", JSON.stringify(user));
-        toast.success("Login successfully", { autoClose: 1000 });
         router.push("/dashboard");
+        toast.success("Login successfully", { autoClose: 1000 });
       }
     } catch (e) {
       console.log("error", e);
       toast.error(e.response?.data?.message || "Server Error", {
         autoClose: 1000,
       });
+      reset();
     }
   };
   return (

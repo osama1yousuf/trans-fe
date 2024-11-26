@@ -11,17 +11,6 @@ import * as Avatar from "@radix-ui/react-avatar";
 export default function InactiveDriver() {
   // useUserValidator("superadmin");
 
-  const handleSource = (image) => {
-    if (image.length) {
-      image = JSON.parse(image);
-      if (image && image.buffer && image.buffer.data) {
-        const base64Image = Buffer.from(image.buffer.data).toString('base64');
-        const preview = `data:${image.mimetype};base64,${base64Image}`;
-        // return "https://images.unsplash.com/photo-1492633423870-43d1cd2775eb?&w=128&h=128&dpr=2&q=80"
-        return preview;
-      }
-    }
-  }
 
   const {
     register,
@@ -40,7 +29,7 @@ export default function InactiveDriver() {
         <Avatar.Root className="AvatarRoot">
           <Avatar.Image
             className="AvatarImage w-16 h-10"
-            src={handleSource(row.image)}
+            src={row.image}
             alt="Colm Tuite"
           />
           <Avatar.Fallback className="AvatarFallback" delayMs={600}>

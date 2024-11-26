@@ -34,11 +34,13 @@ const CardContent = ({ children }) => (
 
 export default function AttendanceMark() {
   const [shifts, setShifts] = useState([]);
+  const [noOfShifts, setNoOfShifts] = useState(0);
   const [loadingState, setLoadingState] = useState([false, false, false]);
   const [currentTime, setCurrentTime] = useState(new Date());
 
   useEffect(() => {
     getCurrentAttendance();
+    setNoOfShifts(JSON.parse(localStorage.getItem("user"))?.noOfShifts);
   }, []);
 
   useEffect(() => {
@@ -153,8 +155,7 @@ export default function AttendanceMark() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-16">
           {Array.from(
             {
-              length: 3,
-              // JSON.parse(localStorage.getItem("user"))?.noOfShifts
+              length: noOfShifts,
             },
             (_, index) => (
               <Card key={index}>

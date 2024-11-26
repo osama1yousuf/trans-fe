@@ -41,7 +41,7 @@ export default function UserProfile({
             {firstName} {lastName}
           </CardTitle>
           <p className="text-sm text-muted-foreground">
-            {joiningDate
+            {joiningDate !== "Invalid Date"
               ? `Member since ${formatDate(joiningDate)}`
               : "Joining date not available"}
           </p>
@@ -71,7 +71,7 @@ export default function UserProfile({
         <div>
           <Label className="text-sm font-medium">Joining Date</Label>
           <p className="text-sm text-muted-foreground">
-            {joiningDate ? formatDate(joiningDate) : "Not provided"}
+            {joiningDate !== "Invalid Date" ? formatDate(joiningDate) : "Not provided"}
           </p>
         </div>
         {vehicleName && (
