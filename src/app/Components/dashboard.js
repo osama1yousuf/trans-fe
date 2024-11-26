@@ -15,7 +15,7 @@ import LocationModel from "./LocationModal";
 export default function Dashboard({ children }) {
   const [expandedItems, setExpandedItems] = useState({});
   const [user, setUser] = useState(null);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
   const toggleExpand = (name) => {
     setExpandedItems((prev) => ({ ...prev, [name]: !prev[name] }));
@@ -120,9 +120,8 @@ export default function Dashboard({ children }) {
   ];
   const pathname = usePathname();
   const [openTabs, setOpenTabs] = useState([]);
-
   const [activeTab, setActiveTab] = useState("Dashboard");
-  const [sideBar, setSideBar] = useState(true);
+  const [sideBar, setSideBar] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [profileModal, setProfileModal] = useState(false);
 
@@ -210,27 +209,19 @@ export default function Dashboard({ children }) {
     setIsSidebarOpen(!isSidebarOpen);
   };
   return (
-    <div className="flex h-screen flex-col bg-gray-100 text-gray-900">
-      {pathname !== "/" && pathname !== "/signUp" ? (
+    <div className="flex h-screen flex-col bg-gray-100">
+      {pathname !== "/" && pathname !== "/signUp" && (
         <>
-          {showModal ? <LocationModel setShowModal={setShowModal} /> : null}
+          {showModal && <LocationModel setShowModal={setShowModal} />}
 
-          <header className="flex items-center justify-between bg-blue-600 p-4 text-white">
-            <nav className="flex justify-between p-2">
-              <div className="flex items-center space-x-3 lg:pr-16 pr-6">
-                <Image
-                  className="sm:block hidden mr-3"
-                  width={90}
-                  height={90}
-                  src={logo}
-                  alt="logo"
-                />
+          <header className="bg-white flex items-center sticky top-0 h-[12vh] border-b-2 p-4">
+            <div className="flex items-center w-full justify-between">
+              <div className="flex items-center">
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="lg:hidden text-white hover:bg-blue-700"
+                  className="lg:hidden"
                   onClick={toggleSidebar}
-                  aria-label={isSidebarOpen ? "Close menu" : "Open menu"}
                 >
                   {isSidebarOpen ? (
                     <X className="h-6 w-6" />
@@ -238,68 +229,87 @@ export default function Dashboard({ children }) {
                     <Menu className="h-6 w-6" />
                   )}
                 </Button>
+                <Link href="/dashboard">
+                  <Image
+                    className="hidden sm:block"
+                    width={90}
+                    height={90}
+                    src={logo}
+                    alt="logo"
+                  />
+                </Link>
               </div>
 
               <div className="relative">
-                <button
-                  onClick={profileSetting}
-                  className="relative inline-flex mt-1 justify-end  cursor-pointer "
+                <Button
+                  variant="ghost"
+                  className="p-1"
+                  onClick={() => setProfileModal(!profileModal)}
                 >
-                  <Avatar className="w-14 h-14">
+                  <Avatar className="h-10 w-10">
                     <AvatarImage
                       src={`https://api.dicebear.com/6.x/initials/svg?seed=${user?.firstName}%20${user?.lastName}`}
                       alt={`${user?.firstName} ${user?.lastName}`}
                     />
                     <AvatarFallback>
-                      {user?.firstName.charAt(0).toUpperCase()}
-                      {user?.lastName.charAt(0).toUpperCase()}
+                      {user?.firstName?.charAt(0).toUpperCase()}
+                      {user?.lastName?.charAt(0).toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
-                </button>
+                </Button>
 
                 {profileModal && (
-                  <div className="right-0 mt-0 w-fit px-10 absolute bg-gray-100 rounded shadow-lg z-50">
-                    <ul className="py-2">
-                      <li
+                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-50">
+                    <div className="py-1">
+                      <Button
+                        variant="ghost"
+                        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                         onClick={() => {
                           setProfileModal(false);
                           router.push("/setting");
                         }}
-                        className="block px-3 py-1 text-gray-900 cursor-pointer hover:bg-gray-200"
                       >
                         Settings
-                      </li>
-                      <li
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                         onClick={() => {
                           localStorage.clear();
                           setProfileModal(false);
                           router.push("/");
                         }}
-                        className="block px-3 py-1 text-gray-900 cursor-pointer hover:bg-gray-200"
                       >
                         Logout
-                      </li>
-                    </ul>
+                      </Button>
+                    </div>
                   </div>
                 )}
               </div>
-            </nav>
+            </div>
           </header>
-          <div className="flex flex-1 overflow-hidden">
+          <div className="flex w-full">
             <div
               className={`
-            ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}
+            ${isSidebarOpen ? "translate-x-0 w-64" : "-translate-x-full w-auto"}
             lg:translate-x-0 transition-transform duration-300 ease-in-out
-            fixed lg:static inset-y-0 left-0 z-30 w-64 bg-white shadow-lg overflow-y-auto
+            sticky h-[88vh] lg:static inset-y-0 left-0 z-10 shadow-lg overflow-y-auto
           `}
             >
-              <div className="p-4 border-b border-gray-200">
-                <h2 className="text-xl font-semibold">Transport Ease</h2>
-              </div>
-              <nav className="p-4">
-                <ul className="space-y-2">
-                  {openTabs &&
-                    openTabs.map((item, index) => (
+              <aside
+                className={`
+          ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}
+          fixed top-[64px] left-0 z-40 h-[calc(100vh-64px)] w-64 
+          transform overflow-y-auto bg-white shadow-lg transition-transform duration-300 
+          lg:static lg:top-0 lg:h-screen lg:translate-x-0
+        `}
+              >
+                <div className="p-4 border-b border-gray-200">
+                  <h2 className="text-xl font-semibold">Transport Ease</h2>
+                </div>
+                <nav className="p-4">
+                  <ul className="space-y-2">
+                    {openTabs?.map((item, index) => (
                       <div key={index} className="mb-2">
                         <Link
                           href={
@@ -362,26 +372,21 @@ export default function Dashboard({ children }) {
                         )}
                       </div>
                     ))}
-                </ul>
-              </nav>
+                  </ul>
+                </nav>
+              </aside>
             </div>
+            {/* Main Content */}
+            <main className="flex-1 overflow-y-auto bg-gray-100 p-6">
+              <div className="container mx-auto">{children}</div>
+            </main>
           </div>
         </>
-      ) : null}
-      {pathname !== "/" ? (
-        <div
-          className={`p-1 ${
-            sideBar
-              ? "sm:ml-0"
-              : pathname === "/dashboard" || pathname === "/dashboard"
-              ? "sm:ml-0"
-              : "sm:ml-64"
-          }`}
-        >
-          <div className="flex-1 overflow-auto p-6">{children}</div>
-        </div>
-      ) : (
-        <div className="flex-1 overflow-auto p-6">{children}</div>
+      )}
+      {pathname === "/" && (
+        <main className="flex-1  bg-gray-100 overflow-auto p-6">
+          {children}
+        </main>
       )}
     </div>
   );
