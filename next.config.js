@@ -7,11 +7,14 @@ const withPWA = require("next-pwa")({
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    env:{
-        // BASE_URL:'http://192.168.1.108:3000'
-        BASE_URL:'https://13.60.168.95.nip.io'
-        // BASE_URL:'http://localhost:3000'
-    }
-}
+  images: {
+    domains: ["res.cloudinary.com"],
+  },
+  env: {
+    // BASE_URL:'http://192.168.1.108:3000'
+    BASE_URL: "https://13.60.168.95.nip.io",
+    // BASE_URL:'http://localhost:3000'
+  },
+};
 
 module.exports = withPWA(nextConfig);

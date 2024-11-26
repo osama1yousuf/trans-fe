@@ -9,6 +9,8 @@ import { useEffect, useState } from "react";
 import DriverForm from "@/app/Components/Forms/DriverForm";
 import { validateDriverSchema } from "@/app/helper/validationSchemas";
 import { driverFormIntVal } from "@/app/helper/IntialValues";
+import axios from "axios";
+import Loader from "@/app/Components/Loader";
 export default function Createdriver() {
   useUserValidator("superadmin");
   const router = useRouter();
@@ -18,39 +20,60 @@ export default function Createdriver() {
     watch,
     setValue,
     setFocus,
+    reset,
     handleSubmit,
-    formState: { errors , isSubmitting },
+    formState: { errors, isSubmitting },
   } = useForm({
     defaultValues: driverFormIntVal,
     resolver: yupResolver(validateDriverSchema),
   });
 
   const [file, setFile] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  const onSubmit = async (values) => {
-    console.log("values", values);
+  const uploadImageOnCloud = async (file) => {
     try {
       const formData = new FormData();
+      formData.append("file", file);
+      formData.append("upload_preset", `keb3hz0o`);
+      const response = await axios.post(
+        `https://api.cloudinary.com/v1_1/dh3d6g21h/image/upload`,
+        formData
+      );
+      console.log("form", response);
+      return response.data;
+    } catch (error) {
+      console.log("Error while uplading image on cloudinary", error.message);
+      return null;
+    }
+  };
 
-      Object.keys(values).forEach(key => {
-        if (typeof values[key] === 'object') {
-          formData.append(key, JSON.stringify(values[key]));
-        } else {
-          formData.append(key, values[key]);
-        }
-      });
-
+  const onSubmit = async (values) => {
+    setLoading(true);
+    let payload = values;
+    try {
       if (file) {
-        formData.append('image', file);
+        const uploadResponse = await uploadImageOnCloud(file);
+        payload = { ...payload, image: uploadResponse?.secure_url };
       }
-
-      const responsne = await axiosInstance.post("/driver", formData);
-      console.log("responsne", responsne);
-      toast.success("Driver created successfully", { autoClose: 1000 });
-      router.push("/admin/activedriver");
     } catch (e) {
-      console.log("error", e, e?.response?.data?.message[0]);
-      toast.error(e?.response?.data?.message[0], { autoClose: 1000 });
+      console.error("Image upload failed", error);
+      return; // Optionally handle the error, e.g., show an alert or toast messag
+    }
+    try {
+      const responsne = await axiosInstance.post("/driver", payload);
+      console.log("responsne", responsne);
+      router.push("/admin/activedriver");
+      toast.success("Driver created successfully", { autoClose: 1000 });
+      reset();
+      setFile(null);
+      setLoading(false);
+    } catch (e) {
+      console.log("error", e, e?.response?.data?.message);
+      toast.error(e?.response?.data?.message, { autoClose: 1000 });
+      reset();
+      setFile(null);
+      setLoading(false);
     }
   };
 
@@ -81,23 +104,29 @@ export default function Createdriver() {
         <button
           type="submit"
           form="driverCreate"
-          disabled={isSubmitting}
-          className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+          disabled={loading}
+          className={`my-4 text-white ${
+            loading ? "bg-gray-400" : "bg-[#811630] hover:bg-primary-700"
+          } focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center`}
         >
-          SAVE
+          {isSubmitting ? "Submitting" : "Submit"}
         </button>
       </div>
-      <DriverForm
-        formId={"driverCreate"}
-        handleSubmit={handleSubmit(onSubmit)}
-        errors={errors}
-        showPassField={true}
-        setFocus={setFocus}
-        register={register}
-        watch={watch}
-        setFile={setFile}
-        file={file}
-      />
+      {loading ? (
+        <Loader />
+      ) : (
+        <DriverForm
+          formId={"driverCreate"}
+          handleSubmit={handleSubmit(onSubmit)}
+          errors={errors}
+          showPassField={true}
+          setFocus={setFocus}
+          register={register}
+          watch={watch}
+          setFile={setFile}
+          file={file}
+        />
+      )}
     </div>
   );
 }

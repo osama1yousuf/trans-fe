@@ -19,15 +19,16 @@ const DriverForm = ({
   formId,
   showPassField,
   setFile,
-  file
+  file,
 }) => {
   const [imagePreview, setImagePreview] = useState(null);
   useEffect(() => {
-    if (file && file.buffer && file.buffer.data) {
-      const base64Image = Buffer.from(file.buffer.data).toString('base64');
-      setImagePreview(`data:${file.mimetype};base64,${base64Image}`);
-    }
-  }, [file])
+    setImagePreview(file);
+    // if (file && file.buffer && file.buffer.data) {
+    //   const base64Image = Buffer.from(file.buffer.data).toString('base64');
+    //   setImagePreview(`data:${file.mimetype};base64,${base64Image}`);
+    // }
+  }, [file]);
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -39,7 +40,6 @@ const DriverForm = ({
       setFile(file);
     }
   };
-
 
   return (
     <form id={formId} onSubmit={handleSubmit}>
@@ -54,15 +54,15 @@ const DriverForm = ({
           <AccordionItem
             className={
               errors?.firstName ||
-                errors.lastName ||
-                errors.dateOfBirth ||
-                errors.cnicNo ||
-                errors.cnicExpiry ||
-                errors?.contactOne ||
-                errors?.contactTwo ||
-                errors?.joiningDate ||
-                errors?.password ||
-                errors?.address
+              errors.lastName ||
+              errors.dateOfBirth ||
+              errors.cnicNo ||
+              errors.cnicExpiry ||
+              errors?.contactOne ||
+              errors?.contactTwo ||
+              errors?.joiningDate ||
+              errors?.password ||
+              errors?.address
                 ? "border-2 border-red-600 my-1"
                 : "border-2 border-gray-300 rounded-lg my-1"
             }
@@ -103,7 +103,10 @@ const DriverForm = ({
               {/* Image Preview */}
               <div className="w-full  mt-2 lg:w-1/4 px-3">
                 <div className="flex flex-col items-start">
-                  <label htmlFor="image-upload" className="block mb-2 text-xs font-sm text-gray-700 :text-white">
+                  <label
+                    htmlFor="image-upload"
+                    className="block mb-2 text-xs font-sm text-gray-700 :text-white"
+                  >
                     Upload an Image
                   </label>
                   <input

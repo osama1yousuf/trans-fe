@@ -8,7 +8,7 @@ export default function Textfield2({
   error,
   register,
   setFocus,
-  autoComplete="" 
+  autoComplete="off" 
 }) {
   const handleFocus = (field) => {
     setFocus(field);
