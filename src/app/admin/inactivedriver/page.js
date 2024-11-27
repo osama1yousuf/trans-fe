@@ -11,7 +11,6 @@ import * as Avatar from "@radix-ui/react-avatar";
 export default function InactiveDriver() {
   // useUserValidator("superadmin");
 
-
   const {
     register,
     watch,
@@ -40,7 +39,7 @@ export default function InactiveDriver() {
     },
     {
       name: "Name",
-      selector: (row) =>  row?.firstName + " " + row?.lastName,
+      selector: (row) => row?.firstName + " " + row?.lastName,
     },
     {
       name: "Mobile #",
@@ -122,8 +121,8 @@ export default function InactiveDriver() {
 
   return (
     // <Dashboard >
-    <div className="w-full">
-      <div className="w-full mt-2 lg:w-1/4 px-3">
+    <div>
+      <div className="w-full mb-2 md:w-1/4">
         <Textfield2
           register={register}
           setFocus={setFocus}
@@ -133,7 +132,7 @@ export default function InactiveDriver() {
           type={"text"}
         />
       </div>
-      <div className="z-0">
+
         <TableComp
           count={data?.count || 0}
           columns={columns}
@@ -142,7 +141,6 @@ export default function InactiveDriver() {
           getFunc={getDriver}
           search={search}
         />
-      </div>
     </div>
     // </Dashboard>
   );

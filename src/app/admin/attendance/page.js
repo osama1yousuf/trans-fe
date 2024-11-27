@@ -1,6 +1,7 @@
 "use client";
 import { TableComp } from "@/app/Components/DataTable";
 import { useForm } from "react-hook-form";
+import DataTable from "react-data-table-component";
 import {
   Accordion,
   AccordionContent,
@@ -10,9 +11,10 @@ import {
 
 import { attendanceColForAdmin } from "@/app/helper/columnList";
 import { getDriverAttendanceForAdmin } from "@/app/helper/DriverServices";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import Textfield2 from "@/app/Components/TextField2";
 import SearchableSelect from "@/app/Components/searchable-select";
+import Loader from "@/app/Components/Loader";
 export default function Attendance() {
   const {
     register,
@@ -64,8 +66,9 @@ export default function Attendance() {
     getAttendance(search, 0);
   }, [search]);
   return (
-    <div className="p-4">
-      <Accordion type="single" collapsible className="w-full">
+    <div>
+      {console.log("data", data)}
+      <Accordion type="single" collapsible className="w-full mb-2">
         <AccordionItem
           className="border-2 border-gray-300 rounded-lg"
           value="item-1"
@@ -96,15 +99,18 @@ export default function Attendance() {
           </AccordionContent>
         </AccordionItem>
       </Accordion>
-      <div className="w-full">
-        {/* <TableComp
-          columns={attendanceColForAdmin}
-          count={data?.length || 0}
-          data={data}
-          getFunc={getAttendance}
-          search={search}
+
+      <div className="max-w-[92vw] rounded-sm">
+        <Suspense fallback={<Loader />} />
+        <DataTable
           title={"Attendance Record"}
-        /> */}
+          data={data?.length > 0 ? data : []}
+          columns={attendanceColForAdmin}
+          pagination
+          paginationTotalRows={data?.length}
+          paginationPerPage={10}
+          fixedHeader
+        />
       </div>
     </div>
   );

@@ -232,7 +232,7 @@ export default function ActiveDriver() {
 
   return (
     // <Dashboard >
-    <div className="w-full">
+    <div>
       {showModal && (
         <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
           <div className="relative w-auto my-6 mx-auto max-w-3xl">
@@ -286,8 +286,8 @@ export default function ActiveDriver() {
           </div>
         </div>
       )}
-      <div className="flex lg:flex-row flex-col items-center justify-between">
-        <div className="w-full mt-2 lg:w-1/4 px-3">
+      <div className="flex gap-2 mb-2 md:gap-0 md:flex-row flex-col items-center justify-between">
+        <div className="w-full md:w-1/4">
           <Textfield2
             register={register}
             setFocus={setFocus}
@@ -297,7 +297,7 @@ export default function ActiveDriver() {
             type={"text"}
           />
         </div>
-        <div className="w-full mt-2 lg:w-1/4 px-3">
+        <div className="w-full md:w-1/4">
           <Button onClick={toggleView} variant="outline">
             {tableView ? (
               <LayoutGrid className="mr-2 h-4 w-4" />
@@ -308,7 +308,7 @@ export default function ActiveDriver() {
           </Button>
         </div>
       </div>
-      <div className="z-0">
+      <div>
         {tableView ? (
           <TableComp
             columns={columns}

@@ -62,8 +62,8 @@ export default function Login() {
         <a className="flex flex-col items-center mb-2 text-xl font-semibold text-gray-900 :text-white">
           <Image
             className="mr-2"
-            width={140}
-            height={140}
+            width={160}
+            height={160}
             src={logo}
             alt="logo"
           />

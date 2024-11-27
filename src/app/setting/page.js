@@ -58,7 +58,7 @@ export default function Setting() {
   };
 
   return (
-    <div className="p-4 m-auto">
+    <div className="m-auto">
       <UserProfile
         firstName={user?.firstName}
         lastName={user?.lastName}
@@ -66,10 +66,10 @@ export default function Setting() {
         joiningDate={new Date(user?.joiningDate).toDateString()}
         vehicleName={user?.vehicleInfo?.vehicleName}
       />
-      <div className="w-full m-auto bg-white rounded-lg md:mt-0 sm:max-w-md sm:p-8">
+      <div className="m-auto bg-white rounded-lg mt-5 sm:max-w-md sm:p-8">
         <form
           onSubmit={handleSubmit(changePasswordSubmit)}
-          className="mt-4 lg:mt-5 w-full md:space-y-5"
+          className=" p-5 sm:p-0 space-y-5"
         >
           <h2 className="mb-1 text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
             Change Password
