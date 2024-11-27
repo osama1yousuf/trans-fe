@@ -37,8 +37,7 @@ export const TableComp = ({ columns, data, title, getFunc, search, count }) => {
   }, [page, search]); // Watch page and search
 
   return (
-    <div className="z-0">
-      {console.log(data, "datadata")}
+    <div className="max-w-[92vw] rounded-sm">
       <Suspense fallback={<Loader />} />
       <DataTable
         title={title}

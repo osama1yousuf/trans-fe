@@ -21,7 +21,7 @@ const Card = ({ children }) => (
 );
 
 const CardHeader = ({ children }) => (
-  <div className="px-6 py-4 bg-gray-100">{children}</div>
+  <div className="px-6 py-4 bg-white border-b border-gray-300">{children}</div>
 );
 
 const CardTitle = ({ children }) => (
@@ -143,7 +143,7 @@ export default function AttendanceMark() {
 
   return (
     <>
-      <div className="fixed right-1 z-10 p-1 rounded-md bg-[#811630]">
+      <div className="fixed right-1 z-10 rounded-md bg-[#811630]">
         <div className="mx-auto p-2">
           {/* <h1 className="text-2xl text-white font-bold">Daily Attendance</h1> */}
           <div className="text-sm text-white font-semibold">
@@ -151,7 +151,7 @@ export default function AttendanceMark() {
           </div>
         </div>
       </div>
-      <div className="container relative mx-auto p-2 pt-8">
+      <div className="container relative mx-auto  pt-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-16">
           {Array.from(
             {
@@ -159,7 +159,7 @@ export default function AttendanceMark() {
             },
             (_, index) => (
               <Card key={index}>
-                <CardHeader>
+                <CardHeader >
                   <CardTitle>Shift {index + 1}</CardTitle>
                 </CardHeader>
                 <CardContent>

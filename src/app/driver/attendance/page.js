@@ -1,9 +1,11 @@
 "use client";
 import { TableComp } from "@/app/Components/DataTable";
+import Loader from "@/app/Components/Loader";
 import { SelectDropdown } from "@/app/Components/SelectDropdown";
 import { attendanceCol } from "@/app/helper/columnList";
 import { getDriverAttendance } from "@/app/helper/DriverServices";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
+import DataTable from "react-data-table-component";
 export default function Attendance() {
   const [filterSelect, setFilterSelect] = useState(
     new Date(
@@ -58,21 +60,25 @@ export default function Attendance() {
     getAttendance(filterSelect);
   }, [filterSelect]);
   return (
-    <div className="p-4">
-      <div className="w-full lg:w-1/4">
+    <div>
+      <div className="w-full mb-2 md:w-1/4">
         <SelectDropdown
           label={"Filter"}
           options={filterOptions}
           handleChange={(e) => setFilterSelect(e.target.value)}
         />
       </div>
-      <div className="w-full">
-        {/* <TableComp
-          count={data?.count || 0}
-          columns={attendanceCol}
+      <div className="max-w-[92vw]  rounded-sm">
+        <Suspense fallback={<Loader />} />
+        <DataTable
           title={"Attendance Record"}
-          data={data}
-        /> */}
+          data={data?.length > 0 ? data : []}
+          columns={attendanceCol}
+          pagination
+          paginationTotalRows={data?.length}
+          paginationPerPage={10}
+          fixedHeader
+        />
       </div>
     </div>
   );

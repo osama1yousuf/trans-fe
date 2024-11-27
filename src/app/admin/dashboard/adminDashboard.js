@@ -45,7 +45,7 @@ export default function AdminDashboard() {
     setLoader(false)
   }, [feePeriod]);
   return (
-    <div className="w-full">
+    <div>
     {loader ? <Loader /> :
     <>
     {/* statisticsCard */}

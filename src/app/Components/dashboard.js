@@ -1,9 +1,8 @@
 "use client";
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useWindowSize } from "@uidotdev/usehooks";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { usePathname } from "next/navigation";
 import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
@@ -13,25 +12,38 @@ import Image from "next/image";
 import logo from "../../assets/logo.png";
 import LocationModel from "./LocationModal";
 export default function Dashboard({ children }) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const profileRef = useRef(null);
+
   const [expandedItems, setExpandedItems] = useState({});
   const [user, setUser] = useState(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
+  const [openTabs, setOpenTabs] = useState([]);
+  const [activeUserType, setActiveUserType] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [profileModal, setProfileModal] = useState(false);
+
   const toggleExpand = (name) => {
     setExpandedItems((prev) => ({ ...prev, [name]: !prev[name] }));
   };
 
-  const size = useWindowSize();
-  const router = useRouter();
-  let adminTab = [
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
+  let sideBarOption = [
     {
       name: "Dashboard",
       url: "dashboard",
+      type: "SUPERADMIN",
       active: false,
     },
     {
       name: "Driver",
       url: "driver",
+      type: "SUPERADMIN",
       active: false,
       Content: [
         {
@@ -51,6 +63,29 @@ export default function Dashboard({ children }) {
           endpoints: "admin/attendance",
         },
       ],
+    },
+    {
+      name: "Dashboard",
+      url: "member/dashboard",
+      type: "CUSTOMER",
+      active: false,
+    },
+    {
+      name: "Dashboard",
+      url: "dashboard",
+      type: "DRIVER",
+      active: false,
+    },
+    {
+      name: "Attendance",
+      url: "driver/attendance",
+      type: "DRIVER",
+      active: false,
+    },
+    {
+      name: "Profile Setting",
+      url: "setting",
+      active: false,
     },
     // {
     //   name: "Member",
@@ -99,94 +134,24 @@ export default function Dashboard({ children }) {
     //   ],
     // },
   ];
-  let memberTab = [
-    {
-      name: "Dashboard",
-      url: "member/dashboard",
-      active: false,
-    },
-  ];
-  let driverTab = [
-    {
-      name: "Dashboard",
-      url: "dashboard",
-      active: false,
-    },
-    {
-      name: "Attendance",
-      url: "driver/attendance",
-      active: false,
-    },
-  ];
-  const pathname = usePathname();
-  const [openTabs, setOpenTabs] = useState([]);
-  const [activeTab, setActiveTab] = useState("Dashboard");
-  const [sideBar, setSideBar] = useState(false);
-  const [showModal, setShowModal] = useState(false);
-  const [profileModal, setProfileModal] = useState(false);
-
-  const handleActive = (e) => {
-    for (let i = 0; i < openTabs.length; i++) {
-      const element = openTabs[i];
-      // console.log("element");
-      if (element.Content) {
-        // console.log("element" , element.Content);
-        let found = element.Content.find((val) => val.name === e);
-        if (found) {
-          console.log("found", found.name);
-          setActiveTab(e);
-          setSideBar(!sideBar);
-        }
-      }
-    }
-  };
-
-  const handletoggle = () => {
-    setSideBar(!sideBar);
-  };
-
-  const handleClick = (e) => {
-    console.log(e);
-    if (e.name !== "Location") {
-      let result = openTabs.find((v) => v.name == e.name);
-      if (result && !e.Content) {
-        setActiveTab(e.name);
-        setSideBar(!sideBar);
-      }
-      setOpenTabs((prevTabs) => {
-        const updatedTabs = prevTabs.map((tab) => {
-          if (tab.name === e.name) {
-            return {
-              ...tab,
-              active: !tab.active,
-            };
-          }
-          return tab;
-        });
-
-        return updatedTabs;
-      });
-    } else {
-      setShowModal(!showModal);
-    }
-  };
+  /// for setting currentUserTypeSideBarOption
   useEffect(() => {
-    let initialTabs = [];
     if (localStorage.getItem("token")) {
       let userType = localStorage.getItem("userType");
-      if (userType == "DRIVER") {
-        initialTabs = driverTab;
-      } else if (userType == "CUSTOMER") {
-        initialTabs = memberTab;
-      } else if (userType == "SUPERADMIN") {
-        initialTabs = adminTab;
+      if (userType) {
+        let filterCurrentOpt = sideBarOption.filter((e) => e.type === userType);
+        setOpenTabs(filterCurrentOpt || []);
       } else {
         localStorage.clear();
         router.push("/");
       }
-      setOpenTabs(initialTabs || []);
+    } else {
+      localStorage.clear();
+      router.push("/");
     }
   }, [pathname]);
+
+  /// check window resize screen
   useEffect(() => {
     const checkScreenSize = () => {
       const mobile = window.innerWidth < 1000;
@@ -199,131 +164,70 @@ export default function Dashboard({ children }) {
 
     return () => window.removeEventListener("resize", checkScreenSize);
   }, []);
-  const profileSetting = () => {
-    setProfileModal(!profileModal);
-  };
+
+  // Close profile setting modal when clicking outside
   useEffect(() => {
-    setUser(JSON.parse(localStorage.getItem("user")));
+    const handleClickOutside = (event) => {
+      if (profileRef.current && !profileRef.current.contains(event.target)) {
+        setProfileModal(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
   }, []);
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
-  };
+
+  /// use to set user and userType
+  useEffect(() => {
+    console.log("User", localStorage.getItem("user"));
+
+    setUser(JSON.parse(localStorage.getItem("user")));
+    setActiveUserType(localStorage.getItem("userType"));
+  }, []);
+  console.log("pathname", pathname);
   return (
     <div className="flex h-screen flex-col bg-gray-100">
       {pathname !== "/" && pathname !== "/signUp" && (
         <>
           {showModal && <LocationModel setShowModal={setShowModal} />}
 
-          <header className="bg-white flex items-center sticky top-0 h-[12vh] border-b-2 p-4">
-            <div className="flex items-center w-full justify-between">
-              <div className="flex items-center">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="lg:hidden"
-                  onClick={toggleSidebar}
-                >
-                  {isSidebarOpen ? (
-                    <X className="h-6 w-6" />
-                  ) : (
-                    <Menu className="h-6 w-6" />
-                  )}
-                </Button>
-                <Link href="/dashboard">
-                  <Image
-                    className="hidden sm:block"
-                    width={90}
-                    height={90}
-                    src={logo}
-                    alt="logo"
-                  />
-                </Link>
-              </div>
-
-              <div className="relative">
-                <Button
-                  variant="ghost"
-                  className="p-1"
-                  onClick={() => setProfileModal(!profileModal)}
-                >
-                  <Avatar className="h-10 w-10">
-                    <AvatarImage
-                      src={`https://api.dicebear.com/6.x/initials/svg?seed=${user?.firstName}%20${user?.lastName}`}
-                      alt={`${user?.firstName} ${user?.lastName}`}
-                    />
-                    <AvatarFallback>
-                      {user?.firstName?.charAt(0).toUpperCase()}
-                      {user?.lastName?.charAt(0).toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
-                </Button>
-
-                {profileModal && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-50">
-                    <div className="py-1">
-                      <Button
-                        variant="ghost"
-                        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                        onClick={() => {
-                          setProfileModal(false);
-                          router.push("/setting");
-                        }}
-                      >
-                        Settings
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                        onClick={() => {
-                          localStorage.clear();
-                          setProfileModal(false);
-                          router.push("/");
-                        }}
-                      >
-                        Logout
-                      </Button>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          </header>
-          <div className="flex w-full">
+          <div className="flex h-screen">
+            {/* Sidebar */}
+            {isSidebarOpen && (
+              <div
+                className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+                onClick={toggleSidebar}
+              ></div>
+            )}
             <div
-              className={`
-            ${isSidebarOpen ? "translate-x-0 w-64" : "-translate-x-full w-auto"}
-            lg:translate-x-0 transition-transform duration-300 ease-in-out
-            sticky h-[88vh] lg:static inset-y-0 left-0 z-10 shadow-lg overflow-y-auto
-          `}
+              className={`${
+                isSidebarOpen
+                  ? "translate-x-0 w-64"
+                  : "-translate-x-full w-auto"
+              } fixed lg:static inset-y-0 left-0 z-50 bg-white shadow-lg lg:translate-x-0 transition-transform duration-300 ease-in-out`}
             >
-              <aside
-                className={`
-          ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}
-          fixed top-[64px] left-0 z-40 h-[calc(100vh-64px)] w-64 
-          transform overflow-y-auto bg-white shadow-lg transition-transform duration-300 
-          lg:static lg:top-0 lg:h-screen lg:translate-x-0
-        `}
-              >
-                <div className="p-4 border-b border-gray-200">
-                  <h2 className="text-xl font-semibold">Transport Ease</h2>
+              <aside className="h-full overflow-y-auto">
+                <div className="p-4">
+                  <Link href="/dashboard">
+                    <Image width={90} height={90} src={logo} alt="logo" />
+                  </Link>
                 </div>
                 <nav className="p-4">
                   <ul className="space-y-2">
                     {openTabs?.map((item, index) => (
                       <div key={index} className="mb-2">
                         <Link
-                          href={
-                            !item.Content && item.name !== "Location"
-                              ? `/${item.url}`
-                              : "#"
-                          }
+                          href={!item.Content ? `/${item.url}` : "#"}
                           onClick={() => {
-                            handleClick(item);
                             if (item.Content) toggleExpand(item.name);
+                            if (isMobile && !item.Content) toggleSidebar();
                           }}
                           className={`flex items-center w-full p-2 text-base font-medium text-gray-900 rounded-lg transition-colors duration-150 ease-in-out ${
-                            activeTab === item.name
-                              ? "bg-gray-100 text-blue-600"
+                            pathname === `/${item.url}` &&
+                            item.type === activeUserType
+                              ? "bg-gray-100 text-gray-600"
                               : "hover:bg-gray-50"
                           }`}
                         >
@@ -357,10 +261,13 @@ export default function Dashboard({ children }) {
                               <li key={subIndex}>
                                 <Link
                                   href={`/${subItem.endpoints}`}
-                                  onClick={() => handleActive(subItem.name)}
+                                  onClick={() => {
+                                    if (isMobile) toggleSidebar();
+                                  }}
                                   className={`flex items-center w-full p-2 text-sm font-medium text-gray-700 transition-colors duration-150 ease-in-out rounded-md pl-11 ${
-                                    activeTab === subItem.name
-                                      ? "bg-gray-100 text-blue-600"
+                                    pathname === `/${subItem.endpoints}` &&
+                                    item.type === activeUserType
+                                      ? "bg-gray-100 text-gray-600"
                                       : "hover:bg-gray-50"
                                   }`}
                                 >
@@ -376,17 +283,155 @@ export default function Dashboard({ children }) {
                 </nav>
               </aside>
             </div>
+
             {/* Main Content */}
-            <main className="flex-1 overflow-y-auto bg-gray-100 p-6">
-              <div className="container mx-auto">{children}</div>
-            </main>
+            <div className="flex-1 flex flex-col">
+              {/* Header */}
+              <header className="bg-white flex items-center sticky top-0 h-[12vh] border-b-2 p-4 z-30">
+                <div className="flex items-center w-full justify-between">
+                  <div className="flex items-center">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="lg:hidden"
+                      onClick={toggleSidebar}
+                    >
+                      {isSidebarOpen ? (
+                        <X className="h-6 w-6" />
+                      ) : (
+                        <Menu className="h-6 w-6" />
+                      )}
+                    </Button>
+                    <h2 className="text-lg font-semibold">
+                      Transport Ease
+                    </h2>
+                  </div>
+
+                  <div>
+                    <Button
+                      variant="ghost"
+                      className="p-1"
+                      onClick={() => setProfileModal(!profileModal)}
+                    >
+                      <Avatar className="h-10 w-10 sm:h-14 sm:w-14">
+                        <AvatarImage
+                          src={`https://api.dicebear.com/6.x/initials/svg?seed=${user?.firstName}%20${user?.lastName}`}
+                          alt={`${user?.firstName} ${user?.lastName}`}
+                        />
+                        <AvatarFallback>
+                          {user?.firstName?.charAt(0).toUpperCase()}
+                          {user?.lastName?.charAt(0).toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                    </Button>
+
+                    {profileModal && (
+                      <div
+                        ref={profileRef}
+                        className="absolute right-0 mt-2 mr-2 w-64 bg-white rounded-lg shadow-lg z-50 overflow-hidden"
+                      >
+                        <div className="p-4 bg-[#811630] text-white">
+                          <div className="flex items-center space-x-4">
+                            <div className="relative h-10 w-10 sm:h-14 sm:w-14 rounded-full overflow-hidden">
+                              {user?.image ? (
+                                <Image
+                                  src={user?.image}
+                                  alt={userName}
+                                  layout="fill"
+                                  objectFit="cover"
+                                />
+                              ) : (
+                                <Avatar className="h-10 w-10 sm:h-14 sm:w-14">
+                                  <AvatarImage
+                                    src={`https://api.dicebear.com/6.x/initials/svg?seed=${user?.firstName}%20${user?.lastName}`}
+                                    alt={`${user?.firstName} ${user?.lastName}`}
+                                  />
+                                  <AvatarFallback>
+                                    {user?.firstName?.charAt(0).toUpperCase()}
+                                    {user?.lastName?.charAt(0).toUpperCase()}
+                                  </AvatarFallback>
+                                </Avatar>
+                              )}
+                            </div>
+                            <div>
+                              <p className="font-medium">{user?.firstName}</p>
+                              <p className="text-sm opacity-75">
+                                {user?.contactOne}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="py-2">
+                          <button
+                            className="w-full flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                            onClick={() => {
+                              setProfileModal(!profileModal);
+                              router.push("/setting");
+                            }}
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="h-4 w-4 mr-2"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+                              />
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                              />
+                            </svg>
+                            Settings
+                          </button>
+                          <button
+                            className="w-full flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+                            onClick={() => {
+                              localStorage.clear();
+                              setProfileModal(!profileModal);
+                              router.push("/");
+                            }}
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="h-4 w-4 mr-2"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                              />
+                            </svg>
+                            Logout
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </header>
+
+              {/* Main content */}
+              <main className="flex-1 overflow-auto bg-gray-100 p-4">
+                <div className="mx-2">{children}</div>
+              </main>
+            </div>
           </div>
         </>
       )}
       {pathname === "/" && (
-        <main className="flex-1  bg-gray-100 overflow-auto p-6">
-          {children}
-        </main>
+        <main className="flex-1 overflow-auto bg-gray-100 p-4">{children}</main>
       )}
     </div>
   );

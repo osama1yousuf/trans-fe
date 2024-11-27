@@ -129,7 +129,7 @@ export const attendanceColForAdmin = [
       <div className="flex min-w-[68px] flex-col gap-1 py-1">
         <p className="bg-red-500 p-1 text-center text-white">
           {row.attendance.find(
-            (e) => e.shift === "SHIFT_1" && e?.checkInTime !== null
+            (e) => e?.shift === "SHIFT_1" && e?.checkInTime !== null
           )
             ? formatTime(
                 new Date(
