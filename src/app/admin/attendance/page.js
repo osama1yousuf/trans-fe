@@ -99,8 +99,7 @@ export default function Attendance() {
           </AccordionContent>
         </AccordionItem>
       </Accordion>
-
-      <div className="max-w-[92vw] rounded-sm">
+      <div className="max-w-[96vw] rounded-sm">
         <Suspense fallback={<Loader />} />
         <DataTable
           title={"Attendance Record"}

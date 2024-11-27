@@ -68,7 +68,7 @@ export default function Attendance() {
           handleChange={(e) => setFilterSelect(e.target.value)}
         />
       </div>
-      <div className="max-w-[92vw]  rounded-sm">
+      <div className="max-w-[96vw] rounded-sm">
         <Suspense fallback={<Loader />} />
         <DataTable
           title={"Attendance Record"}

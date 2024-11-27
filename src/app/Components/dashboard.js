@@ -302,9 +302,7 @@ export default function Dashboard({ children }) {
                         <Menu className="h-6 w-6" />
                       )}
                     </Button>
-                    <h2 className="text-lg font-semibold">
-                      Transport Ease
-                    </h2>
+                    <h2 className="text-lg font-semibold">Transport Ease</h2>
                   </div>
 
                   <div>
@@ -423,7 +421,7 @@ export default function Dashboard({ children }) {
               </header>
 
               {/* Main content */}
-              <main className="flex-1 overflow-auto bg-gray-100 px-2 py-4">
+              <main className="flex-1 h-fit overflow-auto bg-gray-100 px-2 pt-4 pb-12">
                 <div className="">{children}</div>
               </main>
             </div>
