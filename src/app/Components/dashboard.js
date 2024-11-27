@@ -423,7 +423,7 @@ export default function Dashboard({ children }) {
               </header>
 
               {/* Main content */}
-              <main className="flex-1 overflow-auto bg-gray-100 p-4">
+              <main className="flex-1 overflow-auto bg-gray-100 p-1">
                 <div className="mx-2">{children}</div>
               </main>
             </div>

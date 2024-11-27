@@ -52,9 +52,9 @@ export default function AdminDashboard() {
       <div className="flex items-center flex-wrap-reverse">
         {/* driver Stats */}
         <div className="sm:w-1/2 ">
-          <h3 className="text-xl font-semibold mx-2 mb-1">Driver</h3>
+          <h3 className="text-xl font-semibold mb-1">Driver</h3>
           <div className="flex items-center flex-wrap">
-            <div className="text-center w-full sm:w-4/12 p-2">
+            <div className="text-center w-full sm:w-4/12">
               <div className="border border-gray-300 p-3 rounded-lg shadow-md">
                 <StatisticsCard
                   name={"Total"}
@@ -72,7 +72,7 @@ export default function AdminDashboard() {
                 />
               </div>
             </div>
-            <div className="text-center w-full sm:w-8/12 p-2">
+            <div className="text-center w-full sm:w-8/12">
               <div className="border border-gray-300 p-3 rounded-lg shadow-md">
                  <StatisticsCardAmount
                 useType={"admin"}
@@ -105,7 +105,7 @@ export default function AdminDashboard() {
         {/* member stats */}
         <div className="sm:w-1/2 text-center">
           <div className="flex justify-between items-center">
-            <h3 className="text-xl mr-2 font-semibold mb-1 sm:w-1/3">Member</h3>
+            <h3 className="text-xl font-semibold">Member</h3>
             <input
               type="month"
               value={feePeriod}
