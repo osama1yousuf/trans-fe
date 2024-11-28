@@ -54,13 +54,18 @@ export default function AttendanceMark() {
     };
   }, []);
 
-  const handleCheckIn = async (shiftIndex) => {
+  const handleCheckIn = async (shiftIndex, shifObj) => {
     setLoadingState((prev) => {
       const newState = [...prev];
       newState[shiftIndex] = true;
       return newState;
     });
-    await postAttendanceStatus("CHECK_IN", `SHIFT_${shiftIndex + 1}`);
+    await postAttendanceStatus(
+      "CHECK_IN",
+      `SHIFT_${shiftIndex + 1}`,
+      shifObj?.checkInRecordId,
+      shifObj?.checkOutRecordId
+    );
     setLoadingState((prev) => {
       const newState = [...prev];
       newState[shiftIndex] = false;
@@ -68,13 +73,18 @@ export default function AttendanceMark() {
     });
   };
 
-  const handleCheckOut = async (shiftIndex) => {
+  const handleCheckOut = async (shiftIndex, shifObj) => {
     setLoadingState((prev) => {
       const newState = [...prev];
       newState[shiftIndex] = true;
       return newState;
     });
-    await postAttendanceStatus("CHECK_OUT", `SHIFT_${shiftIndex + 1}`);
+    await postAttendanceStatus(
+      "CHECK_OUT",
+      `SHIFT_${shiftIndex + 1}`,
+      shifObj?.checkInRecordId,
+      shifObj?.checkOutRecordId
+    );
     setLoadingState((prev) => {
       const newState = [...prev];
       newState[shiftIndex] = false;
@@ -90,13 +100,15 @@ export default function AttendanceMark() {
     });
   };
 
-  const postAttendanceStatus = async (type, shift) => {
+  const postAttendanceStatus = async (type, shift, checkInId, checkOutId) => {
     let response;
     try {
       let payload = {
         time: new Date().toISOString(),
         type: type,
         shift: shift,
+        checkInRecordId: checkInId,
+        checkOutRecordId: checkOutId,
       };
       response = await axiosInstance.post("/driv/attendance", payload);
       toast.info(response?.data?.message);
@@ -153,13 +165,13 @@ export default function AttendanceMark() {
       </div>
       <div className="container relative mx-auto  pt-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-16">
-          {Array.from(
+          {shifts.length > 0 ? Array.from(
             {
-              length: noOfShifts,
+              length: shifts.length,
             },
             (_, index) => (
               <Card key={index}>
-                <CardHeader >
+                <CardHeader>
                   <CardTitle>Shift {index + 1}</CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -208,7 +220,12 @@ export default function AttendanceMark() {
                     </div>
 
                     <Button
-                      onClick={() => handleCheckIn(index)}
+                      onClick={() =>
+                        handleCheckIn(
+                          index,
+                          shifts.find((e) => e.shift === `SHIFT_${index + 1}`)
+                        )
+                      }
                       disabled={
                         loadingState[index] ||
                         shifts.find(
@@ -241,7 +258,12 @@ export default function AttendanceMark() {
                         )}
                     </Button>
                     <Button
-                      onClick={() => handleCheckOut(index)}
+                      onClick={() =>
+                        handleCheckOut(
+                          index,
+                          shifts.find((e) => e.shift === `SHIFT_${index + 1}`)
+                        )
+                      }
                       disabled={
                         loadingState[index] ||
                         shifts.find(
@@ -278,7 +300,7 @@ export default function AttendanceMark() {
                 </CardContent>
               </Card>
             )
-          )}
+          ) : <h1>No Shift Found</h1>}
         </div>
       </div>
     </>

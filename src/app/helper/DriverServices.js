@@ -20,7 +20,7 @@ export const getDriverAttendanceForAdmin = async (searchBody, page) => {
     let { data } = await axiosInstance.get(
       `/driver/attendance?fromDate=${searchBody.fromDate}&toDate=${
         searchBody.toDate
-      }&limit=10&offset=${page}&type=${
+      }&type=${
         searchBody.type
       }&driverIds=${searchBody?.driverIds.toString()}`
     );

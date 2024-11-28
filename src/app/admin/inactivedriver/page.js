@@ -92,7 +92,7 @@ export default function InactiveDriver() {
     try {
       let response = await axiosInstance.get(
         `/driver?status=inActive&search=${search}&limit=${10}&offset=${
-          page * 10
+          page > 1 ? (page - 1) * 10 : 0
         }`
       );
       console.log(response.data);
@@ -133,14 +133,14 @@ export default function InactiveDriver() {
         />
       </div>
 
-        <TableComp
-          count={data?.count || 0}
-          columns={columns}
-          data={data}
-          title={"In Active Driver List"}
-          getFunc={getDriver}
-          search={search}
-        />
+      <TableComp
+        count={data?.count || 0}
+        columns={columns}
+        data={data}
+        title={"In Active Driver List"}
+        getFunc={getDriver}
+        search={search}
+      />
     </div>
     // </Dashboard>
   );

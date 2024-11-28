@@ -181,12 +181,10 @@ export default function Dashboard({ children }) {
 
   /// use to set user and userType
   useEffect(() => {
-    console.log("User", localStorage.getItem("user"));
 
     setUser(JSON.parse(localStorage.getItem("user")));
     setActiveUserType(localStorage.getItem("userType"));
   }, []);
-  console.log("pathname", pathname);
   return (
     <div className="flex h-screen flex-col bg-gray-100">
       {pathname !== "/" && pathname !== "/signUp" && (
@@ -287,7 +285,7 @@ export default function Dashboard({ children }) {
             {/* Main Content */}
             <div className="flex-1 flex flex-col">
               {/* Header */}
-              <header className="bg-white flex items-center sticky top-0 h-[12vh] border-b-2 p-4 z-30">
+              <header className="bg-white flex items-center sticky top-0 h-[12vh] pt-2 border-b-2 p-4 z-30">
                 <div className="flex items-center w-full justify-between">
                   <div className="flex items-center">
                     <Button

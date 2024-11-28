@@ -15,10 +15,12 @@ import { Suspense, useEffect, useState } from "react";
 import Textfield2 from "@/app/Components/TextField2";
 import SearchableSelect from "@/app/Components/searchable-select";
 import Loader from "@/app/Components/Loader";
+import axiosInstance from "@/interceptor/axios_inteceptor";
 export default function Attendance() {
   const {
     register,
     setFocus,
+    setValue,
     watch,
     formState: {},
   } = useForm({
@@ -43,7 +45,10 @@ export default function Attendance() {
       },
     },
   });
+
   const [data, setData] = useState("");
+  const [driverList, setDriverList] = useState([]);
+
   const getAttendance = async (search, page) => {
     let from_date = search?.fromDate
       ? new Date(search.fromDate).setUTCHours(0, 0, 0, 0)
@@ -58,16 +63,49 @@ export default function Attendance() {
       type: search?.type ?? "",
     };
     let res = await getDriverAttendanceForAdmin(searchBody, page);
-    console.log("res", res);
+    // console.log("res", res);
     setData(res);
   };
-  const search = watch("search");
+
+  const fromDate = watch("search.fromDate");
+  const toDate = watch("search.toDate");
+
   useEffect(() => {
-    getAttendance(search, 0);
-  }, [search]);
+    getAttendance({ fromDate, toDate }, 0);
+  }, [fromDate, toDate]);
+
+  useEffect(() => {
+    setValue(
+      "search.fromDate",
+      (function () {
+        let date = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+        date.setUTCHours(0, 0, 0, 0);
+        return date.toISOString();
+      })()
+    );
+    setValue(
+      "search.toDate",
+      (function () {
+        let date = new Date();
+        date.setUTCHours(0, 0, 0, 0);
+        return date.toISOString();
+      })()
+    );
+    getDriver("");
+  }, []);
+
+  async function getDriver(search) {
+    try {
+      let response = await axiosInstance.get(
+        `/driver?status=active&search=${search}&limit=${100000}`
+      );
+      setDriverList(response?.data?.data);
+    } catch (e) {
+      console.log(e);
+    }
+  }
   return (
     <div>
-      {console.log("data", data)}
       <Accordion type="single" collapsible className="w-full mb-2">
         <AccordionItem
           className="border-2 border-gray-300 rounded-lg"
@@ -78,7 +116,7 @@ export default function Attendance() {
             <div className="w-full lg:w-1/4  px-3">
               <Textfield2
                 label={"From Date"}
-                name={"fromDate"}
+                name={"search.fromDate"}
                 setFocus={setFocus}
                 register={register}
                 type={"date"}
@@ -87,15 +125,26 @@ export default function Attendance() {
             <div className="w-full lg:w-1/4  px-3">
               <Textfield2
                 label={"To Date"}
-                name={"toDate"}
+                name={"search.toDate"}
                 setFocus={setFocus}
                 register={register}
                 type={"date"}
               />
             </div>
-            <div className="w-full mt-5 lg:w-1/4 px-3">
-              <SearchableSelect />
-            </div>
+            {/* <div className="mt-5 px-3">
+              <SearchableSelect
+                options={
+                  driverList.length > 0
+                    ? driverList.map((e) => {
+                        return {
+                          label: `${e?.firstName} ${e?.contactOne}`,
+                          value: e?._id,
+                        };
+                      })
+                    : []
+                }
+              />
+            </div> */}
           </AccordionContent>
         </AccordionItem>
       </Accordion>

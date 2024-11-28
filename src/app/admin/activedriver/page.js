@@ -168,7 +168,7 @@ export default function ActiveDriver() {
     try {
       let response = await axiosInstance.get(
         `/driver?status=active&search=${search}&limit=${10}&offset=${
-          (page - 1) * 10
+          page > 1 ? (page - 1) * 10 : 0
         }`
       );
       setData(response.data);
@@ -230,6 +230,10 @@ export default function ActiveDriver() {
     getDriver("", currentPage);
   }, [currentPage]);
 
+  useEffect(() => {
+    let isNotDesktop = window.innerWidth < 450;
+    setTableView(!isNotDesktop);
+  }, []);
   return (
     // <Dashboard >
     <div>
