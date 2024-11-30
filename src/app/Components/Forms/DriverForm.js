@@ -420,7 +420,7 @@ const DriverForm = ({
           </AccordionItem>
           <AccordionItem
             className={
-              errors?.comment
+              errors?.comments
                 ? "border-2 border-red-600 my-1"
                 : "border-2 border-gray-300 rounded-lg my-1"
             }
@@ -435,8 +435,8 @@ const DriverForm = ({
                   label={"Comments"}
                   col={"3"}
                   row={"6"}
-                  name={"comment"}
-                  error={errors?.comment}
+                  name={"comments"}
+                  error={errors?.comments}
                 />
               </div>
             </AccordionContent>

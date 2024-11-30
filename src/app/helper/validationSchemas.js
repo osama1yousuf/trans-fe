@@ -65,7 +65,7 @@ export const validateDriverSchema = Yup.object().shape({
   ),
 
   // Optional fields
-  comment: Yup.string(),
+  comments: Yup.string(),
   shifts: Yup.array().of(
     Yup.object().shape({
       shift: Yup.string(),
