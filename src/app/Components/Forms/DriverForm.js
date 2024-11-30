@@ -365,7 +365,7 @@ const DriverForm = ({
             }
             value="item-4"
           >
-            <AccordionTrigger className="px-2">Shifts Info</AccordionTrigger>
+            <AccordionTrigger className="px-2">Trips Info</AccordionTrigger>
             <AccordionContent className="w-full flex rounded-2 flex-wrap">
               <div className="w-full mt-2 lg:w-1/4 px-3">
                 <Textfield2
@@ -373,7 +373,7 @@ const DriverForm = ({
                   register={register}
                   error={errors?.noOfShifts}
                   name={"noOfShifts"}
-                  label={"No of Shifts"}
+                  label={"No of Trips"}
                   type={"number"}
                 />
               </div>
