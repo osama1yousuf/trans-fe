@@ -55,7 +55,7 @@ export default function Attendance() {
 
   let attendColBaseOnShifs = Array.from({ length: noOfShifts }, (_, index) => {
     return {
-      name: `Shift ${index + 1}`,
+      name: `Tr ${index + 1}`,
       selector: (row) => row,
       cell: (row) => (
         <div className="flex min-w-[68px] flex-col gap-1 py-1">

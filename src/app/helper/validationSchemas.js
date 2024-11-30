@@ -69,8 +69,8 @@ export const validateDriverSchema = Yup.object().shape({
   shifts: Yup.array().of(
     Yup.object().shape({
       shift: Yup.string(),
-      checkInTime: Yup.string().required("Shift start date is required"),
-      checkOutTime: Yup.string().required("Shift end date is required"),
+      checkInTime: Yup.string().required("Trip start date is required"),
+      checkOutTime: Yup.string().required("Trip end date is required"),
     })
   ),
   noOfShifts: Yup.number()

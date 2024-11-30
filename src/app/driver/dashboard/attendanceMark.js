@@ -172,7 +172,7 @@ export default function AttendanceMark() {
             (_, index) => (
               <Card key={index}>
                 <CardHeader>
-                  <CardTitle>Shift {index + 1}</CardTitle>
+                  <CardTitle>Trip {index + 1}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
@@ -300,7 +300,7 @@ export default function AttendanceMark() {
                 </CardContent>
               </Card>
             )
-          ) : <h1>No Shift Found</h1>}
+          ) : <h1>No Trips Found</h1>}
         </div>
       </div>
     </>

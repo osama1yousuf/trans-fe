@@ -395,7 +395,7 @@ const DriverForm = ({
                             errors?.shifts[i]?.checkInTime
                           }
                           name={`shifts.${i}.checkInTime`}
-                          label={`Shift-${i + 1}`}
+                          label={`Trip-${i + 1}`}
                           type={"time"}
                         />
                       </div>

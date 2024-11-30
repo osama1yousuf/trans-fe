@@ -123,7 +123,7 @@ export const attendanceColForAdmin = [
     selector: (row) => row?.driverName,
   },
   {
-    name: "Shift 1",
+    name: "Trip 1",
     selector: (row) => row,
     cell: (row) => (
       <div className="flex min-w-[68px] flex-col gap-1 py-1">
@@ -157,7 +157,7 @@ export const attendanceColForAdmin = [
     ),
   },
   {
-    name: "Shift 2",
+    name: "Trip 2",
     selector: (row) => row,
     selector: (row) => row,
     cell: (row) => (
@@ -192,7 +192,7 @@ export const attendanceColForAdmin = [
     ),
   },
   {
-    name: "Shift 3",
+    name: "Trip 3",
     selector: (row) => row,
     cell: (row) => (
       <div className="flex min-w-[68px] flex-col gap-1 py-1">
