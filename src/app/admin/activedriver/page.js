@@ -344,7 +344,7 @@ export default function ActiveDriver() {
 
                         <CardHeader className="pb-2">
                           <CardTitle className="text-lg font-semibold flex justify-between items-center">
-                            {item.firstName + item.lastName}
+                            {item.firstName + " " + item.lastName}
                             {item.image.length ? (
                               <div className="ml-4 flex-shrink-0">
                                 <Image
