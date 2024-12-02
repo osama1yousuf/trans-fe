@@ -9,6 +9,7 @@ import SelectInput from "../SelectInput";
 import TextArea from "../TextArea";
 import { useEffect, useState } from "react";
 import path from "path";
+import Image from "next/image";
 
 const DriverForm = ({
   handleSubmit,
@@ -20,6 +21,7 @@ const DriverForm = ({
   showPassField,
   setFile,
   file,
+  setIsPrfileChange,
 }) => {
   const [imagePreview, setImagePreview] = useState(null);
   useEffect(() => {
@@ -38,6 +40,7 @@ const DriverForm = ({
       };
       reader.readAsDataURL(file);
       setFile(file);
+      setIsPrfileChange(true);
     }
   };
 
@@ -113,14 +116,17 @@ const DriverForm = ({
                     id="image-upload"
                     type="file"
                     accept="image/*"
+                    capture="user"
                     onChange={handleImageChange}
                     className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border file:border-gray-300 file:text-sm file:font-semibold file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200"
                   />
                   {imagePreview && (
-                    <img
+                    <Image
                       src={imagePreview}
+                      width={160}
+                      height={160}
                       alt="Preview"
-                      className="mt-4 h-40 w-40 object-cover rounded-md border border-gray-300"
+                      className="mt-4  object-cover rounded-md border border-gray-300"
                     />
                   )}
                 </div>

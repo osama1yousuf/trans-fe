@@ -15,7 +15,7 @@ export const validateDriverSchema = Yup.object().shape({
     .nullable() // Allow the field to be null
     .test("length", "Phone Number Invalid", (value) => {
       // Check if the value is provided and has a length of 11
-      return value === null || value.length === 11;
+      return value === '' || value.length === 11;
     }),
   password: Yup.string()
     .min(8, "Password should be at least 8 characters")

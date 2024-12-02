@@ -11,10 +11,12 @@ import DriverForm from "@/app/Components/Forms/DriverForm";
 import { validateDriverSchema } from "@/app/helper/validationSchemas";
 import { driverFormIntVal } from "@/app/helper/IntialValues";
 import Loader from "@/app/Components/Loader";
+import useHandleNavigation from "@/app/Components/useHandleNavigation";
 export default function Editdriver() {
   useUserValidator("superadmin");
   const pathname = usePathname();
   const router = useRouter();
+  useHandleNavigation();
   let id = pathname.replace("/admin/editdriver/", "");
   const {
     register,
@@ -31,6 +33,7 @@ export default function Editdriver() {
 
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [isPrfileChange, setIsPrfileChange] = useState(false);
   const uploadImageOnCloud = async (file) => {
     try {
       const formData = new FormData();
@@ -47,11 +50,17 @@ export default function Editdriver() {
       return null;
     }
   };
+  const handleBackAction = () => {
+    if (window.confirm("Are you sure you want to leave this page?")) {
+      router.push("/admin/activedriver");
+    }
+  };
+
   const onSubmit = async (values) => {
     setLoading(true);
     let payload = values;
     try {
-      if (file) {
+      if (file && isPrfileChange) {
         const uploadResponse = await uploadImageOnCloud(file);
         payload = { ...payload, image: uploadResponse?.secure_url };
       }
@@ -151,6 +160,14 @@ export default function Editdriver() {
         >
           {isSubmitting ? "Updating" : "Update"}
         </button>
+        <button
+          type="button"
+          disabled={loading}
+          onClick={handleBackAction}
+          className={`my-4 text-white ml-3 bg-gray-400 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center`}
+        >
+          Back
+        </button>
       </div>
       {loading ? (
         <Loader />
@@ -163,6 +180,7 @@ export default function Editdriver() {
           register={register}
           watch={watch}
           setFile={setFile}
+          setIsPrfileChange={setIsPrfileChange}
           file={file}
         />
       )}

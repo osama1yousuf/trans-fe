@@ -26,6 +26,7 @@ import * as Avatar from "@radix-ui/react-avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import ImagePreview from "@/app/Components/ImagePreview";
 
 export default function ActiveDriver() {
   // useUserValidator("superadmin")
@@ -42,9 +43,12 @@ export default function ActiveDriver() {
   const router = useRouter();
   const [data, setData] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [tableView, setTableView] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
+  const [isImagePreview, setIsImagePreview] = useState(false);
+  const [modalImage, setModalImage] = useState("");
   const [challanData, setChallanData] = useState({
     customerId: null,
     driverId: null,
@@ -56,7 +60,7 @@ export default function ActiveDriver() {
     {
       name: "Actions",
       selector: (row) => row,
-      // width:"100px",
+      width: "90px",
       cell: (row) => (
         <div className="w-full flex  gap-1 lg:w-full ">
           <span title="Edit Driver Detail">
@@ -95,14 +99,22 @@ export default function ActiveDriver() {
     },
     {
       name: "Image",
+      width: "100px",
       cell: (row) => (
-        <Avatar.Root className="AvatarRoot">
+        <Avatar.Root className="AvatarRoot  inline-flex items-center justify-center align-middle overflow-hidden select-none">
           <Avatar.Image
-            className="AvatarImage w-16 h-10"
+            onClick={() => {
+              setIsImagePreview(true);
+              setModalImage(row?.image);
+            }}
+            className="AvatarImage cursor-pointer w-16 h-16 rounded-full object-cover"
             src={row.image}
-            alt="Colm Tuite"
+            alt={`Avatar for ${row.name || "User"}`}
           />
-          <Avatar.Fallback className="AvatarFallback" delayMs={600}>
+          <Avatar.Fallback
+            className="AvatarFallback text-center flex items-center justify-center  text-gray-800"
+            delayMs={600}
+          >
             N/A
           </Avatar.Fallback>
         </Avatar.Root>
@@ -110,22 +122,27 @@ export default function ActiveDriver() {
     },
     {
       name: "Name",
+      width: "300px",
       selector: (row) => row?.firstName + " " + row?.lastName,
     },
     {
       name: "Mobile #",
+      width: "140px",
       selector: (row) => row.contactOne,
     },
     {
       name: "Vehicle #",
+      width: "140px",
       selector: (row) => row.vehicleInfo.vehicleNo,
     },
     {
       name: "Joining Date",
+      width: "150px",
       selector: (row) => new Date(row.joiningDate).toDateString(),
     },
     {
       name: "Status",
+      width: "140px",
       selector: (row) => row.status,
       cell: (row) => (
         <select
@@ -166,6 +183,7 @@ export default function ActiveDriver() {
 
   async function getDriver(search, page) {
     try {
+      setLoading(true);
       let response = await axiosInstance.get(
         `/driver?status=active&search=${search}&limit=${10}&offset=${
           page > 1 ? (page - 1) * 10 : 0
@@ -173,7 +191,9 @@ export default function ActiveDriver() {
       );
       setData(response.data);
       setTotalPages(Math.ceil(response.data.count / 10));
+      setLoading(false);
     } catch (e) {
+      setLoading(false);
       console.log(e);
     }
   }
@@ -234,6 +254,21 @@ export default function ActiveDriver() {
     let isNotDesktop = window.innerWidth < 450;
     setTableView(!isNotDesktop);
   }, []);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      const fetchData = async () => {
+        setCurrentPage(1);
+        await getDriver(search, 0);
+      };
+
+      fetchData();
+    }, 1000); // 1 second delay
+
+    return () => {
+      clearTimeout(handler); // Cleanup on unmount or search change
+    };
+  }, [search]);
   return (
     // <Dashboard >
     <div>
@@ -290,6 +325,15 @@ export default function ActiveDriver() {
           </div>
         </div>
       )}
+      {isImagePreview && (
+        <ImagePreview
+          closeModal={() => {
+            setIsImagePreview(false);
+            setModalImage("");
+          }}
+          imageUrl={modalImage}
+        />
+      )}
       <div className="flex gap-2 mb-2 md:gap-0 md:flex-row flex-col items-center justify-between">
         <div className="w-full md:w-1/4">
           <Textfield2
@@ -322,6 +366,8 @@ export default function ActiveDriver() {
             getFunc={getDriver}
             search={search}
           />
+        ) : loading ? (
+          <Loader />
         ) : (
           <div className="flex flex-col">
             <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
@@ -330,13 +376,13 @@ export default function ActiveDriver() {
                   return (
                     <>
                       <Card
-                        key={item._id}
+                        key={item.image}
                         className="overflow-hidden relative group hover:shadow-lg transition-shadow duration-300"
                       >
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="absolute top-2 right-2 duration-300"
+                          className="absolute top-1 right-1 duration-200"
                           onClick={(e) => editDriver(item)}
                         >
                           <Edit className="h-4 w-4" />
@@ -345,43 +391,28 @@ export default function ActiveDriver() {
                         <CardHeader className="pb-2">
                           <CardTitle className="text-lg font-semibold flex justify-between items-center">
                             {item.firstName + " " + item.lastName}
-                            {item.image.length ? (
-                              <div className="ml-4 flex-shrink-0">
-                                <Image
-                                  src={item.image}
-                                  alt={`Image for ${item._id}`}
-                                  width={80}
-                                  height={80}
-                                />
-                              </div>
-                            ) : (
-                              <div className="h-[50px]"></div>
-                            )}
+                            <Avatar.Root className="AvatarRoot inline-flex items-center justify-center align-middle overflow-hidden select-none">
+                              <Avatar.Image
+                                onClick={() => {
+                                  setIsImagePreview(true);
+                                  setModalImage(item?.image);
+                                }}
+                                className="AvatarImage cursor-pointer w-16 h-16 rounded-full object-cover"
+                                src={item.image}
+                                alt={`Avatar for ${item.name || "User"}`}
+                              />
+                              <Avatar.Fallback
+                                className="AvatarFallback text-center flex items-center justify-center  text-gray-800"
+                                delayMs={600}
+                              >
+                                N/A
+                              </Avatar.Fallback>
+                            </Avatar.Root>
                           </CardTitle>
                         </CardHeader>
                         <CardContent className="p-4">
                           <div className="flex items-start">
                             <div className="flex-grow space-y-2">
-                              {/* {cardColumns.map((column) => {
-                      const columnId = column.id
-                      if (columnId !== imageColumn && columnId !== nameColumn && !dateColumns?.includes(columnId)) {
-                        return (
-                          <div key={columnId} className="flex items-center justify-between">
-                            <span className="text-sm text-muted-foreground capitalize">{columnId}:</span>
-                            <Badge variant="secondary">
-                              {column.accessorFn ? column.accessorFn(item) : item[columnId]}
-                            </Badge>
-                          </div>
-                        )
-                      }
-                      return null
-                    })} */}
-                              {/* <div key={0} className="flex items-center justify-between">
-                            <span className="text-sm text-muted-foreground capitalize">Name:</span>
-                            <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80">
-                              {item.firstName + item.lastName}
-                            </div>
-                          </div> */}
                               <div
                                 key={1}
                                 className="flex items-center justify-between"
@@ -463,40 +494,7 @@ export default function ActiveDriver() {
                                   </span>
                                 </div>
                               </div>
-
-                              {/* {dateColumns && (
-                            <div className="flex justify-between items-center mt-2">
-                              <div className="text-sm">
-                                <p className="text-muted-foreground">{dateColumns[0]}:</p>
-                                <p className="font-medium">{item[dateColumns[0]]}</p>
-                              </div>
-                              <div className="text-sm text-right">
-                                <p className="text-muted-foreground">{dateColumns[1]}:</p>
-                                <p className="font-medium">{item[dateColumns[1]]}</p>
-                              </div>
                             </div>
-                          )} */}
-                            </div>
-                            {/* {imageColumn && (
-                          <div className="ml-4 flex-shrink-0">
-                            <Image
-                              src={item[imageColumn]}
-                              alt={`Image for ${item.id}`}
-                              width={80}
-                              height={80}
-                              className="rounded-full object-cover border-2 border-primary"
-                            />
-                          </div>
-                        )} */}
-                            {/* <div className="ml-4 flex-shrink-0">
-                          <Image
-                            src={handleSource(item.image)}
-                            alt={`Image for ${item.id}`}
-                            width={80}
-                            height={80}
-                            className="rounded-full object-cover border-2 border-primary"
-                          />
-                        </div> */}
                           </div>
                         </CardContent>
                       </Card>

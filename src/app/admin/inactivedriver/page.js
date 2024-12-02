@@ -24,14 +24,18 @@ export default function InactiveDriver() {
   const columns = [
     {
       name: "Image",
+      width: "100px",
       cell: (row) => (
-        <Avatar.Root className="AvatarRoot">
+        <Avatar.Root className="AvatarRoot inline-flex items-center justify-center align-middle overflow-hidden select-none">
           <Avatar.Image
-            className="AvatarImage w-16 h-10"
+            className="AvatarImage w-16 h-16 rounded-full object-cover"
             src={row.image}
-            alt="Colm Tuite"
+            alt={`Avatar for ${row.name || "User"}`}
           />
-          <Avatar.Fallback className="AvatarFallback" delayMs={600}>
+          <Avatar.Fallback
+            className="AvatarFallback text-center flex items-center justify-center  text-gray-800"
+            delayMs={600}
+          >
             N/A
           </Avatar.Fallback>
         </Avatar.Root>
@@ -39,22 +43,27 @@ export default function InactiveDriver() {
     },
     {
       name: "Name",
+      width: "300px",
       selector: (row) => row?.firstName + " " + row?.lastName,
     },
     {
       name: "Mobile #",
+      width: "140px",
       selector: (row) => row.contactOne,
     },
     {
       name: "Vehicle #",
+      width: "140px",
       selector: (row) => row.vehicleInfo.vehicleNo,
     },
     {
       name: "Joining Date",
+      width: "150px",
       selector: (row) => row.joiningDate,
     },
     {
       name: "Status",
+      width: "140px",
       selector: (row) => row.status,
       cell: (row) => (
         <select

@@ -11,10 +11,10 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import logo from "../../assets/logo.png";
 import LocationModel from "./LocationModal";
+import Header from "./Header";
 export default function Dashboard({ children }) {
   const router = useRouter();
   const pathname = usePathname();
-  const profileRef = useRef(null);
 
   const [expandedItems, setExpandedItems] = useState({});
   const [user, setUser] = useState(null);
@@ -23,15 +23,12 @@ export default function Dashboard({ children }) {
   const [openTabs, setOpenTabs] = useState([]);
   const [activeUserType, setActiveUserType] = useState(null);
   const [showModal, setShowModal] = useState(false);
-  const [profileModal, setProfileModal] = useState(false);
 
   const toggleExpand = (name) => {
     setExpandedItems((prev) => ({ ...prev, [name]: !prev[name] }));
   };
 
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
-  };
+  const toggleSidebar = () => {};
 
   let sideBarOption = [
     {
@@ -165,23 +162,8 @@ export default function Dashboard({ children }) {
     return () => window.removeEventListener("resize", checkScreenSize);
   }, []);
 
-  // Close profile setting modal when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (profileRef.current && !profileRef.current.contains(event.target)) {
-        setProfileModal(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
-
   /// use to set user and userType
   useEffect(() => {
-
     setUser(JSON.parse(localStorage.getItem("user")));
     setActiveUserType(localStorage.getItem("userType"));
   }, []);
@@ -285,7 +267,7 @@ export default function Dashboard({ children }) {
             {/* Main Content */}
             <div className="flex-1 flex flex-col">
               {/* Header */}
-              <header className="bg-white flex items-center sticky top-0 h-[12vh] pt-2 border-b-2 p-4 z-30">
+              {/* <header className="bg-white flex items-center sticky top-0 h-[12vh] pt-2 border-b-2 p-4 z-30">
                 <div className="flex items-center w-full justify-between">
                   <div className="flex items-center">
                     <Button
@@ -416,7 +398,11 @@ export default function Dashboard({ children }) {
                     )}
                   </div>
                 </div>
-              </header>
+              </header> */}
+              <Header
+                toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
+                isSidebarOpen={isSidebarOpen}
+              />
 
               {/* Main content */}
               <main className="flex-1 h-fit top-[12vh] overflow-auto bg-gray-100 px-2 pt-4 pb-12">

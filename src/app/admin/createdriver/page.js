@@ -5,16 +5,17 @@ import { useForm } from "react-hook-form";
 import axiosInstance from "@/interceptor/axios_inteceptor";
 import { toast } from "react-toastify";
 import { useUserValidator } from "@/interceptor/userValidate";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import DriverForm from "@/app/Components/Forms/DriverForm";
 import { validateDriverSchema } from "@/app/helper/validationSchemas";
 import { driverFormIntVal } from "@/app/helper/IntialValues";
 import axios from "axios";
 import Loader from "@/app/Components/Loader";
+import useHandleNavigation from "@/app/Components/useHandleNavigation";
 export default function Createdriver() {
   useUserValidator("superadmin");
   const router = useRouter();
-
+  useHandleNavigation();
   const {
     register,
     watch,
@@ -77,6 +78,21 @@ export default function Createdriver() {
     }
   };
 
+  const handleBackAction = () => {
+    if (window.confirm("Are you sure you want to leave this page?")) {
+      router.push("/admin/activedriver");
+    }
+  };
+  useEffect(() => {
+    const handlePopState = (event) => {
+      handleBackAction();
+    };
+    window.addEventListener("popstate", handlePopState);
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, [router]);
+
   const noOfShifts = watch("noOfShifts");
   useEffect(() => {
     if (noOfShifts < 5) {
@@ -110,6 +126,14 @@ export default function Createdriver() {
           } focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center`}
         >
           {isSubmitting ? "Submitting" : "Submit"}
+        </button>
+        <button
+          type="button"
+          disabled={loading}
+          onClick={handleBackAction}
+          className={`my-4 text-white ml-3 bg-gray-400 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center`}
+        >
+          Back
         </button>
       </div>
       {loading ? (
