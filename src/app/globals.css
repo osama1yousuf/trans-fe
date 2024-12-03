@@ -8,10 +8,10 @@
   --background-end-rgb: 255, 255, 255;
 }
 
-input[type=number]::-webkit-inner-spin-button, 
-input[type=number]::-webkit-outer-spin-button { 
-  -webkit-appearance: none; 
-  margin: 0; 
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 /* @media (prefers-color-scheme: ) {
   :root {
@@ -25,12 +25,12 @@ html {
   overflow-x: hidden;
 }
 ::-webkit-scrollbar {
-  width: 0;  /* Remove scrollbar space */
-  background: transparent;  /* Optional: just make scrollbar invisible */
+  width: 0; /* Remove scrollbar space */
+  background: transparent; /* Optional: just make scrollbar invisible */
 }
 /* Optional: show position indicator in red */
 ::-webkit-scrollbar-thumb {
-  background: #FF0000;
+  background: #ff0000;
 }
 @layer base {
   :root {
@@ -94,4 +94,49 @@ html {
   body {
     @apply bg-background text-foreground;
   }
+}
+.switch {
+  position: relative;
+  display: inline-block;
+  rotate: calc(-90deg);
+  width: 40px; /* Adjusted to ensure proper proportions */
+  height: 20px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  border-radius: 20px; /* Keeps the slider rounded */
+  transition: 0.4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 14px;
+  width: 14px;
+  left: 3px; /* Properly aligned inside the slider */
+  bottom: 3px;
+  background-color: white;
+  border-radius: 50%; /* Makes it circular */
+  transition: 0.4s;
+}
+
+input:checked + .slider {
+  background-color: #2196f3; /* Blue background when toggled on */
+}
+
+input:checked + .slider:before {
+  transform: translateX(20px); /* Moves the toggle to the right */
 }

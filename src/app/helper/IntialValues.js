@@ -4,7 +4,7 @@ export const driverFormIntVal = {
   lastName: "",
   dateOfBirth: null,
   cnicNo: null,
-  cnicExpiry: '',
+  cnicExpiry: null,
   contactOne: null,
   contactTwo: '',
   password: "",

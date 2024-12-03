@@ -74,7 +74,7 @@ const Header = ({ toggleSidebar, isSidebarOpen }) => {
                     {user?.image ? (
                       <Image
                         src={user?.image}
-                        alt={userName}
+                        alt={user.firstName}
                         layout="fill"
                         objectFit="cover"
                       />

@@ -84,22 +84,35 @@ export default function Editdriver() {
   const noOfShifts = watch("noOfShifts");
   const shifts = watch("shifts");
   useEffect(() => {
-    if (noOfShifts < 5) {
-      let shiftsArr = Array.from({ length: noOfShifts }, (e, i) => ({
+    if (noOfShifts > 0) {
+      let remNoOfShifts;
+      let existingShifts = [];
+      if (shifts.length > 0) {
+        existingShifts = shifts.filter((e) => e.checkInTime !== "");
+        remNoOfShifts = shifts.length - existingShifts;
+      } else {
+        remNoOfShifts = noOfShifts;
+      }
+
+      let newShifts = Array.from({ length: remNoOfShifts }, (e, i) => ({
         shift: `SHIFT_${i + 1}`,
-        checkInTime: shifts[i]?.checkInTime ? shifts[i]?.checkInTime : "",
-        checkOutTime: shifts[i]?.checkInTime ? shifts[i]?.checkOutTime : "",
+        checkInTime: "",
+        shiftWay: "UP",
+        checkOutTime: "",
       }));
-      setValue("shifts", shiftsArr);
-    } else if (noOfShifts > 4) {
-      let shiftsArr = Array.from({ length: 4 }, (e, i) => ({
-        shift: `SHIFT_${i + 1}`,
-        checkInTime: shifts[i]?.checkInTime ? shifts[i]?.checkInTime : "",
-        checkOutTime: shifts[i]?.checkInTime ? shifts[i]?.checkOutTime : "",
-      }));
-      setValue("shifts", shiftsArr);
-      setValue("noOfShifts", 4);
-    } else {
+      setValue("shifts", [...existingShifts, ...newShifts]);
+    }
+    // else if (noOfShifts > 4) {
+    //   let shifts = Array.from({ length: 4 }, (e, i) => ({
+    //     shift: `SHIFT_${i + 1}`,
+    //     checkInTime: "",
+    //     shiftWay: "UP",
+    //     checkOutTime: "",
+    //   }));
+    //   setValue("shifts", shifts);
+    //   setValue("noOfShifts", 4);
+    // }
+    else {
       setValue("shifts", []);
     }
   }, [noOfShifts, setValue]);
@@ -182,6 +195,8 @@ export default function Editdriver() {
           setFile={setFile}
           setIsPrfileChange={setIsPrfileChange}
           file={file}
+          shifts={shifts}
+          setValue={setValue}
         />
       )}
     </div>

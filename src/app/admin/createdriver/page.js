@@ -83,39 +83,45 @@ export default function Createdriver() {
       router.push("/admin/activedriver");
     }
   };
-  useEffect(() => {
-    const handlePopState = (event) => {
-      handleBackAction();
-    };
-    window.addEventListener("popstate", handlePopState);
-    return () => {
-      window.removeEventListener("popstate", handlePopState);
-    };
-  }, [router]);
 
   const noOfShifts = watch("noOfShifts");
+  const shifts = watch("shifts");
   useEffect(() => {
-    if (noOfShifts < 5) {
-      let shifts = Array.from({ length: noOfShifts }, (e, i) => ({
+    if (noOfShifts > 0) {
+      let remNoOfShifts;
+      let existingShifts = [];
+      if (shifts.length > 0) {
+        existingShifts = shifts.filter((e) => e.checkInTime !== "");
+        remNoOfShifts = shifts.length - existingShifts;
+      } else {
+        remNoOfShifts = noOfShifts;
+      }
+
+      let newShifts = Array.from({ length: remNoOfShifts }, (e, i) => ({
         shift: `SHIFT_${i + 1}`,
         checkInTime: "",
+        shiftWay: "UP",
         checkOutTime: "",
       }));
-      setValue("shifts", shifts);
-    } else if (noOfShifts > 4) {
-      let shifts = Array.from({ length: 4 }, (e, i) => ({
-        shift: `SHIFT_${i + 1}`,
-        checkInTime: "",
-        checkOutTime: "",
-      }));
-      setValue("shifts", shifts);
-      setValue("noOfShifts", 4);
-    } else {
+      setValue("shifts", [...existingShifts, ...newShifts]);
+    }
+    // else if (noOfShifts > 4) {
+    //   let shifts = Array.from({ length: 4 }, (e, i) => ({
+    //     shift: `SHIFT_${i + 1}`,
+    //     checkInTime: "",
+    //     shiftWay: "UP",
+    //     checkOutTime: "",
+    //   }));
+    //   setValue("shifts", shifts);
+    //   setValue("noOfShifts", 4);
+    // }
+    else {
       setValue("shifts", []);
     }
   }, [noOfShifts, setValue]);
   return (
     <div>
+      {console.log("errors", errors)}
       <div>
         <button
           type="submit"
@@ -149,6 +155,8 @@ export default function Createdriver() {
           watch={watch}
           setFile={setFile}
           file={file}
+          shifts={shifts}
+          setValue={setValue}
         />
       )}
     </div>

@@ -21,7 +21,9 @@ const DriverForm = ({
   showPassField,
   setFile,
   file,
-  setIsPrfileChange,
+  setIsPrfileChange = function () {},
+  shifts,
+  setValue,
 }) => {
   const [imagePreview, setImagePreview] = useState(null);
   useEffect(() => {
@@ -46,6 +48,7 @@ const DriverForm = ({
 
   return (
     <form id={formId} onSubmit={handleSubmit}>
+      
       <div className="flex  flex-wrap">
         {/* <div> */}
         <Accordion
@@ -145,6 +148,16 @@ const DriverForm = ({
               <div className="w-full  mt-2 lg:w-1/4 px-3">
                 <Textfield2
                   setFocus={setFocus}
+                  register={register}
+                  error={errors?.cnicExpiry}
+                  name={"cnicExpiry"}
+                  label={"CNIC Expiry Date"}
+                  type={"date"}
+                />
+              </div>
+              <div className="w-full  mt-2 lg:w-1/4 px-3">
+                <Textfield2
+                  setFocus={setFocus}
                   error={errors?.contactOne}
                   register={register}
                   name={"contactOne"}
@@ -184,7 +197,7 @@ const DriverForm = ({
                   />
                 </div>
               )}
-              <div className="w-full mt-2 lg:w-3/4 px-3">
+              <div className="w-full mt-2 lg:w-2/4 px-3">
                 <Textfield2
                   setFocus={setFocus}
                   register={register}
@@ -372,7 +385,7 @@ const DriverForm = ({
             value="item-4"
           >
             <AccordionTrigger className="px-2">Trips Info</AccordionTrigger>
-            <AccordionContent className="w-full flex rounded-2 flex-wrap">
+            <AccordionContent className="w-full rounded-2">
               <div className="w-full mt-2 lg:w-1/4 px-3">
                 <Textfield2
                   setFocus={setFocus}
@@ -389,35 +402,71 @@ const DriverForm = ({
                   return (
                     <div
                       key={i}
-                      className="w-full gap-2 px-3 flex mt-2 lg:w-1/4"
+                      className="w-full gap-2 px-3 flex mt-2 lg:w-1/4 items-start"
                     >
-                      <div className="w-1/2">
-                        <Textfield2
-                          setFocus={setFocus}
-                          register={register}
-                          error={
-                            errors?.shifts?.length > 0 &&
-                            errors?.shifts[i] &&
-                            errors?.shifts[i]?.checkInTime
-                          }
-                          name={`shifts.${i}.checkInTime`}
-                          label={`Trip-${i + 1}`}
-                          type={"time"}
-                        />
+                      {/* First Input Field with "P" */}
+                      <div className="w-1/2 flex items-center">
+                        <div className="flex items-center mt-4">
+                          <span className="text-gray-500 font-bold mr-2">
+                            P
+                          </span>
+                        </div>
+                        <div className="flex-1">
+                          <Textfield2
+                            setFocus={setFocus}
+                            register={register}
+                            error={
+                              errors?.shifts?.length > 0 &&
+                              errors?.shifts[i] &&
+                              errors?.shifts[i]?.checkInTime
+                            }
+                            name={`shifts.${i}.checkInTime`}
+                            label={`Trip-${i + 1}`}
+                            type={"time"}
+                          />
+                        </div>
                       </div>
-                      <div className="w-1/2 mt-4">
-                        <Textfield2
-                          setFocus={setFocus}
-                          register={register}
-                          error={
-                            errors?.shifts?.length > 0 &&
-                            errors?.shifts[i] &&
-                            errors?.shifts[i]?.checkOutTime
-                          }
-                          name={`shifts.${i}.checkOutTime`}
-                          label={``}
-                          type={"time"}
-                        />
+
+                      {/* Second Input Field with "D" */}
+                      <div className="w-1/2 flex items-center mt-4">
+                        <div className="flex items-center">
+                          <span className="text-gray-500 font-bold mr-2">
+                            D
+                          </span>
+                        </div>
+                        <div className="flex-1">
+                          <Textfield2
+                            setFocus={setFocus}
+                            register={register}
+                            error={
+                              errors?.shifts?.length > 0 &&
+                              errors?.shifts[i] &&
+                              errors?.shifts[i]?.checkOutTime
+                            }
+                            name={`shifts.${i}.checkOutTime`}
+                            label={``}
+                            type={"time"}
+                          />
+                        </div>
+                      </div>
+
+                      {/* Vertical Toggle Switch */}
+                      <div className="mt-6">
+                        <label className="switch">
+                          <input
+                            type="checkbox"
+                            name={`shifts.${i}.shiftWay`}
+                            checked={shifts[i].shiftWay === "UP"}
+                            onChange={(e) => {
+                              const newShiftWay = e.target.checked
+                                ? "UP"
+                                : "DN";
+
+                              setValue(`shifts.${i}.shiftWay`, newShiftWay);
+                            }}
+                          />
+                          <span className="slider round"></span>
+                        </label>
                       </div>
                     </div>
                   );

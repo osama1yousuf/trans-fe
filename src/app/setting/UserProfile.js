@@ -8,6 +8,7 @@ export default function UserProfile({
   lastName = "",
   contactOne = "",
   joiningDate = "",
+  image,
   vehicleName,
 }) {
   const formatDate = (dateString) => {
@@ -26,16 +27,26 @@ export default function UserProfile({
   return (
     <Card className="w-full max-w-3xl mx-auto">
       <CardHeader className="flex flex-row items-center gap-4">
-        <Avatar className="w-20 h-20">
-          <AvatarImage
-            src={`https://api.dicebear.com/6.x/initials/svg?seed=${firstName}%20${lastName}`}
-            alt={`${firstName} ${lastName}`}
-          />
-          <AvatarFallback>
-            {getInitials(firstName)}
-            {getInitials(lastName)}
-          </AvatarFallback>
-        </Avatar>
+        {image ? (
+          <Avatar className="w-20 h-20">
+            <AvatarImage src={image} alt={`${firstName} ${lastName}`} />
+            <AvatarFallback>
+              {getInitials(firstName)}
+              {getInitials(lastName)}
+            </AvatarFallback>
+          </Avatar>
+        ) : (
+          <Avatar className="w-20 h-20">
+            <AvatarImage
+              src={`https://api.dicebear.com/6.x/initials/svg?seed=${firstName}%20${lastName}`}
+              alt={`${firstName} ${lastName}`}
+            />
+            <AvatarFallback>
+              {getInitials(firstName)}
+              {getInitials(lastName)}
+            </AvatarFallback>
+          </Avatar>
+        )}
         <div>
           <CardTitle className="text-2xl">
             {firstName} {lastName}
@@ -71,7 +82,9 @@ export default function UserProfile({
         <div>
           <Label className="text-sm font-medium">Joining Date</Label>
           <p className="text-sm text-muted-foreground">
-            {joiningDate !== "Invalid Date" ? formatDate(joiningDate) : "Not provided"}
+            {joiningDate !== "Invalid Date"
+              ? formatDate(joiningDate)
+              : "Not provided"}
           </p>
         </div>
         {vehicleName && (

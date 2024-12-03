@@ -61,6 +61,7 @@ export default function Setting() {
     <div className="m-auto">
       <UserProfile
         firstName={user?.firstName}
+        image={user?.image}
         lastName={user?.lastName}
         contactOne={user?.contactOne}
         joiningDate={new Date(user?.joiningDate).toDateString()}
