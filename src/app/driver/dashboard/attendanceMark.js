@@ -1,7 +1,7 @@
 import axiosInstance from "@/interceptor/axios_inteceptor";
 import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
-import { Play } from "lucide-react";
+import { Play, CirclePause, CheckCheck } from "lucide-react";
 
 const Button = ({ onClick, disabled, className, children }) => (
   <button
@@ -119,6 +119,17 @@ export default function AttendanceMark() {
     }
   };
 
+  function sortShifts(shifts) {
+    return shifts.sort((a, b) => {
+      const getShiftNumber = (shift) => {
+        const match = shift.match(/\d+/);
+        return match ? parseInt(match[0], 10) : Number.MAX_SAFE_INTEGER;
+      };
+
+      return getShiftNumber(a.shift) - getShiftNumber(b.shift);
+    });
+  }
+
   const getCurrentAttendance = async () => {
     try {
       let { data } = await axiosInstance.get(
@@ -127,7 +138,8 @@ export default function AttendanceMark() {
         ).toISOString()}`
       );
       if (data?.data[0]?.attendance) {
-        setShifts(data.data[0].attendance);
+        let sortedShifts = sortShifts(data.data[0].attendance);
+        setShifts(sortedShifts);
       } else {
         setShifts([]);
       }
@@ -155,21 +167,31 @@ export default function AttendanceMark() {
   };
 
   const handleShiftStart = async (shiftObj) => {
-    let response;
-    try {
-      let payload = {
-        willDoShiftTime: new Date().toISOString(),
-        checkInRecordId: shiftObj?.checkInRecordId,
-        checkOutRecordId: shiftObj?.checkOutRecordId,
-      };
-      response = await axiosInstance.post("/driv/shift-willdo", payload);
-      toast.info(response?.data?.message);
-      getCurrentAttendance();
-    } catch (error) {
-      console.log("error", error);
-      toast.error(response?.data?.message || "server Error");
+    let filterRuningShifts = shifts.filter(
+      (e) =>
+        e.shiftStartTime !== null &&
+        (e.checkInTime === null || e.checkoutTime === null)
+    );
+    if (filterRuningShifts.length === 0) {
+      let response;
+      try {
+        let payload = {
+          willDoShiftTime: new Date().toISOString(),
+          checkInRecordId: shiftObj?.checkInRecordId,
+          checkOutRecordId: shiftObj?.checkOutRecordId,
+        };
+        response = await axiosInstance.post("/driv/shift-willdo", payload);
+        toast.info(response?.data?.message);
+        getCurrentAttendance();
+      } catch (error) {
+        console.log("error", error);
+        toast.error(response?.data?.message || "server Error");
+      }
+    } else {
+      toast.error("Complete the previous shift before starting the new one.");
     }
   };
+
   return (
     <>
       <div className="fixed right-1 z-10 rounded-md bg-[#811630]">
@@ -183,11 +205,8 @@ export default function AttendanceMark() {
       <div className="container relative mx-auto  pt-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-16">
           {shifts.length > 0 ? (
-            Array.from(
-              {
-                length: shifts.length,
-              },
-              (_, index) => (
+            shifts.map((e, index) => {
+              return (
                 <Card key={index}>
                   <div className="px-6 py-4 flex justify-between bg-white border-b border-gray-300">
                     <div className="text-lg font-semibold text-gray-800">
@@ -196,144 +215,79 @@ export default function AttendanceMark() {
                     <button
                       size="icon"
                       variant="ghost"
-                      onClick={() =>
-                        handleShiftStart(
-                          shifts.find((e) => e.shift === `SHIFT_${index + 1}`)
-                        )
+                      disabled={e.shiftStartTime !== null}
+                      onClick={() => handleShiftStart(e)}
+                      className={
+                        e.shiftStartTime === null &&
+                        e.checkInTime === null &&
+                        e.checkoutTime === null
+                          ? "font-bold py-2 px-4 rounded h-8 w-auto bg-green-100 text-green-700 hover:bg-green-200 hover:text-green-800 cursor-pointer"
+                          : e.shiftStartTime !== null && e.checkoutTime === null
+                          ? "font-bold py-2 px-4 rounded h-8 w-auto bg-yellow-100 text-yellow-700 hover:bg-yellow-200 hover:text-yellow-800 cursor-not-allowed"
+                          : "font-bold py-2 px-4 rounded h-8 w-auto bg-gray-200 text-gray-700 cursor-not-allowed"
                       }
-                      className="font-bold py-2  px-4 rounded h-8 w-auto bg-green-100 text-green-700 hover:bg-green-200 hover:text-green-800 "
                       aria-label={`Start Trip ${index + 1}`}
                     >
-                      <Play className="h-4 w-4" />
+                      {e.shiftStartTime === null &&
+                        e.checkInTime === null &&
+                        e.checkoutTime === null && <Play className="h-4 w-4" />}
+                      {e.shiftStartTime !== null && e.checkoutTime === null && (
+                        <CirclePause className="h-4 w-4" />
+                      )}
+                      {e.shiftStartTime !== null &&
+                        e.checkoutTime !== null &&
+                        e.checkInTime !== null && (
+                          <CheckCheck className="h-4 w-4" />
+                        )}
                     </button>
                   </div>
                   <CardContent>
                     <div className="space-y-4">
                       <div className="text-center text-sm font-bold">
-                        {shifts.find(
-                          (e) =>
-                            e.shift === `SHIFT_${index + 1}` &&
-                            e.checkInTime !== null
-                        ) &&
-                        shifts.find(
-                          (e) =>
-                            e.shift === `SHIFT_${index + 1}` &&
-                            e.checkoutTime === null
-                        )
-                          ? getTimeDiff(
-                              shifts.find(
-                                (e) =>
-                                  e.shift === `SHIFT_${index + 1}` &&
-                                  e.checkInTime !== null
-                              )?.checkInTime,
-                              currentTime
-                            )
-                          : shifts.find(
-                              (e) =>
-                                e.shift === `SHIFT_${index + 1}` &&
-                                e.checkInTime !== null
-                            ) &&
-                            shifts.find(
-                              (e) =>
-                                e.shift === `SHIFT_${index + 1}` &&
-                                e.checkoutTime !== null
-                            ) &&
-                            getTimeDiff(
-                              shifts.find(
-                                (e) =>
-                                  e.shift === `SHIFT_${index + 1}` &&
-                                  e.checkInTime !== null
-                              )?.checkInTime,
-                              shifts.find(
-                                (e) =>
-                                  e.shift === `SHIFT_${index + 1}` &&
-                                  e.checkoutTime !== null
-                              )?.checkoutTime
-                            )}
+                        {e.checkInTime !== null && e.checkoutTime === null
+                          ? getTimeDiff(e.checkInTime, currentTime)
+                          : e.checkInTime !== null &&
+                            e.checkoutTime !== null &&
+                            getTimeDiff(e.checkInTime, e.checkoutTime)}
                       </div>
 
                       <Button
-                        onClick={() =>
-                          handleCheckIn(
-                            index,
-                            shifts.find((e) => e.shift === `SHIFT_${index + 1}`)
-                          )
-                        }
+                        onClick={() => handleCheckIn(index, e)}
                         disabled={
                           loadingState[index] ||
-                          shifts.find(
-                            (e) =>
-                              e.shift === `SHIFT_${index + 1}` &&
-                              e.checkInTime !== null
-                          ) ||
-                          shifts.find(
-                            (e) =>
-                              e.shift === `SHIFT_${index + 1}` &&
-                              e.checkoutTime !== null
-                          )
+                          e.shiftStartTime === null ||
+                          e.checkInTime !== null ||
+                          e.checkoutTime !== null
                         }
                         className="bg-green-500 hover:bg-green-600 text-white"
                       >
                         Check In -{" "}
-                        {shifts.find(
-                          (e) =>
-                            e.shift === `SHIFT_${index + 1}` &&
-                            e.checkInTime !== null
-                        ) &&
-                          formatTime(
-                            new Date(
-                              shifts.find(
-                                (e) =>
-                                  e.shift === `SHIFT_${index + 1}` &&
-                                  e.checkInTime !== null
-                              )?.checkInTime
-                            )
-                          )}
+                        {e.checkInTime !== null &&
+                          formatTime(new Date(e.checkInTime))}
                       </Button>
                       <Button
-                        onClick={() =>
-                          handleCheckOut(
-                            index,
-                            shifts.find((e) => e.shift === `SHIFT_${index + 1}`)
-                          )
-                        }
+                        onClick={() => handleCheckOut(index, e)}
                         disabled={
                           loadingState[index] ||
-                          shifts.find(
-                            (e) =>
-                              e.shift === `SHIFT_${index + 1}` &&
-                              e.checkInTime !== null &&
-                              e.checkoutTime !== null
-                          )
+                          e.shiftStartTime === null ||
+                          e.checkInTime === null ||
+                          e.shiftStartTime === null ||
+                          (e.checkInTime !== null &&
+                            e.shiftStartTime !== null &&
+                            e.checkoutTime !== null)
                         }
                         className="bg-red-500 hover:bg-red-600 text-white"
                       >
                         Check Out -{" "}
-                        {shifts.find(
-                          (e) =>
-                            e.shift === `SHIFT_${index + 1}` &&
-                            e.checkInTime !== null
-                        ) &&
-                          shifts.find(
-                            (e) =>
-                              e.shift === `SHIFT_${index + 1}` &&
-                              e.checkoutTime !== null
-                          ) &&
-                          formatTime(
-                            new Date(
-                              shifts.find(
-                                (e) =>
-                                  e.shift === `SHIFT_${index + 1}` &&
-                                  e.checkInTime !== null
-                              )?.checkoutTime
-                            )
-                          )}
+                        {e.checkInTime !== null &&
+                          e.checkoutTime !== null &&
+                          formatTime(new Date(e.checkoutTime))}
                       </Button>
                     </div>
                   </CardContent>
                 </Card>
-              )
-            )
+              );
+            })
           ) : (
             <h1>No Trips Found</h1>
           )}
