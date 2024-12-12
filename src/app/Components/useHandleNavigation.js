@@ -1,13 +1,13 @@
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
-const useHandleNavigation = () => {
+const useHandleNavigation = (url) => {
   const router = useRouter();
 
   const handleBackAction = () => {
     if (window.confirm("Are you sure you want to leave this page?")) {
       // Navigate to the static page
-      router.push("/admin/activedriver");
+      router.push(url);
     } else {
       // Prevent navigation by restoring the current path
       window.history.pushState(null, "", router.asPath);

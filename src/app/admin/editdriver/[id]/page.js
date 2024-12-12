@@ -16,7 +16,7 @@ export default function Editdriver() {
   useUserValidator("superadmin");
   const pathname = usePathname();
   const router = useRouter();
-  useHandleNavigation();
+  useHandleNavigation("/admin/activedriver");
   let id = pathname.replace("/admin/editdriver/", "");
   const {
     register,

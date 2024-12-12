@@ -15,7 +15,7 @@ export const validateDriverSchema = Yup.object().shape({
     .nullable() // Allow the field to be null
     .test("length", "Phone Number Invalid", (value) => {
       // Check if the value is provided and has a length of 11
-      return value === '' || value.length === 11;
+      return value === "" || value.length === 11;
     }),
   password: Yup.string()
     .min(8, "Password should be at least 8 characters")
@@ -39,7 +39,7 @@ export const validateDriverSchema = Yup.object().shape({
           "hino_bus",
           "toyota_corolla",
           "suzuki_apv",
-          "suzuki_bolan"
+          "suzuki_bolan",
         ],
         "Invalid option selected"
       )
@@ -79,3 +79,5 @@ export const validateDriverSchema = Yup.object().shape({
     .max(4, "Maximum number of shifts is 4")
     .required("Number of shifts is required"),
 });
+
+

@@ -15,7 +15,7 @@ import useHandleNavigation from "@/app/Components/useHandleNavigation";
 export default function Createdriver() {
   useUserValidator("superadmin");
   const router = useRouter();
-  useHandleNavigation();
+  useHandleNavigation("/admin/activedriver");
   const {
     register,
     watch,
@@ -121,7 +121,6 @@ export default function Createdriver() {
   }, [noOfShifts, setValue]);
   return (
     <div>
-      {console.log("errors", errors)}
       <div>
         <button
           type="submit"

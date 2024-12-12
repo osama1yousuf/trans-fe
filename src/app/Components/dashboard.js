@@ -86,25 +86,26 @@ export default function Dashboard({ children }) {
       url: "setting",
       active: false,
     },
-    // {
-    //   name: "Member",
-    //   url: "member",
-    //   active: false,
-    //   Content: [
-    //     {
-    //       name: "Create Member",
-    //       endpoints: "admin/createmember",
-    //     },
-    //     {
-    //       name: "Active Member",
-    //       endpoints: "admin/activemember",
-    //     },
-    //     {
-    //       name: "InActive Member",
-    //       endpoints: "admin/inactivemember",
-    //     },
-    //   ],
-    // },
+    {
+      name: "Member",
+      url: "member",
+      type: "SUPERADMIN",
+      active: false,
+      Content: [
+        {
+          name: "Create Member",
+          endpoints: "admin/createmember",
+        },
+        {
+          name: "Active Member",
+          endpoints: "admin/activemember",
+        },
+        {
+          name: "InActive Member",
+          endpoints: "admin/inactivemember",
+        },
+      ],
+    },
     // {
     //   name: "Location",
     //   url: "admin/location",

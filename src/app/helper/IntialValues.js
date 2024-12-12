@@ -33,3 +33,31 @@ export const driverFormIntVal = {
   shifts: [],
   noOfShifts: null,
 };
+
+export const memberFormIntVal = {
+  firstName: "",
+  lastName: "",
+  contactOne: "",
+  contactTwo: "",
+  cnicNo: "",
+  password: "",
+  comments: "",
+  joinDate: "",
+  //location
+  residentialAddress: "",
+  pickUpAddress: "",
+  dropOffAddress: "",
+  bothSide: "",
+  //timings
+  pickUpTime: "",
+  dropOffTime: "",
+  //timing // saturdayTimings
+  satPickUpTime: "",
+  satDropOffTime: "",
+  //timing // sundayTimings
+  sunPickUpTime: "",
+  sunDropOffTime: "",
+  // fees
+  fees: "",
+  feeType: "",
+};
