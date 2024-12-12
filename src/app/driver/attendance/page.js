@@ -3,8 +3,12 @@ import Loader from "@/app/Components/Loader";
 import { SelectDropdown } from "@/app/Components/SelectDropdown";
 import { attendanceCol } from "@/app/helper/columnList";
 import { getDriverAttendance } from "@/app/helper/DriverServices";
+import { Button } from "@/components/ui/button";
+import { Bus, CalendarDays, LayoutGrid, TableIcon } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { Suspense, useEffect, useState } from "react";
 import DataTable from "react-data-table-component";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 const filterOptions = [
   {
     value: (function () {
@@ -51,6 +55,8 @@ export default function Attendance() {
     ).toISOString()
   );
   const [data, setData] = useState([]);
+  const [tableView, setTableView] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [noOfShifts, setNoOfShifts] = useState(0);
 
   let attendColBaseOnShifs = Array.from({ length: noOfShifts }, (_, index) => {
@@ -96,8 +102,10 @@ export default function Attendance() {
   });
 
   const getAttendance = async (filter) => {
+    setLoading(true);
     let res = await getDriverAttendance(filter);
     setData(res);
+    setLoading(false);
   };
   const formatTime = (dateTimeString) => {
     const date = new Date(dateTimeString);
@@ -110,28 +118,109 @@ export default function Attendance() {
   useEffect(() => {
     setNoOfShifts(JSON.parse(localStorage.getItem("user"))?.noOfShifts);
   }, []);
+  const toggleView = () => {
+    setTableView(!tableView);
+  };
+  useEffect(() => {
+    let isNotDesktop = window.innerWidth < 450;
+    setTableView(!isNotDesktop);
+  }, []);
+  const formatTimeForCard = (time) => {
+    return time !== null ? new Date(time).toLocaleTimeString() : "-";
+  };
 
+  const getStatusColor = (time) => {
+    return time !== null ? "bg-green-500" : "bg-red-500";
+  };
   return (
     <div>
-      <div className="w-full mb-2 md:w-1/4">
-        <SelectDropdown
-          label={"Filter"}
-          options={filterOptions}
-          handleChange={(e) => setFilterSelect(e.target.value)}
-        />
+      <div className="flex gap-2 mb-2 md:gap-0 md:flex-row flex-col items-center justify-between">
+        <div className="w-full mb-2 md:w-1/4">
+          <SelectDropdown
+            label={"Filter"}
+            options={filterOptions}
+            handleChange={(e) => setFilterSelect(e.target.value)}
+          />
+        </div>
+        <div className="w-full md:w-1/6 ml-3">
+          <Button onClick={toggleView} variant="outline">
+            {tableView ? (
+              <LayoutGrid className="mr-2 h-4 w-4" />
+            ) : (
+              <TableIcon className="mr-2 h-4 w-4" />
+            )}
+            {tableView ? "Switch to Card View" : "Switch to Table View"}
+          </Button>
+        </div>
       </div>
-      <div className="max-w-[96vw] rounded-sm">
-        <Suspense fallback={<Loader />} />
-        <DataTable
-          title={"Attendance Record"}
-          data={data?.length > 0 ? data : []}
-          columns={[...attendanceCol, ...attendColBaseOnShifs]}
-          pagination
-          paginationTotalRows={data?.length}
-          paginationPerPage={10}
-          fixedHeader
-        />
-      </div>
+      {loading ? (
+        <Loader />
+      ) : tableView ? (
+        <div className="max-w-[96vw] rounded-sm">
+          <Suspense fallback={<Loader />} />
+          <DataTable
+            title={"Attendance Record"}
+            data={data?.length > 0 ? data : []}
+            columns={[...attendanceCol, ...attendColBaseOnShifs]}
+            pagination
+            paginationTotalRows={data?.length}
+            paginationPerPage={10}
+            fixedHeader
+          />
+        </div>
+      ) : (
+        <div className="flex flex-col">
+          <div className="grid gap-2 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+            {data.length > 0 &&
+              data.map((e, i) => {
+                const { date, driverName, attendance } = e; // Assuming 'e' has these properties
+                return (
+                  <Card key={i} className="w-full max-w-md">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                      <CardTitle className="text-sm font-medium">
+                        <div className="flex items-center gap-2">
+                          <CalendarDays className="h-4 w-4" />
+                          {date}
+                        </div>
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="grid gap-4">
+                        {attendance.map((trip) => (
+                          <div
+                            key={trip.id}
+                            className="flex items-center justify-between"
+                          >
+                            <div className="flex items-center gap-2">
+                              <Bus className="h-4 w-4" />
+                              <span className="text-sm font-medium">
+                                Trip {trip?.shift.replace("SHIFT_" , "")}
+                              </span>
+                            </div>
+                            <div className="flex gap-2">
+                              <Badge
+                                variant="secondary"
+                                className={getStatusColor(trip.checkInTime)}
+                              >
+                                In: {formatTimeForCard(trip.checkInTime)}
+                              </Badge>
+                              <Badge
+                                variant="secondary"
+                                className={getStatusColor(trip.checkoutTime)}
+                              >
+                                Out: {formatTimeForCard(trip.checkoutTime)}
+                              </Badge>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -1,8 +1,6 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { BiEdit } from "react-icons/bi";
-import { BsPersonPlusFill } from "react-icons/bs";
-import { MdOutlinePayment } from "react-icons/md";
 import DataTable from "react-data-table-component";
 import { Suspense, useEffect, useState } from "react";
 import axiosInstance from "@/interceptor/axios_inteceptor";
@@ -112,7 +110,7 @@ export default function ActiveDriver() {
             alt={`Avatar for ${row.name || "User"}`}
           />
           <Avatar.Fallback
-            className="AvatarFallback text-center flex items-center justify-center  text-gray-800"
+            className="AvatarImage cursor-pointer w-16 h-16 rounded-full object-cover text-center flex items-center justify-center  bg-gray-200"
             delayMs={600}
           >
             N/A
@@ -204,16 +202,16 @@ export default function ActiveDriver() {
 
     try {
       let response = await axiosInstance.put(`/driver/status/${row._id}`, body);
-      // await getDriver();
       toast.success(response.data.message);
-      const tempData = { ...data };
-      console.log(tempData, "tempData");
-      console.log(row._id);
-      const index = tempData.data.findIndex((item) => item._id == row._id);
-      console.log(index, "index");
-      tempData.data[index].status = body.status;
-      setData(tempData);
-      console.log(tempData, "tempData");
+      getDriver("", 1);
+      // const tempData = { ...data };
+      // console.log(tempData, "tempData");
+      // console.log(row._id);
+      // const index = tempData.data.findIndex((item) => item._id == row._id);
+      // console.log(index, "index");
+      // tempData.data[index].status = body.status;
+      // setData(tempData);
+      // console.log(tempData, "tempData");
     } catch (e) {
       console.log(e);
       toast.error(e.data);
@@ -227,23 +225,6 @@ export default function ActiveDriver() {
 
   const toggleView = () => {
     setTableView(!tableView);
-  };
-
-  const handleStatusChange = async (id, newStatus) => {
-    let body = {
-      status: newStatus,
-    };
-    try {
-      let response = await axiosInstance.put(`/driver/status/${id}`, body);
-      toast.success(response.data.message);
-      const tempData = { ...data };
-      const index = tempData.data.findIndex((item) => item._id === id);
-      tempData.data[index].status = newStatus;
-      setData(tempData);
-    } catch (e) {
-      console.log(e);
-      toast.error(e.data);
-    }
   };
 
   useEffect(() => {
@@ -357,17 +338,24 @@ export default function ActiveDriver() {
         </div>
       </div>
       <div>
-        {tableView ? (
-          <TableComp
-            columns={columns}
-            count={data?.count || 0}
-            data={data}
-            title={"Active Driver List"}
-            getFunc={getDriver}
-            search={search}
-          />
-        ) : loading ? (
+        {loading ? (
           <Loader />
+        ) : tableView ? (
+          <div className="max-w-[96vw] rounded-sm">
+            <Suspense fallback={<Loader />} />
+            <DataTable
+              title={"Active Driver List"}
+              data={data?.data.length > 0 ? data.data : []}
+              columns={columns}
+              progressPending={loading}
+              pagination
+              paginationServer
+              paginationTotalRows={data?.count || 0}
+              paginationPerPage={currentPage}
+              fixedHeader
+              onChangePage={(e) => setCurrentPage(e)}
+            />
+          </div>
         ) : (
           <div className="flex flex-col">
             <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
@@ -402,7 +390,7 @@ export default function ActiveDriver() {
                                 alt={`Avatar for ${item.name || "User"}`}
                               />
                               <Avatar.Fallback
-                                className="AvatarFallback text-center flex items-center justify-center  text-gray-800"
+                                className="AvatarImage cursor-pointer w-16 h-16 rounded-full object-cover text-center flex items-center justify-center  bg-gray-200"
                                 delayMs={600}
                               >
                                 N/A
@@ -464,12 +452,7 @@ export default function ActiveDriver() {
                                       : "bg-red-500 hover:bg-green-500"
                                   } text-white`}
                                   onClick={() =>
-                                    handleStatusChange(
-                                      item._id,
-                                      item.status.toUpperCase() === "ACTIVE"
-                                        ? "inActive"
-                                        : "active"
-                                    )
+                                    handleCustomerStatusChange(item)
                                   }
                                 >
                                   <span className="relative">
