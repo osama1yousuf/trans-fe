@@ -11,6 +11,7 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { memberFormIntVal } from "@/app/helper/IntialValues";
 import MemberForm from "@/app/Components/Forms/MemberForm";
+import Loader from "@/app/Components/Loader";
 
 let time = [
   "9:00 AM",
