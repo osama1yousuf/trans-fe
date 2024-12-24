@@ -8,6 +8,7 @@ export default function Textfield2({
   error,
   register,
   setFocus,
+  maxLength,
   autoComplete="off" 
 }) {
   const handleFocus = (field) => {
@@ -34,6 +35,7 @@ export default function Textfield2({
       <input
       autoComplete={autoComplete}
         type={type}
+        maxLength={maxLength}
         onFocus={() => handleFocus(name)}
         {...inputProps}
         className={

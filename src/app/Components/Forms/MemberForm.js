@@ -7,18 +7,39 @@ import {
 import Textfield2 from "../TextField2";
 import SelectInput from "../SelectInput";
 import TextArea from "../TextArea";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 const MemberForm = ({
   handleSubmit,
   errors,
   setFocus,
+  setValue,
   register,
+  watch,
   formId,
   showPassField,
   location,
   time,
 }) => {
+  const handleCnicChange = (e) => {
+    let inputValue = e.replace(/\D/g, ""); // Remove non-digit characters
+
+    // Insert hyphen after the 5th digit and second-last digit
+    if (inputValue.length > 5) {
+      inputValue = inputValue.slice(0, 5) + "-" + inputValue.slice(5);
+    }
+    if (inputValue.length > 13) {
+      inputValue = inputValue.slice(0, 13) + "-" + inputValue.slice(13);
+    }
+
+    // Set the value using react-hook-form's setValue
+    setValue("cnicNo", inputValue);
+  };
+  const cnicNo = watch("cnicNo");
+  useEffect(() => {
+    cnicNo.length > 0 && handleCnicChange(cnicNo);
+  }, [cnicNo]);
+
   return (
     <form id={formId} onSubmit={handleSubmit}>
       <div className="flex  flex-wrap">
@@ -92,6 +113,7 @@ const MemberForm = ({
                   setFocus={setFocus}
                   error={errors?.cnicNo}
                   name={"cnicNo"}
+                  maxLength={15}
                   label={"CNIC No"}
                   type={"text"}
                 />
@@ -102,7 +124,8 @@ const MemberForm = ({
                   setFocus={setFocus}
                   error={errors?.contactOne}
                   name={"contactOne"}
-                  label={"Mobile # *"}
+                  label={"Mobile # 1"}
+                  maxLength={11}
                   type={"tel"}
                 />
               </div>
@@ -111,6 +134,7 @@ const MemberForm = ({
                   register={register}
                   setFocus={setFocus}
                   error={errors?.contactTwo}
+                  maxLength={11}
                   name={"contactTwo"}
                   label={"Mobile # 2"}
                   type={"tel"}

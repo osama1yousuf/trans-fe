@@ -45,10 +45,26 @@ const DriverForm = ({
       setIsPrfileChange(true);
     }
   };
+  const handleCnicChange = (e) => {
+    let inputValue = e.replace(/\D/g, ""); // Remove non-digit characters
 
+    // Insert hyphen after the 5th digit and second-last digit
+    if (inputValue.length > 5) {
+      inputValue = inputValue.slice(0, 5) + "-" + inputValue.slice(5);
+    }
+    if (inputValue.length > 13) {
+      inputValue = inputValue.slice(0, 13) + "-" + inputValue.slice(13);
+    }
+
+    // Set the value using react-hook-form's setValue
+    setValue("cnicNo", inputValue);
+  };
+  const cnicNo = watch("cnicNo");
+  useEffect(() => {
+    cnicNo !== null && handleCnicChange(cnicNo);
+  }, [cnicNo]);
   return (
     <form id={formId} onSubmit={handleSubmit}>
-      
       <div className="flex  flex-wrap">
         {/* <div> */}
         <Accordion
@@ -142,7 +158,8 @@ const DriverForm = ({
                   error={errors?.cnicNo}
                   name={"cnicNo"}
                   label={"CNIC No"}
-                  type={"number"}
+                  maxLength={15}
+                  type={"text"}
                 />
               </div>
               <div className="w-full  mt-2 lg:w-1/4 px-3">

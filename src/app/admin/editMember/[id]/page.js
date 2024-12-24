@@ -59,17 +59,20 @@ export default function CreateMember() {
   const validateMemberSchema = Yup.object().shape({
     firstName: Yup.string().required("First name required"),
     lastName: Yup.string().required("Last name required"),
-    // password: Yup.string().min(8, "Password length is greater than 8").required("Password is required"),
     residentialAddress: Yup.string().required("Address is required"),
     joinDate: Yup.date().required("Join date is required"),
     cnicNo: Yup.string()
-      .length(13, "Nic value is greater than 13")
+      .length(15, "Nic value is greater than 15")
       .required("CNIC # is required"),
     contactOne: Yup.string()
       .length(11, "Phone Number Invalid")
       .required("Phone Number required"),
-    contactTwo: Yup.string().length(11, "Phone Number Invalid"),
-    // file: Yup.mixed().required('File is required'),
+   contactTwo: Yup.string()
+       .nullable() // Allow the field to be null
+       .test("length", "Phone Number Invalid", (value) => {
+         // Check if the value is provided and has a length of 11
+         return value === "" || value.length === 11;
+       }),
     bothSide: Yup.string()
       .oneOf(["bothSide", "pickUp", "dropOff"], "Invalid option selected")
       .required("Please select an option"),
@@ -125,6 +128,7 @@ export default function CreateMember() {
     setFocus,
     reset,
     setValue,
+    watch,
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm({
@@ -299,6 +303,8 @@ export default function CreateMember() {
           location={location}
           time={time}
           errors={errors}
+          setValue={setValue}
+          watch={watch}
           setFocus={setFocus}
           register={register}
           formId={"memberCreate"}

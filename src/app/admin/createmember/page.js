@@ -56,51 +56,58 @@ export default function CreateMember() {
   const validateMemberSchema = Yup.object().shape({
     firstName: Yup.string().required("First name required"),
     lastName: Yup.string().required("Last name required"),
-    password: Yup.string()
-      .min(8, "Password length is greater than 8")
-      .required("Password is required"),
     residentialAddress: Yup.string().required("Address is required"),
     joinDate: Yup.date().required("Join date is required"),
     cnicNo: Yup.string()
-      .length(13, "Nic value is greater than 13")
+      .length(15, "Nic value is greater than 15")
       .required("Nic # is required"),
     contactOne: Yup.string()
       .length(11, "Phone Number Invalid")
       .required("Phone Number required"),
-    contactTwo: Yup.string().length(11, "Phone Number Invalid"),
-    // file: Yup.mixed().required('File is required'),
+    contactTwo: Yup.string()
+      .nullable() // Allow the field to be null
+      .test("length", "Phone Number Invalid", (value) => {
+        // Check if the value is provided and has a length of 11
+        return value === "" || value.length === 11;
+      }),
     bothSide: Yup.string()
       .oneOf(["bothSide", "pickUp", "dropOff"], "Invalid option selected")
       .required("Please select an option"),
     pickUpAddress: Yup.string()
-      .oneOf(location, "Invalid option selected")
+      .oneOf(
+        location.map((e) => e?.location),
+        "Invalid option selected"
+      )
       .when("bothSide", {
-        is: (value) => value === "pickUp" || value === "bothSide",
-        then: (sechema) => sechema.required("Please select an option"),
-        otherwise: (schema) => schema,
+        is: (value) => value === "pickUp" || value === "bothSide", // When "pickUp" or "bothSide"
+        then: (schema) => schema.required("Please select a pick-up address"), // Make it required
+        otherwise: (schema) => schema.notRequired().nullable(), // Make it optional and allow null for "dropOff"
       }),
     pickUpTime: Yup.string()
       .oneOf(time, "Invalid option selected")
       .when("bothSide", {
-        is: (value) => value === "pickUp" || value === "bothSide",
-        then: (sechema) => sechema.required("Please select an option"),
-        otherwise: (schema) => schema,
+        is: (value) => value === "pickUp" || value === "bothSide", // When "pickUp" or "bothSide"
+        then: (schema) => schema.required("Please select a pick-up time"), // Make it required
+        otherwise: (schema) => schema.notRequired().nullable(), // Make it optional for other cases
       }),
     satPickUpTime: Yup.string().oneOf(time, "Invalid option selected"),
     sunPickUpTime: Yup.string().oneOf(time, "Invalid option selected"),
     dropOffAddress: Yup.string()
-      .oneOf(location, "Invalid option selected")
+      .oneOf(
+        location.map((e) => e?.location),
+        "Invalid option selected"
+      )
       .when("bothSide", {
-        is: (value) => value === "dropOff" || value === "bothSide",
-        then: (sechema) => sechema.required("Please select an option"),
-        otherwise: (schema) => schema,
+        is: (value) => value === "dropOff" || value === "bothSide", // When "dropOff" or "bothSide"
+        then: (schema) => schema.required("Please select a drop-off address"), // Make it required
+        otherwise: (schema) => schema.notRequired().nullable(), // Make it optional for other cases
       }),
     dropOffTime: Yup.string()
       .oneOf(time, "Invalid option selected")
       .when("bothSide", {
-        is: (value) => value === "dropOff" || value === "bothSide",
-        then: (sechema) => sechema.required("Please select an option"),
-        otherwise: (schema) => schema,
+        is: (value) => value === "dropOff" || value === "bothSide", // When "dropOff" or "bothSide"
+        then: (schema) => schema.required("Please select a drop-off time"), // Make it required
+        otherwise: (schema) => schema.notRequired().nullable(), // Make it optional for other cases
       }),
     satDropOffTime: Yup.string().oneOf(time, "Invalid option selected"),
     sunDropOffTime: Yup.string().oneOf(time, "Invalid option selected"),
@@ -108,13 +115,15 @@ export default function CreateMember() {
     feeType: Yup.string()
       .oneOf(["advance", "monthEnd"], "Invalid option selected")
       .required("Please select an option"),
-    // status: Yup.string().oneOf(['Active', 'InActive'], 'Invalid option selected').required('Please select an option'),
     comments: Yup.string(),
   });
+
   useHandleNavigation("/admin/activemember");
   const {
     register,
     setFocus,
+    watch,
+    setValue,
     reset,
     handleSubmit,
     formState: { errors, isSubmitting },
@@ -131,7 +140,7 @@ export default function CreateMember() {
       console.log(e.message);
     }
   };
-  
+
   useEffect(() => {
     getLocation();
   }, []);
@@ -193,7 +202,6 @@ export default function CreateMember() {
       fees: values.fees,
       feesType: values.feeType,
     };
-    console.log("values", body);
     try {
       let response = await axiosInstance.post("/customer", body);
       console.log("response", response);
@@ -216,6 +224,7 @@ export default function CreateMember() {
   };
   return (
     <>
+      {console.log("error", errors)}
       <div>
         <button
           type="submit"
@@ -243,11 +252,12 @@ export default function CreateMember() {
           handleSubmit={handleSubmit(onSubmit)}
           location={location}
           time={time}
+          setValue={setValue}
+          watch={watch}
           errors={errors}
           setFocus={setFocus}
           register={register}
           formId={"memberCreate"}
-          showPassField={true}
         />
       )}
     </>

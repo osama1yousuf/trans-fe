@@ -5,7 +5,7 @@ export const validateDriverSchema = Yup.object().shape({
   lastName: Yup.string().required("Last name required"),
   dateOfBirth: Yup.date().required("Date of Birth is Required"),
   cnicNo: Yup.string()
-    .length(13, "CNIC value should be 13 characters")
+    .length(15, "CNIC value should be 13 characters")
     .required("CNIC # is required"),
   cnicExpiry: Yup.date().required("CNIC expiry date is required"),
   contactOne: Yup.string()
