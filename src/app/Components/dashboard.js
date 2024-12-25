@@ -12,11 +12,13 @@ import Image from "next/image";
 import logo from "../../assets/logo.png";
 import LocationModel from "./LocationModal";
 import Header from "./Header";
+import { ResetPasswordForm } from "./ResetPasswordForm";
 export default function Dashboard({ children }) {
   const router = useRouter();
   const pathname = usePathname();
 
   const [expandedItems, setExpandedItems] = useState({});
+  const [hasPasswordChange, setHasPasswordChange] = useState();
   const [user, setUser] = useState(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
@@ -167,12 +169,17 @@ export default function Dashboard({ children }) {
 
   /// use to set user and userType
   useEffect(() => {
+    console.log("run on login");
     setUser(JSON.parse(localStorage.getItem("user")));
+    setHasPasswordChange(
+      JSON.parse(localStorage.getItem("user"))?.hasPasswordChange
+    );
     setActiveUserType(localStorage.getItem("userType"));
-  }, []);
+  }, [pathname]);
   return (
     <div className="flex h-screen flex-col bg-gray-100">
-      {pathname !== "/" && pathname !== "/signUp" && (
+      {console.log("hasPasswordChange", hasPasswordChange)}
+      {hasPasswordChange && pathname !== "/" && (
         <>
           {showModal && <LocationModel setShowModal={setShowModal} />}
 
@@ -285,6 +292,11 @@ export default function Dashboard({ children }) {
       )}
       {pathname === "/" && (
         <main className="flex-1 overflow-auto bg-gray-100 p-4">{children}</main>
+      )}
+      {!hasPasswordChange && pathname !== "/" && (
+        <main className="h-full my-auto">
+          <ResetPasswordForm isIntialChange={true} setHasPasswordChange={setHasPasswordChange}/>
+        </main>
       )}
     </div>
   );
