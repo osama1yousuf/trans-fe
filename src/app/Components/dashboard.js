@@ -43,27 +43,27 @@ export default function Dashboard({ children }) {
     },
     {
       name: "Driver",
-      url: "driver",
+      url: "admin/driver",
       type: "SUPERADMIN",
       active: false,
-      Content: [
-        {
-          name: "Create Driver",
-          endpoints: "admin/createdriver",
-        },
-        {
-          name: "Active Driver",
-          endpoints: "admin/activedriver",
-        },
-        {
-          name: "InActive Driver",
-          endpoints: "admin/inactivedriver",
-        },
-        {
-          name: "Attendance",
-          endpoints: "admin/attendance",
-        },
-      ],
+      // Content: [
+      //   {
+      //     name: "Create Driver",
+      //     endpoints: "admin/createdriver",
+      //   },
+      //   {
+      //     name: "Active Driver",
+      //     endpoints: "admin/activedriver",
+      //   },
+      //   {
+      //     name: "InActive Driver",
+      //     endpoints: "admin/inactivedriver",
+      //   },
+      //   {
+      //     name: "Attendance",
+      //     endpoints: "admin/attendance",
+      //   },
+      // ],
     },
     {
       name: "Dashboard",
@@ -90,23 +90,23 @@ export default function Dashboard({ children }) {
     },
     {
       name: "Member",
-      url: "member",
+      url: "admin/member",
       type: "SUPERADMIN",
       active: false,
-      Content: [
-        {
-          name: "Create Member",
-          endpoints: "admin/createmember",
-        },
-        {
-          name: "Active Member",
-          endpoints: "admin/activemember",
-        },
-        {
-          name: "InActive Member",
-          endpoints: "admin/inactivemember",
-        },
-      ],
+      // Content: [
+      //   {
+      //     name: "Create Member",
+      //     endpoints: "admin/createmember",
+      //   },
+      //   {
+      //     name: "Active Member",
+      //     endpoints: "admin/activemember",
+      //   },
+      //   {
+      //     name: "InActive Member",
+      //     endpoints: "admin/inactivemember",
+      //   },
+      // ],
     },
     // {
     //   name: "Location",
@@ -169,7 +169,6 @@ export default function Dashboard({ children }) {
 
   /// use to set user and userType
   useEffect(() => {
-    console.log("run on login");
     setUser(JSON.parse(localStorage.getItem("user")));
     setHasPasswordChange(
       JSON.parse(localStorage.getItem("user"))?.hasPasswordChange

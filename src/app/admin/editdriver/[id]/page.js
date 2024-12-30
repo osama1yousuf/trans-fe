@@ -12,11 +12,12 @@ import { validateDriverSchema } from "@/app/helper/validationSchemas";
 import { driverFormIntVal } from "@/app/helper/IntialValues";
 import Loader from "@/app/Components/Loader";
 import useHandleNavigation from "@/app/Components/useHandleNavigation";
+import { dateFormater } from "@/lib/utils";
 export default function Editdriver() {
   useUserValidator("superadmin");
   const pathname = usePathname();
   const router = useRouter();
-  useHandleNavigation("/admin/activedriver");
+  useHandleNavigation("/admin/driver");
   let id = pathname.replace("/admin/editdriver/", "");
   const {
     register,
@@ -25,7 +26,7 @@ export default function Editdriver() {
     reset,
     setFocus,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors, isSubmitting, isDirty },
   } = useForm({
     defaultValues: driverFormIntVal,
     resolver: yupResolver(validateDriverSchema),
@@ -51,8 +52,12 @@ export default function Editdriver() {
     }
   };
   const handleBackAction = () => {
-    if (window.confirm("Are you sure you want to leave this page?")) {
-      router.push("/admin/activedriver");
+    if (isDirty) {
+      if (window.confirm("Are you sure you want to leave this page?")) {
+        router.push("/admin/driver");
+      }
+    } else {
+      router.push("/admin/driver");
     }
   };
 
@@ -70,7 +75,7 @@ export default function Editdriver() {
     }
     try {
       const response = await axiosInstance.put(`/driver/${id}`, payload);
-      router.push("/admin/activedriver");
+      router.push("/admin/driver");
       toast.success("Driver updated successfully", { autoClose: 500 });
       reset();
       setFile(null);
@@ -81,41 +86,7 @@ export default function Editdriver() {
       setLoading(false);
     }
   };
-  const noOfShifts = watch("noOfShifts");
   const shifts = watch("shifts");
-  useEffect(() => {
-    if (noOfShifts > 0) {
-      let remNoOfShifts;
-      let existingShifts = [];
-      if (shifts.length > 0) {
-        existingShifts = shifts.filter((e) => e.checkInTime !== "");
-        remNoOfShifts = shifts.length - existingShifts;
-      } else {
-        remNoOfShifts = noOfShifts;
-      }
-
-      let newShifts = Array.from({ length: remNoOfShifts }, (e, i) => ({
-        shift: `SHIFT_${i + 1}`,
-        checkInTime: "",
-        shiftWay: "UP",
-        checkOutTime: "",
-      }));
-      setValue("shifts", [...existingShifts, ...newShifts]);
-    }
-    // else if (noOfShifts > 4) {
-    //   let shifts = Array.from({ length: 4 }, (e, i) => ({
-    //     shift: `SHIFT_${i + 1}`,
-    //     checkInTime: "",
-    //     shiftWay: "UP",
-    //     checkOutTime: "",
-    //   }));
-    //   setValue("shifts", shifts);
-    //   setValue("noOfShifts", 4);
-    // }
-    else {
-      setValue("shifts", []);
-    }
-  }, [noOfShifts, setValue]);
   useEffect(() => {
     (async function () {
       setLoading(true);
@@ -126,32 +97,49 @@ export default function Editdriver() {
           setFile(image);
           let updateval = { ...driverFormIntVal, ...data };
           reset(updateval);
+          console.log(
+            new Date(updateval?.cnicExpiry).toISOString(),
+            new Date(updateval?.cnicExpiry).toLocaleDateString("en-US"),
+            new Date(updateval?.cnicExpiry).toISOString().split("T")[0],
+            "updateval?.cnicExpiry"
+          );
+
           setValue("salaryInfo", [
             updateval.salaryInfo[updateval.salaryInfo.length - 1],
           ]);
           setValue(
             "cnicExpiry",
-            new Date(updateval?.cnicExpiry).toISOString().split("T")[0]
+            dateFormater(
+              new Date(updateval?.cnicExpiry).toLocaleDateString("en-US")
+            )
           );
           setValue(
             "dateOfBirth",
-            new Date(updateval?.dateOfBirth).toISOString().split("T")[0]
+            dateFormater(
+              new Date(updateval?.dateOfBirth).toLocaleDateString("en-US")
+            )
           );
           setValue(
             "joiningDate",
-            new Date(updateval?.joiningDate).toISOString().split("T")[0]
+            dateFormater(
+              new Date(updateval?.joiningDate).toLocaleDateString("en-US")
+            )
           );
           setValue(
             "licenseInfo.licenseIssue",
-            new Date(updateval?.licenseInfo?.licenseIssue)
-              .toISOString()
-              .split("T")[0]
+            dateFormater(
+              new Date(updateval?.licenseInfo?.licenseIssue).toLocaleDateString(
+                "en-US"
+              )
+            )
           );
           setValue(
             "licenseInfo.licenseExpiry",
-            new Date(updateval?.licenseInfo?.licenseExpiry)
-              .toISOString()
-              .split("T")[0]
+            dateFormater(
+              new Date(
+                updateval?.licenseInfo?.licenseExpiry
+              ).toLocaleDateString("en-US")
+            )
           );
         }
       } catch (error) {

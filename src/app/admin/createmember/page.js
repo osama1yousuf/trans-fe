@@ -74,43 +74,32 @@ export default function CreateMember() {
       .oneOf(["bothSide", "pickUp", "dropOff"], "Invalid option selected")
       .required("Please select an option"),
     pickUpAddress: Yup.string()
-      .oneOf(
-        location.map((e) => e?.location),
-        "Invalid option selected"
-      )
-      .when("bothSide", {
-        is: (value) => value === "pickUp" || value === "bothSide", // When "pickUp" or "bothSide"
-        then: (schema) => schema.required("Please select a pick-up address"), // Make it required
-        otherwise: (schema) => schema.notRequired().nullable(), // Make it optional and allow null for "dropOff"
-      }),
+    .when("bothSide", {
+      is: (value) => value === "pickUp" || value === "bothSide", // When "pickUp" or "bothSide"
+      then: (schema) => schema.required("Please select a pick-up address"), // Make it required
+      otherwise: (schema) => schema.notRequired().nullable(), // Make it optional and allow null for "dropOff"
+    }),
     pickUpTime: Yup.string()
-      .oneOf(time, "Invalid option selected")
-      .when("bothSide", {
-        is: (value) => value === "pickUp" || value === "bothSide", // When "pickUp" or "bothSide"
-        then: (schema) => schema.required("Please select a pick-up time"), // Make it required
-        otherwise: (schema) => schema.notRequired().nullable(), // Make it optional for other cases
-      }),
-    satPickUpTime: Yup.string().oneOf(time, "Invalid option selected"),
-    sunPickUpTime: Yup.string().oneOf(time, "Invalid option selected"),
-    dropOffAddress: Yup.string()
-      .oneOf(
-        location.map((e) => e?.location),
-        "Invalid option selected"
-      )
-      .when("bothSide", {
-        is: (value) => value === "dropOff" || value === "bothSide", // When "dropOff" or "bothSide"
-        then: (schema) => schema.required("Please select a drop-off address"), // Make it required
-        otherwise: (schema) => schema.notRequired().nullable(), // Make it optional for other cases
-      }),
+    .when("bothSide", {
+      is: (value) => value === "pickUp" || value === "bothSide", // When "pickUp" or "bothSide"
+      then: (schema) => schema.required("Please select a pick-up time"), // Make it required
+      otherwise: (schema) => schema.notRequired().nullable(), // Make it optional for other cases
+    }),
+    satPickUpTime: Yup.string(),
+    sunPickUpTime: Yup.string(),
+    dropOffAddress: Yup.string().when("bothSide", {
+      is: (value) => value === "dropOff" || value === "bothSide", // When "dropOff" or "bothSide"
+      then: (schema) => schema.required("Please select a drop-off address"), // Make it required
+      otherwise: (schema) => schema.notRequired().nullable(), // Make it optional for other cases
+    }),
     dropOffTime: Yup.string()
-      .oneOf(time, "Invalid option selected")
-      .when("bothSide", {
-        is: (value) => value === "dropOff" || value === "bothSide", // When "dropOff" or "bothSide"
-        then: (schema) => schema.required("Please select a drop-off time"), // Make it required
-        otherwise: (schema) => schema.notRequired().nullable(), // Make it optional for other cases
-      }),
-    satDropOffTime: Yup.string().oneOf(time, "Invalid option selected"),
-    sunDropOffTime: Yup.string().oneOf(time, "Invalid option selected"),
+    .when("bothSide", {
+      is: (value) => value === "dropOff" || value === "bothSide", // When "dropOff" or "bothSide"
+      then: (schema) => schema.required("Please select a drop-off time"), // Make it required
+      otherwise: (schema) => schema.notRequired().nullable(), // Make it optional for other cases
+    }),
+    satDropOffTime: Yup.string(),
+    sunDropOffTime: Yup.string(),
     fees: Yup.string().required("Fees amount is required"),
     feeType: Yup.string()
       .oneOf(["advance", "monthEnd"], "Invalid option selected")
@@ -118,7 +107,7 @@ export default function CreateMember() {
     comments: Yup.string(),
   });
 
-  useHandleNavigation("/admin/activemember");
+  useHandleNavigation("/admin/member");
   const {
     register,
     setFocus,
@@ -126,7 +115,7 @@ export default function CreateMember() {
     setValue,
     reset,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors, isSubmitting, isDirty },
   } = useForm({
     defaultValues: memberFormIntVal,
     resolver: yupResolver(validateMemberSchema),
@@ -206,7 +195,7 @@ export default function CreateMember() {
       let response = await axiosInstance.post("/customer", body);
       console.log("response", response);
       toast.success("Member created successfully", { autoClose: 1000 });
-      router.push("/admin/activemember");
+      router.push("/admin/member");
       reset();
       setLoading(false);
     } catch (e) {
@@ -218,8 +207,12 @@ export default function CreateMember() {
   };
 
   const handleBackAction = () => {
-    if (window.confirm("Are you sure you want to leave this page?")) {
-      router.push("/admin/activemember");
+    if (isDirty) {
+      if (window.confirm("Are you sure you want to leave this page?")) {
+        router.push("/admin/member");
+      }
+    } else {
+      router.push("/admin/member");
     }
   };
   return (

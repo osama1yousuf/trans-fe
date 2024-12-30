@@ -5,9 +5,10 @@ import * as Yup from "yup";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useRouter } from "next/navigation";
+import { use, useEffect, useState } from "react";
 export const ResetPasswordForm = ({ isIntialChange, setHasPasswordChange }) => {
   const router = useRouter();
-
+  const [user, setUser] = useState(null);
   const changePasswordSchema = Yup.object().shape({
     contactOne: Yup.string()
       .length(11, "Phone Number Invalid")
@@ -25,6 +26,7 @@ export const ResetPasswordForm = ({ isIntialChange, setHasPasswordChange }) => {
     reset,
     formState: { errors, isSubmitting },
     setFocus,
+    setValue,
   } = useForm({
     defaultValues: {
       contactOne: "",
@@ -56,6 +58,13 @@ export const ResetPasswordForm = ({ isIntialChange, setHasPasswordChange }) => {
       reset();
     }
   };
+  useEffect(() => {
+    let user = JSON.parse(localStorage.getItem("user"));
+    if (user) {
+      setUser(user);
+      setValue("contactOne", user?.contactOne);
+    }
+  }, []);
   return (
     <div className="m-auto bg-white rounded-lg mt-5 sm:max-w-md sm:p-8">
       <form
@@ -67,6 +76,7 @@ export const ResetPasswordForm = ({ isIntialChange, setHasPasswordChange }) => {
         </h2>
         <div>
           <Textfield2
+            readOnly={isIntialChange}
             setFocus={setFocus}
             error={errors?.contactOne}
             register={register}

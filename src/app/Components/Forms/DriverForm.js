@@ -8,9 +8,8 @@ import Textfield2 from "../TextField2";
 import SelectInput from "../SelectInput";
 import TextArea from "../TextArea";
 import { useEffect, useState } from "react";
-import path from "path";
 import Image from "next/image";
-
+import { Plus, CircleX } from "lucide-react";
 const DriverForm = ({
   handleSubmit,
   errors,
@@ -63,6 +62,39 @@ const DriverForm = ({
   useEffect(() => {
     cnicNo !== null && handleCnicChange(cnicNo);
   }, [cnicNo]);
+
+  const handleTripAdd = () => {
+    let noOfShifts = watch("noOfShifts");
+    let shifts = watch("shifts");
+    setValue("noOfShifts", noOfShifts + 1);
+    setValue("shifts", [
+      ...shifts,
+      {
+        shift: `SHIFT_${noOfShifts + 1}`,
+        checkInTime: "",
+        shiftWay: "UP",
+        checkOutTime: "",
+      },
+    ]);
+  };
+
+  const handleTripDelete = (e) => {
+    console.log("e", e);
+    let noOfShifts = watch("noOfShifts");
+    let shifts = watch("shifts");
+    let updatedShifts = shifts.filter((el) => el?.shift !== e?.shift);
+    updatedShifts = updatedShifts.map((e, i) => {
+      return {
+        shift: `SHIFT_${i + 1}`,
+        checkInTime: e.checkInTime,
+        shiftWay: e?.shiftWay,
+        checkOutTime: e?.checkOutTime,
+      };
+    });
+    console.log("updatedShifts", updatedShifts);
+    setValue("noOfShifts", noOfShifts - 1);
+    setValue("shifts", updatedShifts);
+  };
   return (
     <form id={formId} onSubmit={handleSubmit}>
       <div className="flex  flex-wrap">
@@ -403,15 +435,21 @@ const DriverForm = ({
           >
             <AccordionTrigger className="px-2">Trips Info</AccordionTrigger>
             <AccordionContent className="w-full rounded-2">
-              <div className="w-full mt-2 lg:w-1/4 px-3">
-                <Textfield2
-                  setFocus={setFocus}
-                  register={register}
-                  error={errors?.noOfShifts}
-                  name={"noOfShifts"}
-                  label={"No of Trips"}
-                  type={"number"}
-                />
+              <div className="w-full mt-2 flex items-end gap-2 lg:w-1/5 px-3">
+                <div className="w-1/2">
+                  <Textfield2
+                    readOnly={true}
+                    setFocus={setFocus}
+                    register={register}
+                    error={errors?.noOfShifts}
+                    name={"noOfShifts"}
+                    label={"No of Trips"}
+                    type={"number"}
+                  />
+                </div>
+                <div className="border-slate-950 hover:border-slate-200 border rounded-md hover:bg-gray-500  cursor-pointer bg-white p-1">
+                  <Plus onClick={handleTripAdd} className="text-gray-700" />
+                </div>
               </div>
               <br />
               {watch("noOfShifts") > 0 &&
@@ -419,8 +457,15 @@ const DriverForm = ({
                   return (
                     <div
                       key={i}
-                      className="w-full gap-2 px-3 flex mt-2 lg:w-1/4 items-start"
+                      className="w-full gap-2 px-3 flex mt-2 lg:w-1/4 items-end"
                     >
+                      {" "}
+                      <div className=" border mb-1 rounded-md cursor-pointer p-1 bg-transparent">
+                        <CircleX
+                          onClick={() => handleTripDelete(shifts[i])}
+                          className="text-red-400 w-5 h-5"
+                        />
+                      </div>
                       {/* First Input Field with "P" */}
                       <div className="w-1/2 flex items-center">
                         <div className="flex items-center mt-4">
@@ -443,7 +488,6 @@ const DriverForm = ({
                           />
                         </div>
                       </div>
-
                       {/* Second Input Field with "D" */}
                       <div className="w-1/2 flex items-center mt-4">
                         <div className="flex items-center">
@@ -466,9 +510,8 @@ const DriverForm = ({
                           />
                         </div>
                       </div>
-
                       {/* Vertical Toggle Switch */}
-                      <div className="mt-6">
+                      <div className="mb-2">
                         <label className="switch">
                           <input
                             type="checkbox"

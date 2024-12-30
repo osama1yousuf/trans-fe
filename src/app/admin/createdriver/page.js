@@ -15,7 +15,7 @@ import useHandleNavigation from "@/app/Components/useHandleNavigation";
 export default function Createdriver() {
   useUserValidator("superadmin");
   const router = useRouter();
-  useHandleNavigation("/admin/activedriver");
+  useHandleNavigation("/admin/driver");
   const {
     register,
     watch,
@@ -23,7 +23,7 @@ export default function Createdriver() {
     setFocus,
     reset,
     handleSubmit,
-    formState: { errors, isSubmitting ,  },
+    formState: { errors, isSubmitting, isDirty },
   } = useForm({
     defaultValues: driverFormIntVal,
     resolver: yupResolver(validateDriverSchema),
@@ -64,7 +64,7 @@ export default function Createdriver() {
     try {
       const responsne = await axiosInstance.post("/driver", payload);
       console.log("responsne", responsne);
-      router.push("/admin/activedriver");
+      router.push("/admin/driver");
       toast.success("Driver created successfully", { autoClose: 1000 });
       reset();
       setFile(null);
@@ -79,46 +79,16 @@ export default function Createdriver() {
   };
 
   const handleBackAction = () => {
-    if (window.confirm("Are you sure you want to leave this page?")) {
-      router.push("/admin/activedriver");
+    if (isDirty) {
+      if (window.confirm("Are you sure you want to leave this page?")) {
+        router.push("/admin/driver");
+      }
+    } else {
+      router.push("/admin/driver");
     }
   };
 
-  const noOfShifts = watch("noOfShifts");
   const shifts = watch("shifts");
-  useEffect(() => {
-    if (noOfShifts > 0) {
-      let remNoOfShifts;
-      let existingShifts = [];
-      if (shifts.length > 0) {
-        existingShifts = shifts.filter((e) => e.checkInTime !== "");
-        remNoOfShifts = shifts.length - existingShifts;
-      } else {
-        remNoOfShifts = noOfShifts;
-      }
-
-      let newShifts = Array.from({ length: remNoOfShifts }, (e, i) => ({
-        shift: `SHIFT_${i + 1}`,
-        checkInTime: "",
-        shiftWay: "UP",
-        checkOutTime: "",
-      }));
-      setValue("shifts", [...existingShifts, ...newShifts]);
-    }
-    // else if (noOfShifts > 4) {
-    //   let shifts = Array.from({ length: 4 }, (e, i) => ({
-    //     shift: `SHIFT_${i + 1}`,
-    //     checkInTime: "",
-    //     shiftWay: "UP",
-    //     checkOutTime: "",
-    //   }));
-    //   setValue("shifts", shifts);
-    //   setValue("noOfShifts", 4);
-    // }
-    else {
-      setValue("shifts", []);
-    }
-  }, [noOfShifts, setValue]);
   return (
     <div>
       <div>

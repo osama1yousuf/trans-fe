@@ -283,7 +283,7 @@ export default function Editassign() {
       try {
         let response = axiosInstance.post("/assignment/assign", finalObj);
         toast.success(response.message);
-        router.push("/admin/activedriver");
+        router.push("/admin/driver");
       } catch (e) {
         toast.error(e.message);
       }

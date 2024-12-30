@@ -67,34 +67,30 @@ export default function CreateMember() {
     contactOne: Yup.string()
       .length(11, "Phone Number Invalid")
       .required("Phone Number required"),
-   contactTwo: Yup.string()
-       .nullable() // Allow the field to be null
-       .test("length", "Phone Number Invalid", (value) => {
-         // Check if the value is provided and has a length of 11
-         return value === "" || value.length === 11;
-       }),
+    contactTwo: Yup.string()
+      .nullable() // Allow the field to be null
+      .test("length", "Phone Number Invalid", (value) => {
+        // Check if the value is provided and has a length of 11
+        return value === "" || value.length === 11;
+      }),
     bothSide: Yup.string()
       .oneOf(["bothSide", "pickUp", "dropOff"], "Invalid option selected")
       .required("Please select an option"),
     pickUpAddress: Yup.string()
-      .oneOf(
-        location.map((e) => e?.location),
-        "Invalid option selected"
-      )
       .when("bothSide", {
         is: (value) => value === "pickUp" || value === "bothSide",
         then: (sechema) => sechema.required("Please select an option"),
         otherwise: (schema) => schema,
       }),
     pickUpTime: Yup.string()
-      .oneOf(time, "Invalid option selected")
+      
       .when("bothSide", {
         is: (value) => value === "pickUp" || value === "bothSide",
         then: (sechema) => sechema.required("Please select an option"),
         otherwise: (schema) => schema,
       }),
-    satPickUpTime: Yup.string().oneOf(time, "Invalid option selected"),
-    sunPickUpTime: Yup.string().oneOf(time, "Invalid option selected"),
+    satPickUpTime: Yup.string().notRequired(),
+    sunPickUpTime: Yup.string().notRequired(),
     dropOffAddress: Yup.string()
       .oneOf(
         location.map((e) => e?.location),
@@ -106,14 +102,13 @@ export default function CreateMember() {
         otherwise: (schema) => schema,
       }),
     dropOffTime: Yup.string()
-      .oneOf(time, "Invalid option selected")
       .when("bothSide", {
         is: (value) => value === "dropOff" || value === "bothSide",
         then: (sechema) => sechema.required("Please select an option"),
         otherwise: (schema) => schema,
       }),
-    satDropOffTime: Yup.string().oneOf(time, "Invalid option selected"),
-    sunDropOffTime: Yup.string().oneOf(time, "Invalid option selected"),
+    satDropOffTime: Yup.string().notRequired(),
+    sunDropOffTime: Yup.string().notRequired(),
     fees: Yup.string().required("Fees amount is required"),
     feeType: Yup.string()
       .oneOf(["advance", "monthEnd"], "Invalid option selected")
@@ -121,7 +116,7 @@ export default function CreateMember() {
     // status: Yup.string().oneOf(['Active', 'InActive'], 'Invalid option selected').required('Please select an option'),
     comments: Yup.string(),
   });
-  useHandleNavigation("/admin/activemember");
+  useHandleNavigation("/admin/member");
 
   const {
     register,
@@ -256,7 +251,7 @@ export default function CreateMember() {
       let response = await axiosInstance.put(`/customer/${id}`, body);
       console.log("responne", response);
       toast.success("Member updated successfully", { autoClose: 1000 });
-      router.push("/admin/activemember");
+      router.push("/admin/member");
       reset();
       setLoading(false);
     } catch (e) {
@@ -268,8 +263,12 @@ export default function CreateMember() {
   };
 
   const handleBackAction = () => {
-    if (window.confirm("Are you sure you want to leave this page?")) {
-      router.push("/admin/activemember");
+    if (isDirty) {
+      if (window.confirm("Are you sure you want to leave this page?")) {
+        router.push("/admin/member");
+      }
+    } else {
+      router.push("/admin/member");
     }
   };
   return (
