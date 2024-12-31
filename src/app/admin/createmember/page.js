@@ -217,7 +217,6 @@ export default function CreateMember() {
   };
   return (
     <>
-      {console.log("error", errors)}
       <div>
         <button
           type="submit"
