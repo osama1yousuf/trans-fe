@@ -39,7 +39,7 @@ export const memberFormIntVal = {
   lastName: "",
   contactOne: "",
   contactTwo: "",
-  cnicNo: "",
+  cnicNo: null,
   password: "",
   comments: "",
   joinDate: "",

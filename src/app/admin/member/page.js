@@ -13,6 +13,7 @@ import { useRouter } from "next/navigation";
 import { useUserValidator } from "@/interceptor/userValidate";
 import Textfield2 from "@/app/Components/TextField2";
 import SelectInput from "@/app/Components/SelectInput";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   ChevronLeft,
   ChevronRight,
@@ -50,7 +51,7 @@ export default function ActiveMember() {
   } = useForm({
     defaultValues: {
       search: "",
-      status: "active",
+      status: "",
     },
   });
   const search = watch("search");
@@ -157,45 +158,38 @@ export default function ActiveMember() {
   async function getMemeber(search, page) {
     try {
       setLoading(true);
-      let response = await axiosInstance.get(`/customer?status=${status}`);
+      let response = await axiosInstance.get(
+        `/customer?status=${status}&search=${search}&limit=${10}&offset=${
+          page > 1 ? (page - 1) * 10 : 0
+        }`
+      );
+      console.log("response.data", response.data);
+
       setData(response.data);
-      setTotalPages(Math.ceil(response.data.length / 10));
+      setTotalPages(Math.ceil(response.data.count / 10));
       setLoading(false);
     } catch (e) {
       setLoading(false);
       console.log(e);
     }
-    // try {
-    //   setLoading(true);
-    //   let response = await axiosInstance.get(
-    //     `/custome?status=${status}&search=${search}&limit=${10}&offset=${
-    //       page > 1 ? (page - 1) * 10 : 0
-    //     }`
-    //   );
-    //   setData(response.data);
-    //   setTotalPages(Math.ceil(response.data.count / 10));
-    //   setLoading(false);
-    // } catch (e) {
-    //   setLoading(false);
-    //   console.log(e);
-    // }
   }
   const handleCustomerStatusChange = async (row) => {
-    let body = {
-      status: row.currentStatus == "active" ? "inActive" : "active",
-    };
-    console.log(row);
-    console.log(body);
-    try {
-      let response = await axiosInstance.put(
-        `/customer/status/${row._id}`,
-        body
-      );
-      await getMemeber("", 0);
-      toast.success(response.message);
-    } catch (e) {
-      console.log(e.message);
-      toast.error(e.message);
+    let confirm = window.confirm("Are You Sure?");
+    if (confirm) {
+      let body = {
+        status: row.currentStatus == "active" ? "inActive" : "active",
+      };
+      try {
+        let response = await axiosInstance.put(
+          `/customer/status/${row._id}`,
+          body
+        );
+        await getMemeber("", 0);
+        toast.success(response.message);
+      } catch (e) {
+        console.log(e.message);
+        toast.error(e.message);
+      }
     }
   };
   const handleGenerateChallan = async () => {
@@ -369,8 +363,8 @@ export default function ActiveMember() {
           <div className="max-w-[96vw] rounded-sm">
             <Suspense fallback={<Loader />} />
             <DataTable
-              title={"Active Driver List"}
-              data={data?.length > 0 ? data : []}
+              title={"Member List"}
+              data={data?.data?.length > 0 ? data.data : []}
               columns={columns}
               progressPending={loading}
               pagination={false}
@@ -419,7 +413,7 @@ export default function ActiveMember() {
           <div className="flex flex-col">
             <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
               {data &&
-                data.map((item) => {
+                data?.data?.map((item) => {
                   return (
                     <>
                       <Card
@@ -430,31 +424,24 @@ export default function ActiveMember() {
                           variant="ghost"
                           size="icon"
                           className="absolute top-1 right-1 duration-200"
-                          onClick={(e) => editDriver(item)}
+                          onClick={(e) => editMember(item)}
                         >
                           <Edit className="h-4 w-4" />
                         </Button>
 
                         <CardHeader className="pb-2">
                           <CardTitle className="text-lg font-semibold flex justify-between items-center">
-                            {item.firstName + " " + item.lastName}
-                            {/* <Avatar.Root className="AvatarRoot inline-flex items-center justify-center align-middle overflow-hidden select-none">
-                              <Avatar.Image
-                                onClick={() => {
-                                  setIsImagePreview(true);
-                                  setModalImage(item?.image);
-                                }}
-                                className="AvatarImage cursor-pointer w-16 h-16 rounded-full object-cover"
-                                src={item.image}
-                                alt={`Avatar for ${item.name || "User"}`}
+                            {item?.firstName + " " + item?.lastName}
+                            <Avatar className="h-10 w-10 sm:h-14 sm:w-14">
+                              <AvatarImage
+                                src={`https://api.dicebear.com/6.x/initials/svg?seed=${item?.firstName}%20${item?.lastName}`}
+                                alt={`${item?.firstName} ${item?.lastName}`}
                               />
-                              <Avatar.Fallback
-                                className="AvatarImage cursor-pointer w-16 h-16 rounded-full object-cover text-center flex items-center justify-center  bg-gray-200"
-                                delayMs={600}
-                              >
-                                N/A
-                              </Avatar.Fallback>
-                            </Avatar.Root> */}
+                              <AvatarFallback>
+                                {item?.firstName?.charAt(0).toUpperCase()}
+                                {item?.lastName?.charAt(0).toUpperCase()}
+                              </AvatarFallback>
+                            </Avatar>
                           </CardTitle>
                         </CardHeader>
                         <CardContent className="p-4">
@@ -476,10 +463,10 @@ export default function ActiveMember() {
                                 className="flex items-center justify-between"
                               >
                                 <span className="text-sm text-muted-foreground capitalize">
-                                  Vehicle #:
+                                  Residential Location:
                                 </span>
                                 <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80">
-                                  {item.vehicleInfo.vehicleNo || "N/A"}
+                                  {item?.location?.residentialAddress || "N/A"}
                                 </div>
                               </div>
                               <div
@@ -490,7 +477,9 @@ export default function ActiveMember() {
                                   Joining Date:
                                 </span>
                                 <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80">
-                                  {new Date(item.joiningDate).toDateString()}
+                                  {moment(item?.status?.joinDate).format(
+                                    "DD-MM-YYYY"
+                                  ) || "N/A"}
                                 </div>
                               </div>
                               <div
@@ -498,22 +487,10 @@ export default function ActiveMember() {
                                 className="flex items-center justify-between"
                               >
                                 <span className="text-sm text-muted-foreground capitalize">
-                                  Cnic Expire:
+                                  Pickup Location:
                                 </span>
-                                <div
-                                  className={`${
-                                    item?.cnicExpiry !== ""
-                                      ? new Date(item?.cnicExpiry) <= new Date()
-                                        ? "border-red-800 text-red-800 bg-red-200"
-                                        : "border-green-800 text-green-800 bg-green-200"
-                                      : "border-gray-800 text-gray-600 bg-gray-200"
-                                  } border rounded-lg p-1 font-semibold text-xs`}
-                                >
-                                  {item?.cnicExpiry !== ""
-                                    ? new Date(item?.cnicExpiry) <= new Date()
-                                      ? "Yes"
-                                      : "No"
-                                    : "N/A"}
+                                <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80">
+                                  {item?.location?.pickUpAddress || "N/A"}
                                 </div>
                               </div>
                               <div
@@ -521,26 +498,10 @@ export default function ActiveMember() {
                                 className="flex items-center justify-between"
                               >
                                 <span className="text-sm text-muted-foreground capitalize">
-                                  License Expire:
+                                  DropOff Location:
                                 </span>
-                                <div
-                                  className={`${
-                                    item?.licenseInfo?.licenseExpiry !== ""
-                                      ? new Date(
-                                          item?.licenseInfo?.licenseExpiry
-                                        ) <= new Date()
-                                        ? "border-red-800 text-red-800 bg-red-200"
-                                        : "border-green-800 text-green-800 bg-green-200"
-                                      : "border-gray-800 text-gray-600 bg-gray-200"
-                                  } border rounded-lg p-1 font-semibold text-xs`}
-                                >
-                                  {item?.licenseInfo?.licenseExpiry !== ""
-                                    ? new Date(
-                                        item?.licenseInfo?.licenseExpiry
-                                      ) <= new Date()
-                                      ? "Yes"
-                                      : "No"
-                                    : "N/A"}
+                                <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80">
+                                  {item?.location?.dropOffAddress || "N/A"}
                                 </div>
                               </div>
                               <div
@@ -556,7 +517,8 @@ export default function ActiveMember() {
                                 <div
                                   variant="outline"
                                   className={`inline-flex items-center rounded-md border p-1 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 hover:bg-gray-200 cursor-pointer transition-all duration-300 ${
-                                    item.status.toUpperCase() === "ACTIVE"
+                                    item.currentStatus.toUpperCase() ===
+                                    "ACTIVE"
                                       ? "border-green-800 text-green-800 bg-green-200"
                                       : "border-red-800 text-red-800 bg-red-200"
                                   }`}
@@ -564,7 +526,7 @@ export default function ActiveMember() {
                                     handleCustomerStatusChange(item)
                                   }
                                 >
-                                  {item.status === "active" ? (
+                                  {item.currentStatus === "active" ? (
                                     <span className="relative">
                                       <span
                                         className={`

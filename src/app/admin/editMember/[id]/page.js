@@ -76,19 +76,17 @@ export default function CreateMember() {
     bothSide: Yup.string()
       .oneOf(["bothSide", "pickUp", "dropOff"], "Invalid option selected")
       .required("Please select an option"),
-    pickUpAddress: Yup.string()
-      .when("bothSide", {
-        is: (value) => value === "pickUp" || value === "bothSide",
-        then: (sechema) => sechema.required("Please select an option"),
-        otherwise: (schema) => schema,
-      }),
+    pickUpAddress: Yup.string().when("bothSide", {
+      is: (value) => value === "pickUp" || value === "bothSide",
+      then: (sechema) => sechema.required("Please select an option"),
+      otherwise: (schema) => schema,
+    }),
     pickUpTime: Yup.string()
-      
-      .when("bothSide", {
-        is: (value) => value === "pickUp" || value === "bothSide",
-        then: (sechema) => sechema.required("Please select an option"),
-        otherwise: (schema) => schema,
-      }),
+    .when("bothSide", {
+      is: (value) => value === "pickUp" || value === "bothSide",
+      then: (sechema) => sechema.required("Please select an option"),
+      otherwise: (schema) => schema,
+    }),
     satPickUpTime: Yup.string().notRequired(),
     sunPickUpTime: Yup.string().notRequired(),
     dropOffAddress: Yup.string()
@@ -101,12 +99,11 @@ export default function CreateMember() {
         then: (sechema) => sechema.required("Please select an option"),
         otherwise: (schema) => schema,
       }),
-    dropOffTime: Yup.string()
-      .when("bothSide", {
-        is: (value) => value === "dropOff" || value === "bothSide",
-        then: (sechema) => sechema.required("Please select an option"),
-        otherwise: (schema) => schema,
-      }),
+    dropOffTime: Yup.string().when("bothSide", {
+      is: (value) => value === "dropOff" || value === "bothSide",
+      then: (sechema) => sechema.required("Please select an option"),
+      otherwise: (schema) => schema,
+    }),
     satDropOffTime: Yup.string().notRequired(),
     sunDropOffTime: Yup.string().notRequired(),
     fees: Yup.string().required("Fees amount is required"),
@@ -125,7 +122,7 @@ export default function CreateMember() {
     setValue,
     watch,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors, isSubmitting, isDirty },
   } = useForm({
     defaultValues: memberFormIntVal,
     resolver: yupResolver(validateMemberSchema),

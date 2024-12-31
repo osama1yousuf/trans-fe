@@ -37,11 +37,12 @@ const MemberForm = ({
   };
   const cnicNo = watch("cnicNo");
   useEffect(() => {
-    cnicNo.length > 0 && handleCnicChange(cnicNo);
+    cnicNo !== null && handleCnicChange(cnicNo);
   }, [cnicNo]);
 
   return (
     <form id={formId} onSubmit={handleSubmit}>
+      {console.log("errors", errors)}
       <div className="flex  flex-wrap">
         <Accordion
           type="single"
@@ -113,8 +114,8 @@ const MemberForm = ({
                   setFocus={setFocus}
                   error={errors?.cnicNo}
                   name={"cnicNo"}
-                  maxLength={15}
                   label={"CNIC No"}
+                  maxLength={15}
                   type={"text"}
                 />
               </div>

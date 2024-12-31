@@ -449,7 +449,7 @@ export default function ActiveDriver() {
           <div className="max-w-[96vw] rounded-sm">
             <Suspense fallback={<Loader />} />
             <DataTable
-              title={"Active Driver List"}
+              title={"Driver List"}
               data={data?.data.length > 0 ? data.data : []}
               columns={columns}
               progressPending={loading}
