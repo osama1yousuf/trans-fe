@@ -7,6 +7,7 @@ import axiosInstance from "@/interceptor/axios_inteceptor";
 import { toast } from "react-toastify";
 import Loader from "@/app/Components/Loader";
 import { useUserValidator } from "@/interceptor/userValidate";
+import moment from "moment";
 import Textfield2 from "@/app/Components/TextField2";
 import { useForm } from "react-hook-form";
 import {
@@ -162,7 +163,8 @@ export default function ActiveDriver() {
     {
       name: "Joining Date",
       width: "150px",
-      selector: (row) => new Date(row.joiningDate).toDateString(),
+      selector: (row) => row.joiningDate,
+      cell: (row) => <div>{moment(row.joiningDate).format("DD-MMM-YYYY")}</div>,
     },
     {
       name: "Status",
@@ -549,7 +551,9 @@ export default function ActiveDriver() {
                                   Joining Date:
                                 </span>
                                 <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80">
-                                  {new Date(item.joiningDate).toDateString()}
+                                  {moment(row.joiningDate).format(
+                                    "DD-MMM-YYYY"
+                                  )}
                                 </div>
                               </div>
                               <div
