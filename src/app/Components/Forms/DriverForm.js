@@ -95,8 +95,15 @@ const DriverForm = ({
     setValue("noOfShifts", noOfShifts - 1);
     setValue("shifts", updatedShifts);
   };
+
   return (
     <form id={formId} onSubmit={handleSubmit}>
+      {console.log(
+        "err",
+        errors,
+        typeof watch("noOfShifts"),
+        watch("noOfShifts")
+      )}
       <div className="flex  flex-wrap">
         {/* <div> */}
         <Accordion
@@ -167,7 +174,7 @@ const DriverForm = ({
                     id="image-upload"
                     type="file"
                     accept="image/*"
-                    capture="user"
+                    // capture="user"
                     onChange={handleImageChange}
                     className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border file:border-gray-300 file:text-sm file:font-semibold file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200"
                   />
@@ -397,7 +404,7 @@ const DriverForm = ({
                 <Textfield2
                   setFocus={setFocus}
                   register={register}
-                  error={errors?.salaryInfo?.salary}
+                  error={errors?.salaryInfo && errors?.salaryInfo[0]?.salary}
                   name={"salaryInfo[0].salary"}
                   label={"Salary"}
                   type={"number"}
@@ -408,17 +415,16 @@ const DriverForm = ({
                   label={"Salary Type"}
                   setFocus={setFocus}
                   name={"salaryInfo[0].salaryType"}
-                  showDefaultOption={true}
-                  error={errors?.salaryInfo?.salaryType}
+                  error={errors?.salaryInfo && errors?.salaryInfo[0].salaryType}
                   register={register}
                   options={[
                     {
-                      value: "advance",
-                      label: "Advance",
-                    },
-                    {
                       value: "monthEnd",
                       label: "Month End",
+                    },
+                    {
+                      value: "advance",
+                      label: "Advance",
                     },
                   ]}
                 />
@@ -436,19 +442,22 @@ const DriverForm = ({
             <AccordionTrigger className="px-2">Trips Info</AccordionTrigger>
             <AccordionContent className="w-full rounded-2">
               <div className="w-full mt-2 flex items-end gap-2 lg:w-1/5 px-3">
-                <div className="w-1/2">
-                  <Textfield2
-                    readOnly={true}
-                    setFocus={setFocus}
-                    register={register}
-                    error={errors?.noOfShifts}
-                    name={"noOfShifts"}
-                    label={"No of Trips"}
-                    type={"number"}
-                  />
+                <div className="w-auto">
+                  <div
+                    className={
+                      errors?.noOfShifts
+                        ? "bg-gray-50 border-2 border-red-500 text-gray-900 sm:text-xs rounded-md focus:ring-primary-600 focus:border-primary-600 block w-full p-2 :bg-gray-700 :border-gray-600 :placeholder-gray-400 :text-white :focus:ring-blue-500 :focus:border-blue-500"
+                        : "bg-gray-50 border border-gray-300 text-gray-900 sm:text-xs rounded-md focus:ring-primary-600 focus:border-primary-600 block w-full p-2 :bg-gray-700 :border-gray-600 :placeholder-gray-400 :text-white :focus:ring-blue-500 :focus:border-blue-500"
+                    }
+                  >
+                    {watch("noOfShifts")}
+                  </div>
                 </div>
                 <div className="border-slate-950 hover:border-slate-200 border rounded-md hover:bg-gray-500  cursor-pointer bg-white p-1">
-                  <Plus onClick={handleTripAdd} className="text-gray-700" />
+                  <Plus
+                    onClick={handleTripAdd}
+                    className="text-gray-700 w-5 h-5"
+                  />
                 </div>
               </div>
               <br />

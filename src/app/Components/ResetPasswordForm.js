@@ -5,20 +5,20 @@ import * as Yup from "yup";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useRouter } from "next/navigation";
-import { use, useEffect, useState } from "react";
+import { useEffect } from "react";
 export const ResetPasswordForm = ({ isIntialChange, setHasPasswordChange }) => {
   const router = useRouter();
-  const [user, setUser] = useState(null);
   const changePasswordSchema = Yup.object().shape({
-    contactOne: Yup.string()
-      .length(11, "Phone Number Invalid")
-      .required("Phone Number required"),
     currentPassword: Yup.string()
       .min(8, "Password Length is greater than 8")
       .required("Password is required"),
     newPassword: Yup.string()
       .min(8, "Password Length is greater than 8")
       .required("Password is required"),
+    confirmPassword: Yup.string().oneOf(
+      [Yup.ref("newPassword"), null],
+      "Passwords must match"
+    ),
   });
   const {
     register,
@@ -37,10 +37,11 @@ export const ResetPasswordForm = ({ isIntialChange, setHasPasswordChange }) => {
   });
 
   const changePasswordSubmit = async (values) => {
+    let { confirmPassword, ...payload } = values;
     try {
       let response = await axios.post(
         `${process.env.BASE_URL}/api/reset-password`,
-        values
+        payload
       );
       let user = JSON.parse(localStorage.getItem("user"));
       user.hasPasswordChange = true;
@@ -61,7 +62,6 @@ export const ResetPasswordForm = ({ isIntialChange, setHasPasswordChange }) => {
   useEffect(() => {
     let user = JSON.parse(localStorage.getItem("user"));
     if (user) {
-      setUser(user);
       setValue("contactOne", user?.contactOne);
     }
   }, []);
@@ -74,17 +74,6 @@ export const ResetPasswordForm = ({ isIntialChange, setHasPasswordChange }) => {
         <h2 className="mb-1 text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
           Change Password
         </h2>
-        <div>
-          <Textfield2
-            readOnly={isIntialChange}
-            setFocus={setFocus}
-            error={errors?.contactOne}
-            register={register}
-            label={"Contact"}
-            name={"contactOne"}
-            type={"text"}
-          />
-        </div>
         <div>
           <Textfield2
             error={errors?.currentPassword}
@@ -101,6 +90,16 @@ export const ResetPasswordForm = ({ isIntialChange, setHasPasswordChange }) => {
             register={register}
             label={"New Password"}
             name={"newPassword"}
+            setFocus={setFocus}
+            type={"password"}
+          />
+        </div>
+        <div>
+          <Textfield2
+            error={errors?.confirmPassword}
+            register={register}
+            label={"Confirm Password"}
+            name={"confirmPassword"}
             setFocus={setFocus}
             type={"password"}
           />

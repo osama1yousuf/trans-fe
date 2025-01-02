@@ -1,7 +1,7 @@
 "use client";
 
 import axiosInstance from "@/interceptor/axios_inteceptor";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import DataTable from "react-data-table-component";
 import { toast } from "react-toastify";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,7 +10,6 @@ import Link from "next/link";
 import moment from "moment";
 import { BiEdit } from "react-icons/bi";
 import { useRouter } from "next/navigation";
-import { useUserValidator } from "@/interceptor/userValidate";
 import Textfield2 from "@/app/Components/TextField2";
 import SelectInput from "@/app/Components/SelectInput";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -27,20 +26,7 @@ import { useForm } from "react-hook-form";
 import Loader from "@/app/Components/Loader";
 
 export default function ActiveMember() {
-  useUserValidator("superadmin");
-  const router = useRouter();
-  const [showModal, setShowModal] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(0);
-  const [tableView, setTableView] = useState(true);
-  const [loading, setLoading] = useState(false);
-  const [data, setData] = useState([]);
-  const [challanData, setChallanData] = useState({
-    customerId: null,
-    driverId: null,
-    challanType: "CUSTOMER",
-    challanDate: null,
-  });
+  // useUserValidator("superadmin");
 
   const {
     register,
@@ -51,11 +37,30 @@ export default function ActiveMember() {
   } = useForm({
     defaultValues: {
       search: "",
-      status: "",
+      status: "active",
     },
   });
+
+  const router = useRouter();
+  const isMounted = useRef(false);
+  const [data, setData] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [tableView, setTableView] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const [limit, setLimit] = useState(10);
+  const [totalCount, setTotalCount] = useState(0);
+  const [challanData, setChallanData] = useState({
+    customerId: null,
+    driverId: null,
+    challanType: "CUSTOMER",
+    challanDate: null,
+  });
+
   const search = watch("search");
   const status = watch("status");
+
   const columns = [
     {
       name: "Actions",
@@ -93,6 +98,24 @@ export default function ActiveMember() {
       ),
     },
     {
+      name: "Image",
+      width: "100px",
+      cell: (item) => (
+        <>
+          <Avatar className="AvatarRoot  inline-flex items-center justify-center align-middle overflow-hidden select-none">
+            {/* <AvatarImage
+              src={`https://api.dicebear.com/6.x/initials/svg?seed=${item?.firstName}%20${item?.lastName}`}
+              alt={`${item?.firstName} ${item?.lastName}`}
+            /> */}
+            <AvatarFallback>
+              {item?.firstName?.charAt(0).toUpperCase()}
+              {item?.lastName?.charAt(0).toUpperCase()}
+            </AvatarFallback>
+          </Avatar>
+        </>
+      ),
+    },
+    {
       name: "Name",
       width: "270px",
       selector: (row) => row?.firstName + " " + row?.lastName,
@@ -102,16 +125,12 @@ export default function ActiveMember() {
       width: "140px",
       selector: (row) => row.contactOne,
     },
-    // {
-    //     name: 'Vehicle #',
-    //     selector: row => row.vehicleNo,
-    // },
     {
       name: "Joining Date",
       width: "150px",
       selector: (row) => row.status.joinDate,
       cell: (row) => (
-        <div>{moment(row.status.joinDate).format("DD-MM-YYYY")}</div>
+        <div>{moment(row.status.joinDate).format("DD-MMM-YYYY")}</div>
       ),
     },
     {
@@ -152,46 +171,11 @@ export default function ActiveMember() {
     },
     ,
   ];
+
   const editMember = (e) => {
     router.push(`/admin/editMember/${e._id}`);
   };
-  async function getMemeber(search, page) {
-    try {
-      setLoading(true);
-      let response = await axiosInstance.get(
-        `/customer?status=${status}&search=${search}&limit=${10}&offset=${
-          page > 1 ? (page - 1) * 10 : 0
-        }`
-      );
-      console.log("response.data", response.data);
 
-      setData(response.data);
-      setTotalPages(Math.ceil(response.data.count / 10));
-      setLoading(false);
-    } catch (e) {
-      setLoading(false);
-      console.log(e);
-    }
-  }
-  const handleCustomerStatusChange = async (row) => {
-    let confirm = window.confirm("Are You Sure?");
-    if (confirm) {
-      let body = {
-        status: row.currentStatus == "active" ? "inActive" : "active",
-      };
-      try {
-        let response = await axiosInstance.put(
-          `/customer/status/${row._id}`,
-          body
-        );
-        await getMemeber("", 0);
-        toast.success(response.message);
-      } catch (e) {
-        console.log(e.message);
-        toast.error(e.message);
-      }
-    }
-  };
   const handleGenerateChallan = async () => {
     try {
       let response = await axiosInstance.post("/challan/generate", {
@@ -207,42 +191,94 @@ export default function ActiveMember() {
       setShowModal(false);
     }
   };
+  
+  async function getMemeber() {
+    try {
+      setLoading(true);
+      let response = await axiosInstance.get(
+        `/customer?status=${status}&search=${search}&limit=${limit}&offset=${
+          currentPage > 1 ? (currentPage - 1) * limit : 0
+        }`
+      );
+      setData(response.data);
+      setTotalCount(response?.data?.count);
+      setTotalPages(Math.ceil(response.data.count / limit));
+      setLoading(false);
+    } catch (e) {
+      setLoading(false);
+      console.log(e);
+    }
+  }
+  /// status change event
+  const handleCustomerStatusChange = async (row) => {
+    let confirm = window.confirm("Are You Sure?");
+    if (confirm) {
+      let body = {
+        status: row.currentStatus == "active" ? "inActive" : "active",
+      };
+      try {
+        let response = await axiosInstance.put(
+          `/customer/status/${row?._id}`,
+          body
+        );
+        await getMemeber();
+        toast.success(response.data.message);
+      } catch (e) {
+        toast.error(e?.response?.data?.message || "Server Error");
+      }
+    }
+  };
 
-  useEffect(() => {
-    let isNotDesktop = window.innerWidth < 450;
-    setTableView(!isNotDesktop);
-    getMemeber("", 0);
-  }, []);
-
+  // change view table and card
   const toggleView = () => {
     setTableView(!tableView);
   };
 
-  /// work when search value change
+  // Effect for currentPage and limt change
   useEffect(() => {
-    const handler = setTimeout(() => {
-      const fetchData = async () => {
-        setCurrentPage(1);
-        setValue("status", "");
-        await getMemeber(search, 0);
+    if (isMounted.current) {
+      getMemeber();
+    }
+  }, [currentPage, limit]);
+
+  // Effect for search change
+  useEffect(() => {
+    if (isMounted.current) {
+      const handler = setTimeout(() => {
+        const fetchData = async () => {
+          setCurrentPage(1); // Reset pagination
+          await getMemeber();
+        };
+
+        fetchData();
+      }, 500); // 0.5 second debounce
+      return () => {
+        clearTimeout(handler); // Cleanup
       };
-
-      fetchData();
-    }, 1000); // 1 second delay
-
-    return () => {
-      clearTimeout(handler); // Cleanup on unmount or search change
-    };
+    }
   }, [search]);
 
-  /// work when status value change
+  // Effect for `status` change
   useEffect(() => {
-    setCurrentPage(1);
-    getMemeber(search, 0);
+    if (isMounted.current) {
+      setCurrentPage(1); // Reset pagination
+      getMemeber();
+    }
   }, [status]);
+
+  // Set the flag to true after the first render
+  useEffect(() => {
+    let isNotDesktop = window.innerWidth < 450;
+    setTableView(!isNotDesktop);
+    if (!isMounted.current) {
+      getMemeber();
+    }
+    isMounted.current = true;
+  }, []);
+
   return (
-    // <Dashboard >
-    <div className="w-full">
+    <div>
+      {/* challan generate model  */}
       {showModal && (
         <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
           <div className="relative w-auto my-6 mx-auto max-w-3xl">
@@ -296,6 +332,7 @@ export default function ActiveMember() {
           </div>
         </div>
       )}{" "}
+      {/* filter area */}
       <div className="flex bg-white p-2 rounded-md gap-2 mb-2 md:gap-0 md:flex-row flex-col md:items-center items-end justify-between">
         <div className="w-full md:w-1/4">
           <Textfield2
@@ -317,16 +354,16 @@ export default function ActiveMember() {
               register={register}
               options={[
                 {
-                  value: "",
-                  label: "All",
-                },
-                {
                   value: "active",
                   label: "Active",
                 },
                 {
                   value: "inActive",
                   label: "In Active",
+                },
+                {
+                  value: "",
+                  label: "All",
                 },
               ]}
             />
@@ -356,6 +393,7 @@ export default function ActiveMember() {
           </button>
         </div>
       </div>
+      {/* date view table and card  */}
       <div>
         {loading ? (
           <Loader />
@@ -369,45 +407,6 @@ export default function ActiveMember() {
               progressPending={loading}
               pagination={false}
             />
-            <div className="flex justify-center items-center space-x-2 mt-4">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setCurrentPage(1)}
-                disabled={currentPage === 1}
-              >
-                <ChevronsLeft className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                disabled={currentPage === 1}
-              >
-                <ChevronLeft className="h-4 w-4" />
-              </Button>
-              <span className="text-sm font-medium">
-                Page {currentPage} of {totalPages}
-              </span>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() =>
-                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-                }
-                disabled={currentPage === totalPages}
-              >
-                <ChevronRight className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setCurrentPage(totalPages)}
-                disabled={currentPage === totalPages}
-              >
-                <ChevronsRight className="h-4 w-4" />
-              </Button>
-            </div>
           </div>
         ) : (
           <div className="flex flex-col">
@@ -433,10 +432,10 @@ export default function ActiveMember() {
                           <CardTitle className="text-lg font-semibold flex justify-between items-center">
                             {item?.firstName + " " + item?.lastName}
                             <Avatar className="h-10 w-10 sm:h-14 sm:w-14">
-                              <AvatarImage
+                              {/* <AvatarImage
                                 src={`https://api.dicebear.com/6.x/initials/svg?seed=${item?.firstName}%20${item?.lastName}`}
                                 alt={`${item?.firstName} ${item?.lastName}`}
-                              />
+                              /> */}
                               <AvatarFallback>
                                 {item?.firstName?.charAt(0).toUpperCase()}
                                 {item?.lastName?.charAt(0).toUpperCase()}
@@ -478,11 +477,11 @@ export default function ActiveMember() {
                                 </span>
                                 <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80">
                                   {moment(item?.status?.joinDate).format(
-                                    "DD-MM-YYYY"
+                                    "DD-MMM-YYYY"
                                   ) || "N/A"}
                                 </div>
                               </div>
-                              <div
+                              {/* <div
                                 key={3}
                                 className="flex items-center justify-between"
                               >
@@ -503,7 +502,7 @@ export default function ActiveMember() {
                                 <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80">
                                   {item?.location?.dropOffAddress || "N/A"}
                                 </div>
-                              </div>
+                              </div> */}
                               <div
                                 key={3}
                                 className="flex items-center justify-between"
@@ -555,10 +554,15 @@ export default function ActiveMember() {
                   );
                 })}
             </div>
-            <div className="flex justify-center items-center space-x-2 mt-4">
+          </div>
+        )}
+        {!loading && (
+          <div className="flex justify-center items-center space-x-2 mt-4">
+            <div className="flex items-center gap-2">
               <Button
                 variant="outline"
-                size="sm"
+                size="icon"
+                className="h-8 w-8"
                 onClick={() => setCurrentPage(1)}
                 disabled={currentPage === 1}
               >
@@ -566,30 +570,48 @@ export default function ActiveMember() {
               </Button>
               <Button
                 variant="outline"
-                size="sm"
+                size="icon"
+                className="h-8 w-8"
                 onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                 disabled={currentPage === 1}
               >
                 <ChevronLeft className="h-4 w-4" />
               </Button>
-              <span className="text-sm font-medium">
-                Page {currentPage} of {totalPages}
+
+              <span className="text-xs sm:text-sm  text-muted-foreground">
+                Page {currentPage} of {totalPages} | {totalCount} {}
+                records
               </span>
+              <div className="relative inline-block">
+                <select
+                  value={limit.toString()}
+                  onChange={(e) => setLimit(Number(e.target.value))}
+                  className="w-full rounded-md border border-input bg-background px-2 py-1 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                >
+                  {[10, 20, 50, 100].map((option) => (
+                    <option key={option} value={option.toString()}>
+                      {option}
+                    </option>
+                  ))}
+                </select>
+              </div>
               <Button
                 variant="outline"
-                size="sm"
+                size="icon"
+                className="h-8 w-8"
                 onClick={() =>
                   setCurrentPage((prev) => Math.min(prev + 1, totalPages))
                 }
-                disabled={currentPage === totalPages}
+                disabled={currentPage === totalPages || limit >= totalCount}
               >
                 <ChevronRight className="h-4 w-4" />
               </Button>
               <Button
                 variant="outline"
-                size="sm"
+                size="icon"
+                className="h-8 w-8"
                 onClick={() => setCurrentPage(totalPages)}
-                disabled={currentPage === totalPages}
+                disabled={currentPage === totalPages || limit >= totalCount}
               >
                 <ChevronsRight className="h-4 w-4" />
               </Button>
@@ -598,6 +620,5 @@ export default function ActiveMember() {
         )}
       </div>
     </div>
-    // </Dashboard>
   );
 }

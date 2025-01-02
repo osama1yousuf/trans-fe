@@ -6,7 +6,7 @@ export const driverFormIntVal = {
   cnicNo: null,
   cnicExpiry: null,
   contactOne: null,
-  contactTwo: '',
+  contactTwo: "",
   password: "",
   address: "",
   joiningDate: null,
@@ -25,13 +25,13 @@ export const driverFormIntVal = {
   },
   salaryInfo: [
     {
-      salary: null,
-      salaryType: "",
+      salary: "",
+      salaryType: "monthEnd",
     },
   ],
 
   shifts: [],
-  noOfShifts: null,
+  noOfShifts: 0,
 };
 
 export const memberFormIntVal = {
@@ -47,7 +47,7 @@ export const memberFormIntVal = {
   residentialAddress: "",
   pickUpAddress: "",
   dropOffAddress: "",
-  bothSide: "",
+  bothSide: "bothSide",
   //timings
   pickUpTime: "",
   dropOffTime: "",
@@ -59,5 +59,5 @@ export const memberFormIntVal = {
   sunDropOffTime: "",
   // fees
   fees: "",
-  feeType: "",
+  feeType: "advance",
 };

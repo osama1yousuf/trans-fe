@@ -177,7 +177,6 @@ export default function Dashboard({ children }) {
   }, [pathname]);
   return (
     <div className="flex h-screen flex-col bg-gray-100">
-      {console.log("hasPasswordChange", hasPasswordChange)}
       {hasPasswordChange && pathname !== "/" && (
         <>
           {showModal && <LocationModel setShowModal={setShowModal} />}
@@ -292,11 +291,16 @@ export default function Dashboard({ children }) {
       {pathname === "/" && (
         <main className="flex-1 overflow-auto bg-gray-100 p-4">{children}</main>
       )}
-      {!hasPasswordChange && pathname !== "/" && (
-        <main className="h-full my-auto">
-          <ResetPasswordForm isIntialChange={true} setHasPasswordChange={setHasPasswordChange}/>
-        </main>
-      )}
+      {!hasPasswordChange &&
+        hasPasswordChange !== undefined &&
+        pathname !== "/" && (
+          <main className="h-full my-auto">
+            <ResetPasswordForm
+              isIntialChange={true}
+              setHasPasswordChange={setHasPasswordChange}
+            />
+          </main>
+        )}
     </div>
   );
 }

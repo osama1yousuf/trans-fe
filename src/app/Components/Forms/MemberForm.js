@@ -179,10 +179,13 @@ const MemberForm = ({
                     label={"Travel Type"}
                     name={"bothSide"}
                     setFocus={setFocus}
-                    showDefaultOption={true}
                     error={errors?.bothSide}
                     register={register}
                     options={[
+                      {
+                        value: "bothSide",
+                        label: "Both Side",
+                      },
                       {
                         value: "pickUp",
                         label: "Pickup",
@@ -190,10 +193,6 @@ const MemberForm = ({
                       {
                         value: "dropOff",
                         label: "DropOff",
-                      },
-                      {
-                        value: "bothSide",
-                        label: "Both Side",
                       },
                     ]}
                   />
@@ -359,7 +358,6 @@ const MemberForm = ({
                 <SelectInput
                   label={"Fees Type"}
                   name={"feeType"}
-                  showDefaultOption={true}
                   setFocus={setFocus}
                   error={errors?.feeType}
                   register={register}

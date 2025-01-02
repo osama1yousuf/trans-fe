@@ -2,7 +2,7 @@
 import { useRouter } from "next/navigation";
 import { BiEdit } from "react-icons/bi";
 import DataTable from "react-data-table-component";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import axiosInstance from "@/interceptor/axios_inteceptor";
 import { toast } from "react-toastify";
 import Loader from "@/app/Components/Loader";
@@ -15,6 +15,8 @@ import {
   ChevronsLeft,
   ChevronsRight,
   Edit,
+  IdCard,
+  Bus,
   LayoutGrid,
   TableIcon,
 } from "lucide-react";
@@ -37,10 +39,11 @@ export default function ActiveDriver() {
   } = useForm({
     defaultValues: {
       search: "",
-      status: "",
+      status: "active",
     },
   });
   const router = useRouter();
+  const isMounted = useRef(false);
   const [data, setData] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -48,6 +51,8 @@ export default function ActiveDriver() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [isImagePreview, setIsImagePreview] = useState(false);
+  const [limit, setLimit] = useState(10);
+  const [totalCount, setTotalCount] = useState(0);
   const [modalImage, setModalImage] = useState("");
   const [challanData, setChallanData] = useState({
     customerId: null,
@@ -124,6 +129,25 @@ export default function ActiveDriver() {
       name: "Name",
       width: "300px",
       selector: (row) => row?.firstName + " " + row?.lastName,
+      cell: (item) => (
+        <div>
+          <div className="flex gap-1">
+            {item?.cnicExpiry !== "" &&
+            new Date(item?.cnicExpiry) <= new Date() ? (
+              <IdCard className="w-5 h-5 text-red-500" />
+            ) : (
+              <IdCard className="w-5 h-5 text-green-500" />
+            )}
+            {item?.licenseInfo?.licenseExpiry !== "" &&
+            new Date(item?.licenseInfo?.licenseExpiry) <= new Date() ? (
+              <Bus className="w-5 h-5 text-red-500" />
+            ) : (
+              <Bus className="w-5 h-5 text-green-500" />
+            )}
+          </div>
+          {item.firstName + " " + item.lastName}
+        </div>
+      ),
     },
     {
       name: "Mobile #",
@@ -139,50 +163,6 @@ export default function ActiveDriver() {
       name: "Joining Date",
       width: "150px",
       selector: (row) => new Date(row.joiningDate).toDateString(),
-    },
-    {
-      name: "Cnic Expire",
-      width: "120px",
-      selector: (row) => row.cnicExpiry,
-      cell: (row) => (
-        <div
-          className={`${
-            row?.cnicExpiry !== ""
-              ? new Date(row?.cnicExpiry) <= new Date()
-                ? "border-red-800 text-red-800 bg-red-200"
-                : "border-green-800 text-green-800 bg-green-200"
-              : "border-gray-800 text-gray-600 bg-gray-200"
-          } border rounded-lg p-1 font-semibold text-xs m-auto`}
-        >
-          {row?.cnicExpiry !== ""
-            ? new Date(row?.cnicExpiry) <= new Date()
-              ? "Yes"
-              : "No"
-            : "N/A"}
-        </div>
-      ),
-    },
-    {
-      name: "License Expire",
-      width: "120px",
-      selector: (row) => row.licenseInfo,
-      cell: (row) => (
-        <div
-          className={`${
-            row?.licenseInfo?.licenseExpiry !== ""
-              ? new Date(row?.licenseInfo?.licenseExpiry) <= new Date()
-                ? "border-red-800 text-red-800 bg-red-200"
-                : "border-green-800 text-green-800 bg-green-200"
-              : "border-gray-800 text-gray-600 bg-gray-200"
-          } border rounded-lg p-1 font-semibold text-xs m-auto`}
-        >
-          {row?.licenseInfo?.licenseExpiry !== ""
-            ? new Date(row?.licenseInfo?.licenseExpiry) <= new Date()
-              ? "Yes"
-              : "No"
-            : "N/A"}
-        </div>
-      ),
     },
     {
       name: "Status",
@@ -222,9 +202,14 @@ export default function ActiveDriver() {
     },
   ];
 
+  const search = watch("search");
+  const status = watch("status");
+
+  /// edit driver event
   const editDriver = (e) => {
     router.push(`/admin/editdriver/${e._id}`);
   };
+  // assignment event
   const handleEditAssign = (e) => {
     router.push(`/admin/assign/${e._id}`);
   };
@@ -245,22 +230,25 @@ export default function ActiveDriver() {
     }
   };
 
-  async function getDriver(search, page, status) {
+  /// get driver
+  async function getDriver() {
     try {
       setLoading(true);
       let response = await axiosInstance.get(
-        `/driver?status=${status}&search=${search}&limit=${10}&offset=${
-          page > 1 ? (page - 1) * 10 : 0
+        `/driver?status=${status}&search=${search}&limit=${limit}&offset=${
+          currentPage > 1 ? (currentPage - 1) * limit : 0
         }`
       );
       setData(response.data);
-      setTotalPages(Math.ceil(response.data.count / 10));
+      setTotalCount(response?.data?.count);
+      setTotalPages(Math.ceil(response.data.count / limit));
       setLoading(false);
     } catch (e) {
       setLoading(false);
       console.log(e);
     }
   }
+  /// status change event
   const handleCustomerStatusChange = async (row) => {
     let confirm = window.confirm("Are You Sure");
     if (confirm) {
@@ -273,53 +261,63 @@ export default function ActiveDriver() {
           body
         );
         toast.success(response.data.message);
-        getDriver("", 1, "");
+        getDriver();
       } catch (e) {
-        console.log(e);
-        toast.error(e.data);
+        toast.error(e?.response?.data?.message || "Server Error");
       }
     }
   };
-  const search = watch("search");
-  const status = watch("status");
-  useEffect(() => {
-    let isNotDesktop = window.innerWidth < 450;
-    setTableView(!isNotDesktop);
-    getDriver("", 1, "");
-  }, []);
 
+  // change view table and card
   const toggleView = () => {
     setTableView(!tableView);
   };
 
+  // Effect for currentPage and limt change
   useEffect(() => {
-    getDriver("", currentPage, status);
-  }, [currentPage]);
-  /// work when search value change
+    if (isMounted.current) {
+      getDriver();
+    }
+  }, [currentPage, limit]);
+
+  // Effect for search change
   useEffect(() => {
-    const handler = setTimeout(() => {
-      const fetchData = async () => {
-        setCurrentPage(1);
-        setValue("status", "");
-        await getDriver(search, 0, "");
+    if (isMounted.current) {
+      const handler = setTimeout(() => {
+        const fetchData = async () => {
+          setCurrentPage(1); // Reset pagination
+          await getDriver();
+        };
+
+        fetchData();
+      }, 500); // 0.5 second debounce
+      return () => {
+        clearTimeout(handler); // Cleanup
       };
-
-      fetchData();
-    }, 1000); // 1 second delay
-
-    return () => {
-      clearTimeout(handler); // Cleanup on unmount or search change
-    };
+    }
   }, [search]);
 
-  /// work when status value change
+  // Effect for `status` change
   useEffect(() => {
-    setCurrentPage(1);
-    getDriver(search, 0, status);
+    if (isMounted.current) {
+      setCurrentPage(1); // Reset pagination
+      getDriver();
+    }
   }, [status]);
+
+  // Set the flag to true after the first render
+  useEffect(() => {
+    let isNotDesktop = window.innerWidth < 450;
+    setTableView(!isNotDesktop);
+    if (!isMounted.current) {
+      getDriver();
+    }
+    isMounted.current = true;
+  }, []);
+
   return (
-    // <Dashboard >
     <div>
+      {/* challan generate model  */}
       {showModal && (
         <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
           <div className="relative w-auto my-6 mx-auto max-w-3xl">
@@ -373,6 +371,7 @@ export default function ActiveDriver() {
           </div>
         </div>
       )}
+      {/* image preview model */}
       {isImagePreview && (
         <ImagePreview
           closeModal={() => {
@@ -382,6 +381,7 @@ export default function ActiveDriver() {
           imageUrl={modalImage}
         />
       )}
+      {/* filter area */}
       <div className="flex bg-white p-2 rounded-md gap-2 mb-2 md:gap-0 md:flex-row flex-col md:items-center items-end justify-between">
         <div className="w-full md:w-1/4">
           <Textfield2
@@ -403,16 +403,16 @@ export default function ActiveDriver() {
               register={register}
               options={[
                 {
-                  value: "",
-                  label: "All",
-                },
-                {
                   value: "active",
                   label: "Active",
                 },
                 {
                   value: "inActive",
                   label: "In Active",
+                },
+                {
+                  value: "",
+                  label: "All",
                 },
               ]}
             />
@@ -442,6 +442,7 @@ export default function ActiveDriver() {
           </button>
         </div>
       </div>
+      {/* date view table and card  */}
       <div>
         {loading ? (
           <Loader />
@@ -454,56 +455,7 @@ export default function ActiveDriver() {
               columns={columns}
               progressPending={loading}
               pagination={false}
-              // paginationServer={true}
-              // highlightOnHover={true}
-              // paginationRowsPerPageOptions={[10]}
-              // paginationTotalRows={data?.count || 0}
-              // paginationPerPage={currentPage}
-              // fixedHeader
-              // onChangePage={(e) => {
-              //   console.log("e", e);
-              //   setCurrentPage(e);
-              // }}
             />
-            <div className="flex justify-center items-center space-x-2 mt-4">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setCurrentPage(1)}
-                disabled={currentPage === 1}
-              >
-                <ChevronsLeft className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                disabled={currentPage === 1}
-              >
-                <ChevronLeft className="h-4 w-4" />
-              </Button>
-              <span className="text-sm font-medium">
-                Page {currentPage} of {totalPages}
-              </span>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() =>
-                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-                }
-                disabled={currentPage === totalPages}
-              >
-                <ChevronRight className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setCurrentPage(totalPages)}
-                disabled={currentPage === totalPages}
-              >
-                <ChevronsRight className="h-4 w-4" />
-              </Button>
-            </div>
           </div>
         ) : (
           <div className="flex flex-col">
@@ -525,9 +477,26 @@ export default function ActiveDriver() {
                           <Edit className="h-4 w-4" />
                         </Button>
 
-                        <CardHeader className="pb-2">
+                        <CardHeader className="pb-2 ">
                           <CardTitle className="text-lg font-semibold flex justify-between items-center">
-                            {item.firstName + " " + item.lastName}
+                            <div>
+                              <div className="flex gap-1">
+                                {item?.cnicExpiry !== "" &&
+                                new Date(item?.cnicExpiry) <= new Date() ? (
+                                  <IdCard className="w-5 h-5 text-red-500" />
+                                ) : (
+                                  <IdCard className="w-5 h-5 text-green-500" />
+                                )}
+                                {item?.licenseInfo?.licenseExpiry !== "" &&
+                                new Date(item?.licenseInfo?.licenseExpiry) <=
+                                  new Date() ? (
+                                  <Bus className="w-5 h-5 text-red-500" />
+                                ) : (
+                                  <Bus className="w-5 h-5 text-green-500" />
+                                )}
+                              </div>
+                              {item.firstName + " " + item.lastName}
+                            </div>
                             <Avatar.Root className="AvatarRoot inline-flex items-center justify-center align-middle overflow-hidden select-none">
                               <Avatar.Image
                                 onClick={() => {
@@ -548,7 +517,7 @@ export default function ActiveDriver() {
                           </CardTitle>
                         </CardHeader>
                         <CardContent className="p-4">
-                          <div className="flex items-start">
+                          <div className="flex items-start ">
                             <div className="flex-grow space-y-2">
                               <div
                                 key={1}
@@ -581,56 +550,6 @@ export default function ActiveDriver() {
                                 </span>
                                 <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80">
                                   {new Date(item.joiningDate).toDateString()}
-                                </div>
-                              </div>
-                              <div
-                                key={3}
-                                className="flex items-center justify-between"
-                              >
-                                <span className="text-sm text-muted-foreground capitalize">
-                                  Cnic Expire:
-                                </span>
-                                <div
-                                  className={`${
-                                    item?.cnicExpiry !== ""
-                                      ? new Date(item?.cnicExpiry) <= new Date()
-                                        ? "border-red-800 text-red-800 bg-red-200"
-                                        : "border-green-800 text-green-800 bg-green-200"
-                                      : "border-gray-800 text-gray-600 bg-gray-200"
-                                  } border rounded-lg p-1 font-semibold text-xs`}
-                                >
-                                  {item?.cnicExpiry !== ""
-                                    ? new Date(item?.cnicExpiry) <= new Date()
-                                      ? "Yes"
-                                      : "No"
-                                    : "N/A"}
-                                </div>
-                              </div>
-                              <div
-                                key={3}
-                                className="flex items-center justify-between"
-                              >
-                                <span className="text-sm text-muted-foreground capitalize">
-                                  License Expire:
-                                </span>
-                                <div
-                                  className={`${
-                                    item?.licenseInfo?.licenseExpiry !== ""
-                                      ? new Date(
-                                          item?.licenseInfo?.licenseExpiry
-                                        ) <= new Date()
-                                        ? "border-red-800 text-red-800 bg-red-200"
-                                        : "border-green-800 text-green-800 bg-green-200"
-                                      : "border-gray-800 text-gray-600 bg-gray-200"
-                                  } border rounded-lg p-1 font-semibold text-xs`}
-                                >
-                                  {item?.licenseInfo?.licenseExpiry !== ""
-                                    ? new Date(
-                                        item?.licenseInfo?.licenseExpiry
-                                      ) <= new Date()
-                                      ? "Yes"
-                                      : "No"
-                                    : "N/A"}
                                 </div>
                               </div>
                               <div
@@ -683,10 +602,15 @@ export default function ActiveDriver() {
                   );
                 })}
             </div>
-            <div className="flex justify-center items-center space-x-2 mt-4">
+          </div>
+        )}
+        {!loading && (
+          <div className="flex justify-center items-center space-x-2 mt-4">
+            <div className="flex items-center gap-2">
               <Button
                 variant="outline"
-                size="sm"
+                size="icon"
+                className="h-8 w-8"
                 onClick={() => setCurrentPage(1)}
                 disabled={currentPage === 1}
               >
@@ -694,30 +618,48 @@ export default function ActiveDriver() {
               </Button>
               <Button
                 variant="outline"
-                size="sm"
+                size="icon"
+                className="h-8 w-8"
                 onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                 disabled={currentPage === 1}
               >
                 <ChevronLeft className="h-4 w-4" />
               </Button>
-              <span className="text-sm font-medium">
-                Page {currentPage} of {totalPages}
+
+              <span className="text-xs sm:text-sm  text-muted-foreground">
+                Page {currentPage} of {totalPages} | {totalCount} {}
+                records
               </span>
+              <div className="relative inline-block">
+                <select
+                  value={limit.toString()}
+                  onChange={(e) => setLimit(Number(e.target.value))}
+                  className="w-full rounded-md border border-input bg-background px-2 py-1 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                >
+                  {[10, 20, 50, 100].map((option) => (
+                    <option key={option} value={option.toString()}>
+                      {option}
+                    </option>
+                  ))}
+                </select>
+              </div>
               <Button
                 variant="outline"
-                size="sm"
+                size="icon"
+                className="h-8 w-8"
                 onClick={() =>
                   setCurrentPage((prev) => Math.min(prev + 1, totalPages))
                 }
-                disabled={currentPage === totalPages}
+                disabled={currentPage === totalPages || limit >= totalCount}
               >
                 <ChevronRight className="h-4 w-4" />
               </Button>
               <Button
                 variant="outline"
-                size="sm"
+                size="icon"
+                className="h-8 w-8"
                 onClick={() => setCurrentPage(totalPages)}
-                disabled={currentPage === totalPages}
+                disabled={currentPage === totalPages || limit >= totalCount}
               >
                 <ChevronsRight className="h-4 w-4" />
               </Button>
@@ -726,6 +668,5 @@ export default function ActiveDriver() {
         )}
       </div>
     </div>
-    // </Dashboard>
   );
 }

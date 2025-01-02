@@ -57,7 +57,7 @@ export const validateDriverSchema = Yup.object().shape({
   // Salary Info Validation
   salaryInfo: Yup.array().of(
     Yup.object().shape({
-      salary: Yup.string().required("Salary amount is required"),
+      salary: Yup.string().min(1).required("Salary amount is required"),
       salaryType: Yup.string()
         .oneOf(["advance", "monthEnd"], "Invalid option selected")
         .required("Please select an option"),
@@ -74,10 +74,8 @@ export const validateDriverSchema = Yup.object().shape({
     })
   ),
   noOfShifts: Yup.number()
-    .nullable("Number of shifts is required")
+    .nullable()
+    .required("Number of shifts is required")
     .min(1, "Minimum number of shifts is 1")
-    .max(4, "Maximum number of shifts is 4")
-    .required("Number of shifts is required"),
+    .typeError("Number of shifts must be a number"),
 });
-
-
