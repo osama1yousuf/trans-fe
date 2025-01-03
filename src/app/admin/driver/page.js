@@ -28,6 +28,7 @@ import Image from "next/image";
 import ImagePreview from "@/app/Components/ImagePreview";
 import SelectInput from "@/app/Components/SelectInput";
 import Link from "next/link";
+import InactiveForm from "@/app/Components/Forms/InactiveForm";
 
 export default function ActiveDriver() {
   // useUserValidator("superadmin")
@@ -55,6 +56,8 @@ export default function ActiveDriver() {
   const [limit, setLimit] = useState(10);
   const [totalCount, setTotalCount] = useState(0);
   const [modalImage, setModalImage] = useState("");
+  const [inactiveModal, setInactiveModal] = useState(false);
+  const [inactiveModalUser, setInactiveModalUser] = useState(null);
   const [challanData, setChallanData] = useState({
     customerId: null,
     driverId: null,
@@ -178,7 +181,14 @@ export default function ActiveDriver() {
               ? "border-green-800 text-green-800 bg-green-200"
               : "border-red-800 text-red-800 bg-red-200"
           }`}
-          onClick={() => handleCustomerStatusChange(row)}
+          onClick={() => {
+            if (row.status.toUpperCase() === "ACTIVE") {
+              setInactiveModal(true);
+              setInactiveModalUser(row);
+            } else {
+              handleStatusChangetoActive(row);
+            }
+          }}
         >
           {row.status === "active" ? (
             <span className="relative">
@@ -237,7 +247,7 @@ export default function ActiveDriver() {
     try {
       setLoading(true);
       let response = await axiosInstance.get(
-        `/driver?status=${status}&search=${search}&limit=${limit}&offset=${
+        `/driver?status=${status}&search=${search.trim()}&limit=${limit}&offset=${
           currentPage > 1 ? (currentPage - 1) * limit : 0
         }`
       );
@@ -250,12 +260,12 @@ export default function ActiveDriver() {
       console.log(e);
     }
   }
-  /// status change event
-  const handleCustomerStatusChange = async (row) => {
-    let confirm = window.confirm("Are You Sure");
+  /// status change to active user event
+  const handleStatusChangetoActive = async (row) => {
+    let confirm = window.confirm("Are You Sure to Active Driver");
     if (confirm) {
       let body = {
-        status: row.status == "active" ? "inActive" : "active",
+        status: "active",
       };
       try {
         let response = await axiosInstance.put(
@@ -267,6 +277,31 @@ export default function ActiveDriver() {
       } catch (e) {
         toast.error(e?.response?.data?.message || "Server Error");
       }
+    }
+  };
+
+  /// status change to inactive user event
+  const handleStatusChangetoInactive = async (values, user) => {
+    console.log("val", values, user);
+
+    let body = {
+      status: "inActive",
+      comments: values?.comments,
+      inActiveDate: values?.date,
+    };
+    try {
+      let response = await axiosInstance.put(
+        `/driver/status/${user._id}`,
+        body
+      );
+      if (response) {
+        setInactiveModal(false);
+        toast.success(response.data.message);
+        getDriver();
+      }
+    } catch (e) {
+      setInactiveModal(false);
+      toast.error(e?.response?.data?.message || "Server Error");
     }
   };
 
@@ -318,7 +353,7 @@ export default function ActiveDriver() {
   }, []);
 
   return (
-    <div>
+    <div className="z-0">
       {/* challan generate model  */}
       {showModal && (
         <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
@@ -372,6 +407,14 @@ export default function ActiveDriver() {
             </div>
           </div>
         </div>
+      )}
+      {inactiveModal && (
+        <InactiveForm
+          setInactiveModal={setInactiveModal}
+          inactiveModalUser={inactiveModalUser}
+          type={"Driver"}
+          handleStatusChangetoInactive={handleStatusChangetoInactive}
+        />
       )}
       {/* image preview model */}
       {isImagePreview && (
@@ -573,9 +616,16 @@ export default function ActiveDriver() {
                                       ? "border-green-800 text-green-800 bg-green-200"
                                       : "border-red-800 text-red-800 bg-red-200"
                                   }`}
-                                  onClick={() =>
-                                    handleCustomerStatusChange(item)
-                                  }
+                                  onClick={() => {
+                                    if (
+                                      item.status.toUpperCase() === "ACTIVE"
+                                    ) {
+                                      setInactiveModalUser(item);
+                                      setInactiveModal(true);
+                                    } else {
+                                      handleStatusChangetoActive(item);
+                                    }
+                                  }}
                                 >
                                   {item.status === "active" ? (
                                     <span className="relative">

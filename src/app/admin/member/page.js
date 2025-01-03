@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import Loader from "@/app/Components/Loader";
+import InactiveForm from "@/app/Components/Forms/InactiveForm";
 
 export default function ActiveMember() {
   // useUserValidator("superadmin");
@@ -51,6 +52,8 @@ export default function ActiveMember() {
   const [totalPages, setTotalPages] = useState(0);
   const [limit, setLimit] = useState(10);
   const [totalCount, setTotalCount] = useState(0);
+  const [inactiveModal, setInactiveModal] = useState(false);
+  const [inactiveModalUser, setInactiveModalUser] = useState(null);
   const [challanData, setChallanData] = useState({
     customerId: null,
     driverId: null,
@@ -145,7 +148,15 @@ export default function ActiveMember() {
               ? "border-green-800 text-green-800 bg-green-200"
               : "border-red-800 text-red-800 bg-red-200"
           }`}
-          onClick={() => handleCustomerStatusChange(row)}
+          // onClick={() => handleCustomerStatusChange(row)}
+          onClick={() => {
+            if (row.currentStatus.toUpperCase() === "ACTIVE") {
+              setInactiveModal(true);
+              setInactiveModalUser(row);
+            } else {
+              handleStatusChangetoActive(row);
+            }
+          }}
         >
           {row.currentStatus === "active" ? (
             <span className="relative">
@@ -191,7 +202,7 @@ export default function ActiveMember() {
       setShowModal(false);
     }
   };
-  
+
   async function getMemeber() {
     try {
       setLoading(true);
@@ -209,12 +220,13 @@ export default function ActiveMember() {
       console.log(e);
     }
   }
-  /// status change event
-  const handleCustomerStatusChange = async (row) => {
-    let confirm = window.confirm("Are You Sure?");
+
+  /// status change to active user event
+  const handleStatusChangetoActive = async (row) => {
+    let confirm = window.confirm("Are You Sure to Active Member?");
     if (confirm) {
       let body = {
-        status: row.currentStatus == "active" ? "inActive" : "active",
+        status: "active",
       };
       try {
         let response = await axiosInstance.put(
@@ -229,6 +241,30 @@ export default function ActiveMember() {
     }
   };
 
+  /// status change to inactive user event
+  const handleStatusChangetoInactive = async (values, user) => {
+    console.log("val", values, user);
+
+    let body = {
+      status: "inActive",
+      comments: values?.comments,
+      inActiveDate: values?.date,
+    };
+    try {
+      let response = await axiosInstance.put(
+        `/customer/status/${user._id}`,
+        body
+      );
+      if (response) {
+        setInactiveModal(false);
+        toast.success(response.data.message);
+        getMemeber();
+      }
+    } catch (e) {
+      setInactiveModal(false);
+      toast.error(e?.response?.data?.message || "Server Error");
+    }
+  };
   // change view table and card
   const toggleView = () => {
     setTableView(!tableView);
@@ -332,6 +368,14 @@ export default function ActiveMember() {
           </div>
         </div>
       )}{" "}
+      {inactiveModal && (
+        <InactiveForm
+          setInactiveModal={setInactiveModal}
+          inactiveModalUser={inactiveModalUser}
+          type={"Member"}
+          handleStatusChangetoInactive={handleStatusChangetoInactive}
+        />
+      )}
       {/* filter area */}
       <div className="flex bg-white p-2 rounded-md gap-2 mb-2 md:gap-0 md:flex-row flex-col md:items-center items-end justify-between">
         <div className="w-full md:w-1/4">
@@ -521,9 +565,20 @@ export default function ActiveMember() {
                                       ? "border-green-800 text-green-800 bg-green-200"
                                       : "border-red-800 text-red-800 bg-red-200"
                                   }`}
-                                  onClick={() =>
-                                    handleCustomerStatusChange(item)
-                                  }
+                                  // onClick={() =>
+                                  //   handleCustomerStatusChange(item)
+                                  // }
+                                  onClick={() => {
+                                    if (
+                                      item.currentStatus.toUpperCase() ===
+                                      "ACTIVE"
+                                    ) {
+                                      setInactiveModalUser(item);
+                                      setInactiveModal(true);
+                                    } else {
+                                      handleStatusChangetoActive(item);
+                                    }
+                                  }}
                                 >
                                   {item.currentStatus === "active" ? (
                                     <span className="relative">
