@@ -199,7 +199,7 @@ export default function InactiveDriver() {
             setFocus={setFocus}
             error={""}
             name={"search"}
-            label={"Search By Name"}
+            label={"Search"}
             type={"text"}
           />
         </div>

@@ -1,6 +1,6 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { BiEdit } from "react-icons/bi";
+import {} from "lucide-react";
 import DataTable from "react-data-table-component";
 import { Suspense, useEffect, useRef, useState } from "react";
 import axiosInstance from "@/interceptor/axios_inteceptor";
@@ -15,6 +15,7 @@ import {
   ChevronRight,
   ChevronsLeft,
   ChevronsRight,
+  LockKeyholeOpen,
   Edit,
   IdCard,
   Bus,
@@ -75,9 +76,17 @@ export default function ActiveDriver() {
           <span title="Edit Driver Detail">
             <button
               onClick={(e) => editDriver(row)}
-              className="bg-green-500 hover:bg-blue-700 text-white ms-1 p-1 rounded"
+              className="bg-green-500 hover:bg-gray-500 text-white ms-1 p-1 rounded"
             >
-              <BiEdit />
+              <Edit className="w-3 h-3" />
+            </button>
+          </span>
+          <span title="Reset Password">
+            <button
+              onClick={(e) => resetPassword(row)}
+              className="bg-yellow-500 hover:bg-gray-500 text-white ms-1 p-1 rounded"
+            >
+              <LockKeyholeOpen className="w-3 h-3" />
             </button>
           </span>
           {/* <span title="Edit Driver Assignment">
@@ -220,6 +229,24 @@ export default function ActiveDriver() {
   /// edit driver event
   const editDriver = (e) => {
     router.push(`/admin/editdriver/${e._id}`);
+  };
+
+  const resetPassword = async (e) => {
+    try {
+      if (confirm("Are  you sure you want to reset password")) {
+        let body = { contactOne: e?.contactOne };
+        console.log("body", body);
+        let response = await axiosInstance.post(
+          "/superadmin/reset-password",
+          body
+        );
+        console.log("response", response);
+        toast.success(response.data.message);
+      }
+    } catch (e) {
+      console.log("e", e);
+      toast.error(e?.response?.data?.message || "Server Error");
+    }
   };
   // assignment event
   const handleEditAssign = (e) => {
@@ -434,7 +461,7 @@ export default function ActiveDriver() {
             setFocus={setFocus}
             error={""}
             name={"search"}
-            label={"Search By Name"}
+            label={"Search"}
             type={"text"}
           />
         </div>
@@ -470,7 +497,7 @@ export default function ActiveDriver() {
               disabled={loading}
               className={` text-white bg-[#811630] hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-md text-xs px-5 py-2.5 text-center`}
             >
-              Create Driver
+              Create
             </button>
           </Link>
 
@@ -495,7 +522,7 @@ export default function ActiveDriver() {
           <div className="max-w-[96vw] rounded-sm">
             <Suspense fallback={<Loader />} />
             <DataTable
-              title={"Driver List"}
+              title={"Drivers"}
               data={data?.data.length > 0 ? data.data : []}
               columns={columns}
               progressPending={loading}
@@ -513,16 +540,25 @@ export default function ActiveDriver() {
                         key={item.image}
                         className="overflow-hidden relative group hover:shadow-lg transition-shadow duration-300"
                       >
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="absolute top-1 right-1 duration-200"
-                          onClick={(e) => editDriver(item)}
-                        >
-                          <Edit className="h-4 w-4" />
-                        </Button>
-
-                        <CardHeader className="pb-2 ">
+                        <div className="absolute top-1 right-2 duration-200 flex  gap-1">
+                          <span title="Reset Password">
+                            <button
+                              onClick={(e) => resetPassword(item)}
+                              className="bg-yellow-500 hover:bg-gray-500 text-white ms-1 p-1 rounded"
+                            >
+                              <LockKeyholeOpen className="w-3 h-3" />
+                            </button>
+                            <span title="Edit Driver Detail">
+                              <button
+                                onClick={(e) => editDriver(item)}
+                                className="bg-green-500 hover:bg-gray-500 text-white ms-1 p-1 rounded"
+                              >
+                                <Edit className="w-3 h-3" />
+                              </button>
+                            </span>
+                          </span>
+                        </div>
+                        <CardHeader className="pb-2 mt-2">
                           <CardTitle className="text-lg font-semibold flex justify-between items-center">
                             <div>
                               <div className="flex gap-1">

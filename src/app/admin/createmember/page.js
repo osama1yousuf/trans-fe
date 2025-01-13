@@ -65,41 +65,45 @@ export default function CreateMember() {
       .length(11, "Phone Number Invalid")
       .required("Phone Number required"),
     contactTwo: Yup.string()
-      .nullable() // Allow the field to be null
+      .nullable()
       .test("length", "Phone Number Invalid", (value) => {
-        // Check if the value is provided and has a length of 11
         return value === "" || value.length === 11;
       }),
     bothSide: Yup.string()
       .oneOf(["bothSide", "pickUp", "dropOff"], "Invalid option selected")
       .required("Please select an option"),
-    pickUpAddress: Yup.string()
-    .when("bothSide", {
+    pickUpAddress: Yup.string().when("bothSide", {
       is: (value) => value === "pickUp" || value === "bothSide", // When "pickUp" or "bothSide"
       then: (schema) => schema.required("Please select a pick-up address"), // Make it required
       otherwise: (schema) => schema.notRequired().nullable(), // Make it optional and allow null for "dropOff"
     }),
-    pickUpTime: Yup.string()
-    .when("bothSide", {
-      is: (value) => value === "pickUp" || value === "bothSide", // When "pickUp" or "bothSide"
-      then: (schema) => schema.required("Please select a pick-up time"), // Make it required
-      otherwise: (schema) => schema.notRequired().nullable(), // Make it optional for other cases
-    }),
-    satPickUpTime: Yup.string(),
-    sunPickUpTime: Yup.string(),
     dropOffAddress: Yup.string().when("bothSide", {
       is: (value) => value === "dropOff" || value === "bothSide", // When "dropOff" or "bothSide"
       then: (schema) => schema.required("Please select a drop-off address"), // Make it required
       otherwise: (schema) => schema.notRequired().nullable(), // Make it optional for other cases
     }),
-    dropOffTime: Yup.string()
-    .when("bothSide", {
-      is: (value) => value === "dropOff" || value === "bothSide", // When "dropOff" or "bothSide"
-      then: (schema) => schema.required("Please select a drop-off time"), // Make it required
-      otherwise: (schema) => schema.notRequired().nullable(), // Make it optional for other cases
-    }),
-    satDropOffTime: Yup.string(),
-    sunDropOffTime: Yup.string(),
+    timings: Yup.array().of(
+      Yup.object().shape({
+        travelType: Yup.string()
+          .oneOf(["bothSide", "pickUp", "dropOff"], "Invalid option selected")
+          .required("Please select an option"),
+        day: Yup.string().required("Please select a day"),
+        pickUpTime: Yup.string().when("travelType", {
+          is: (value) => value === "pickUp" || value === "bothSide",
+          then: (schema) => schema.required("Please select a pickup time"),
+          otherwise: (schema) => schema,
+        }),
+        dropOffTime: Yup.string().when("travelType", {
+          is: (value) => value === "dropOff" || value === "bothSide",
+          then: (schema) => schema.required("Please select a drop-off time"),
+          otherwise: (schema) => schema,
+        }),
+        pickUpAddress: Yup.string().required("Please select a pickup address"),
+        dropOffAddress: Yup.string().required(
+          "Please select a drop-off address"
+        ),
+      })
+    ),
     fees: Yup.string().required("Fees amount is required"),
     feeType: Yup.string()
       .oneOf(["advance", "monthEnd"], "Invalid option selected")
@@ -151,43 +155,7 @@ export default function CreateMember() {
         dropOffAddress: values.dropOffAddress,
         dropType: values.bothSide,
       },
-      timings: {
-        pickUpTime:
-          values.bothSide == "pickUp" || values.bothSide == "bothSide"
-            ? values.pickUpTime
-            : null,
-        dropOffTime:
-          values.bothSide == "dropOff" || values.bothSide == "bothSide"
-            ? values.dropOffTime
-            : null,
-        saturdayTimings:
-          values.satPickUpTime || values.satDropOffTime
-            ? {
-                pickUpTime:
-                  values.bothSide == "pickUp" || values.bothSide == "bothSide"
-                    ? values.satPickUpTime
-                    : null,
-                dropOffTime:
-                  values.bothSide == "dropOff" || values.bothSide == "bothSide"
-                    ? values.satDropOffTime
-                    : null,
-              }
-            : null,
-        sundayTimings:
-          values.sunPickUpTime || values.sunDropOffTime
-            ? {
-                pickUpTime:
-                  values.bothSide == "pickUp" || values.bothSide == "bothSide"
-                    ? values.sunPickUpTime
-                    : null,
-                dropOffTime:
-                  values.bothSide == "dropOff" || values.bothSide == "bothSide"
-                    ? values.pickUpTime
-                    : null,
-              }
-            : null,
-      },
-
+      timings: values.timings,
       fees: values.fees,
       feesType: values.feeType,
     };

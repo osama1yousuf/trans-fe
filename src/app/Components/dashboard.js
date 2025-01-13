@@ -46,24 +46,6 @@ export default function Dashboard({ children }) {
       url: "admin/driver",
       type: "SUPERADMIN",
       active: false,
-      // Content: [
-      //   {
-      //     name: "Create Driver",
-      //     endpoints: "admin/createdriver",
-      //   },
-      //   {
-      //     name: "Active Driver",
-      //     endpoints: "admin/activedriver",
-      //   },
-      //   {
-      //     name: "InActive Driver",
-      //     endpoints: "admin/inactivedriver",
-      //   },
-      //   {
-      //     name: "Attendance",
-      //     endpoints: "admin/attendance",
-      //   },
-      // ],
     },
     {
       name: "Dashboard",
@@ -93,48 +75,35 @@ export default function Dashboard({ children }) {
       url: "admin/member",
       type: "SUPERADMIN",
       active: false,
-      // Content: [
-      //   {
-      //     name: "Create Member",
-      //     endpoints: "admin/createmember",
-      //   },
-      //   {
-      //     name: "Active Member",
-      //     endpoints: "admin/activemember",
-      //   },
-      //   {
-      //     name: "InActive Member",
-      //     endpoints: "admin/inactivemember",
-      //   },
-      // ],
     },
     // {
     //   name: "Location",
     //   url: "admin/location",
     //   active: false,
     // },
-    // {
-    //   name: "Financial",
-    //   url: "financial",
-    //   active: false,
-    //   Content: [
-    //     {
-    //       name: "Challan / PaySlip",
-    //       endpoints: "admin/challan",
-    //       // active: false,
-    //     },
-    //     {
-    //       name: "Collection",
-    //       endpoints: "admin/collection",
-    //       // active: false,
-    //     },
-    //     {
-    //       name: "Payment",
-    //       endpoints: "admin/payment",
-    //       // active: false,
-    //     },
-    //   ],
-    // },
+    {
+      name: "Financial",
+      url: "financial",
+      type: "SUPERADMIN",
+      active: false,
+      Content: [
+        {
+          name: "Challan / PaySlip",
+          endpoints: "admin/challan",
+          // active: false,
+        },
+        {
+          name: "Collection",
+          endpoints: "admin/collection",
+          // active: false,
+        },
+        {
+          name: "Payment",
+          endpoints: "admin/payment",
+          // active: false,
+        },
+      ],
+    },
   ];
   /// for setting currentUserTypeSideBarOption
   useEffect(() => {

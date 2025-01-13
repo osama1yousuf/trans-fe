@@ -49,15 +49,7 @@ export const memberFormIntVal = {
   dropOffAddress: "",
   bothSide: "bothSide",
   //timings
-  pickUpTime: "",
-  dropOffTime: "",
-  //timing // saturdayTimings
-  satPickUpTime: "",
-  satDropOffTime: "",
-  //timing // sundayTimings
-  sunPickUpTime: "",
-  sunDropOffTime: "",
-  // fees
+  timings: [],
   fees: "",
   feeType: "advance",
 };

@@ -8,7 +8,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import moment from "moment";
-import { BiEdit } from "react-icons/bi";
 import { useRouter } from "next/navigation";
 import Textfield2 from "@/app/Components/TextField2";
 import SelectInput from "@/app/Components/SelectInput";
@@ -18,6 +17,7 @@ import {
   ChevronRight,
   ChevronsLeft,
   ChevronsRight,
+  LockKeyholeOpen,
   Edit,
   LayoutGrid,
   TableIcon,
@@ -75,12 +75,18 @@ export default function ActiveMember() {
           <span title="Edit Member">
             <button
               onClick={(e) => editMember(row)}
-              className="bg-green-500 hover:bg-blue-700 text-white  p-1 rounded"
-              type="submit"
+              className="bg-green-500 hover:bg-gray-500 text-white ms-1 p-1 rounded"
             >
-              <BiEdit />
+              <Edit className="w-3 h-3" />
             </button>
-            {/* <button className="bg-green-500 hover:bg-blue-700 text-white ms-1 p-1 rounded" type="submit">Edit driver</button> */}
+          </span>
+          <span title="Reset Password">
+            <button
+              onClick={(e) => resetPassword(row)}
+              className="bg-yellow-500 hover:bg-gray-500 text-white ms-1 p-1 rounded"
+            >
+              <LockKeyholeOpen className="w-3 h-3" />
+            </button>
           </span>
           {/* <span title="Customer Challan Generate">
             <button
@@ -265,6 +271,25 @@ export default function ActiveMember() {
       toast.error(e?.response?.data?.message || "Server Error");
     }
   };
+
+  const resetPassword = async (e) => {
+    try {
+      if (confirm("Are  you sure you want to reset password")) {
+        let body = { contactOne: e?.contactOne };
+        console.log("body", body);
+        let response = await axiosInstance.post(
+          "/superadmin/reset-password",
+          body
+        );
+        console.log("response", response);
+        toast.success(response.data.message);
+      }
+    } catch (e) {
+      console.log("e", e);
+      toast.error(e?.response?.data?.message || "Server Error");
+    }
+  };
+
   // change view table and card
   const toggleView = () => {
     setTableView(!tableView);
@@ -384,7 +409,7 @@ export default function ActiveMember() {
             setFocus={setFocus}
             error={""}
             name={"search"}
-            label={"Search By Name"}
+            label={"Search"}
             type={"text"}
           />
         </div>
@@ -420,7 +445,7 @@ export default function ActiveMember() {
               disabled={loading}
               className={` text-white bg-[#811630] hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-md text-xs px-5 py-2.5 text-center`}
             >
-              Create Member
+              Create
             </button>
           </Link>
 
@@ -445,7 +470,7 @@ export default function ActiveMember() {
           <div className="max-w-[96vw] rounded-sm">
             <Suspense fallback={<Loader />} />
             <DataTable
-              title={"Member List"}
+              title={"Members"}
               data={data?.data?.length > 0 ? data.data : []}
               columns={columns}
               progressPending={loading}
@@ -463,16 +488,25 @@ export default function ActiveMember() {
                         key={item.image}
                         className="overflow-hidden relative group hover:shadow-lg transition-shadow duration-300"
                       >
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="absolute top-1 right-1 duration-200"
-                          onClick={(e) => editMember(item)}
-                        >
-                          <Edit className="h-4 w-4" />
-                        </Button>
-
-                        <CardHeader className="pb-2">
+                        <div className="absolute top-1 right-2 duration-200 flex  gap-1">
+                          <span title="Reset Password">
+                            <button
+                              onClick={(e) => resetPassword(item)}
+                              className="bg-yellow-500 hover:bg-gray-500 text-white ms-1 p-1 rounded"
+                            >
+                              <LockKeyholeOpen className="w-3 h-3" />
+                            </button>
+                            <span title="Edit Member From">
+                              <button
+                                onClick={(e) => editMember(item)}
+                                className="bg-green-500 hover:bg-gray-500 text-white ms-1 p-1 rounded"
+                              >
+                                <Edit className="w-3 h-3" />
+                              </button>
+                            </span>
+                          </span>
+                        </div>
+                        <CardHeader className="pb-2 mt-2">
                           <CardTitle className="text-lg font-semibold flex justify-between items-center">
                             {item?.firstName + " " + item?.lastName}
                             <Avatar className="h-10 w-10 sm:h-14 sm:w-14">

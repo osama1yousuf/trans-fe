@@ -2,6 +2,7 @@ import { MdError } from "react-icons/md";
 const SelectInput = ({
   label,
   name,
+  disable,
   register,
   showDefaultOption,
   options,
@@ -20,6 +21,7 @@ const SelectInput = ({
         {error && <MdError className="text-red-500" />}
       </div>
       <select
+        disabled={disable}
         {...register(name)}
         onFocus={() => handleFocus(name)}
         className={
@@ -30,7 +32,7 @@ const SelectInput = ({
       >
         {showDefaultOption && <option value="">Select Option</option>}
         {options.map((e, i) => (
-          <option key={i} value={e.value}>
+          <option disabled={e?.disable} key={i} value={e.value}>
             {e.label}
           </option>
         ))}

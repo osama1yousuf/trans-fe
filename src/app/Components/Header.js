@@ -42,7 +42,10 @@ const Header = ({ toggleSidebar, isSidebarOpen }) => {
               <Menu className="h-6 w-6" />
             )}
           </Button>
-          <h2 className="text-lg font-semibold">Transport Ease</h2>
+          <div>
+            <h2 className="text-lg font-semibold">Transport Ease</h2>
+            {/* <h6 className="text-xs font-semibold">Transport Ease</h6> */}
+          </div>
         </div>
 
         <div>
