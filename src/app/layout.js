@@ -5,6 +5,7 @@ import { Inter } from "next/font/google";
 const inter = Inter({ subsets: ["latin"] });
 import { ToastContainer } from "react-toastify";
 import Dashboard from "./Components/dashboard";
+import ChatArea from "./Components/Chat";
 
  const metadata = {
   title: 'Transport Ease',
@@ -20,6 +21,7 @@ export default function RootLayout({ children }) {
       </head>
       <body className={inter.className}>
         <ToastContainer position="top-center" theme="colored" />
+        <ChatArea />
         <Dashboard>{children}</Dashboard>
       </body>
     </html>

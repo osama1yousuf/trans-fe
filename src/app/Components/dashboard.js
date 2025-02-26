@@ -1,18 +1,15 @@
 "use client";
 import Link from "next/link";
-import React, { useEffect, useState, useRef } from "react";
-import { Menu, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import React, { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
-
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import logo from "../../assets/logo.png";
 import LocationModel from "./LocationModal";
 import Header from "./Header";
 import { ResetPasswordForm } from "./ResetPasswordForm";
+
 export default function Dashboard({ children }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -144,6 +141,8 @@ export default function Dashboard({ children }) {
     );
     setActiveUserType(localStorage.getItem("userType"));
   }, [pathname]);
+
+  
   return (
     <div className="flex h-screen flex-col bg-gray-100">
       {hasPasswordChange && pathname !== "/" && (
