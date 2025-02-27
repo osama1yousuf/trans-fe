@@ -1,0 +1,11 @@
+{
+  "firebaseConfig": {
+    "apiKey": "AIzaSyDkjJ1mFIgDgUg-j2sT41VHOs-Mn2JyxKc",
+    "authDomain": "transport-ease-a2183.firebaseapp.com",
+    "projectId": "transport-ease-a2183",
+    "storageBucket": "transport-ease-a2183.firebasestorage.app",
+    "messagingSenderId": "640785840814",
+    "appId": "1:640785840814:web:cba910609b4ec07f224b3f",
+    "measurementId": "G-M64GYZ8TZZ"
+  }
+}

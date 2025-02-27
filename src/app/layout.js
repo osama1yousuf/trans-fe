@@ -6,6 +6,7 @@ const inter = Inter({ subsets: ["latin"] });
 import { ToastContainer } from "react-toastify";
 import Dashboard from "./Components/dashboard";
 
+
  const metadata = {
   title: 'Transport Ease',
   description: 'Safe ride',

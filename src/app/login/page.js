@@ -9,7 +9,10 @@ import { toast } from "react-toastify";
 import { useForm } from "react-hook-form";
 import Textfield2 from "../Components/TextField2";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { requestForToken } from "@/config/firebase";
+import { useEffect, useState } from "react";
 export default function Login() {
+  const [fcmToken, setFcmToken] = useState(null);
   let url = process.env.BASE_URL;
   const pathname = usePathname();
   const router = useRouter();
@@ -36,9 +39,12 @@ export default function Login() {
   });
 
   const onSubmit = async (values) => {
-    console.log("wrk", values);
+    let payload = {
+      ...values,
+      fcmToken,
+    };
     try {
-      const response = await axios.post(`${url}/api/login`, values);
+      const response = await axios.post(`${url}/api/login`, payload);
       if (response.status == 201) {
         let { token, role, user } = response?.data;
         console.log("res", user);
@@ -56,6 +62,17 @@ export default function Login() {
       reset();
     }
   };
+  useEffect(() => {
+    localStorage.clear();
+    const getToken = async () => {
+      const permission = await Notification.requestPermission();
+      if (permission === "granted") {
+        const fcmToken = await requestForToken();
+        setFcmToken(fcmToken);
+      }
+    };
+    getToken();
+  }, []);
   return (
     <section className="bg-gray-50 min-h-screen :bg-gray-900">
       <div className="flex flex-col items-center justify-center px-2 py-3 mx-auto md:h-screen lg:py-0">
