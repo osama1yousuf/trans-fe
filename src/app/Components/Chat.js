@@ -1,83 +1,39 @@
-"use client"
+"use client";
 
-import { useEffect, useState, useRef } from "react"
-import { Button } from "@/components/ui/button"
-import { MessageCircleCodeIcon, X } from "lucide-react"
-import { usePathname } from "next/navigation"
-import axiosInstance from "@/interceptor/axios_inteceptor"
-
+import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { MessageCircleCodeIcon } from "lucide-react";
+import { usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 export default function ChatArea() {
-  const [isOpen, setIsOpen] = useState(false)
-  const pathname = usePathname()
+  const router = useRouter();
+  const pathname = usePathname();
   const [chatType, setChatType] = useState({
     isUser: false,
     userTpye: null,
-  })
-  const [messages, setMessages] = useState([])
-  const messagesEndRef = useRef(null)
+  });
 
   // Scroll to bottom function
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
-  }
+
 
   useEffect(() => {
-    const isToken = localStorage.getItem("token")
+    const isToken = localStorage.getItem("token");
     if (isToken) {
-      const curUserType = localStorage.getItem("userType")
+      const curUserType = localStorage.getItem("userType");
       setChatType({
         ...chatType,
         isUser: isToken && true,
         userTpye: curUserType,
-      })
+      });
     }
-  }, [pathname]) // Removed setChatType dependency
+  }, [pathname]); // Removed setChatType dependency
 
-  useEffect(() => {
-    // Scroll to bottom when messages change or chat opens
-    if (isOpen) {
-      scrollToBottom()
-    }
-  }, [messages, isOpen]) // Removed scrollToBottom dependency
-
-  useEffect(() => {
-    // Get messages initially
-    getMessages()
-
-    // Set up interval for polling
-    const intervalId = setInterval(() => {
-      getMessages()
-    }, 8000)
-
-    // Clean up interval on component unmount
-    return () => clearInterval(intervalId)
-  }, [])
-
-  const getMessages = async () => {
-    try {
-      const { data } = await axiosInstance.get("/driver/message")
-      if (data?.data) {
-        setMessages((prevMessages) => {
-          // Check if we have new messages to avoid unnecessary re-renders
-          if (
-            data.data.length > 0 &&
-            (!prevMessages.length || data.data[data.data.length - 1]?.id !== prevMessages[prevMessages.length - 1]?.id)
-          ) {
-            return [...prevMessages, ...data.data]
-          }
-          return prevMessages
-        })
-      }
-    } catch (error) {
-      console.log("error", error)
-    }
-  }
 
   return (
     <>
-      {chatType.isUser && (
+      {chatType.isUser && chatType.userTpye === "SUPERADMIN" && (
         <div className="fixed bottom-4 right-4 z-50">
-          {isOpen ? (
+          {/* {isOpen ? (
             <div className="bg-white shadow-lg rounded-lg w-80 flex flex-col h-96">
               <div className="bg-[#811630] text-primary-foreground p-4 rounded-t-lg flex justify-between items-center">
                 <h3 className="font-bold">Chat</h3>
@@ -99,12 +55,11 @@ export default function ChatArea() {
                         </div>
                       </div>
                     ))}
-                    {/* This empty div is used as a reference to scroll to */}
                     <div ref={messagesEndRef} />
                   </div>
-                  {/* <form onSubmit={handleSubmit} className="p-4 border-t">
+                  <form onSubmit={handleSubmit} className="p-4 border-t">
                     <div className="flex space-x-2">
-                      <Input
+                      <input
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
                         placeholder="Type a message..."
@@ -112,7 +67,7 @@ export default function ChatArea() {
                       />
                       <Button type="submit">Send</Button>
                     </div>
-                  </form> */}
+                  </form>
                 </>
               ) : (
                 <div className="flex justify-center items-center h-full">
@@ -120,17 +75,18 @@ export default function ChatArea() {
                 </div>
               )}
             </div>
-          ) : (
-            <Button
-              onClick={() => setIsOpen(true)}
-              className="rounded-full bg-[#811630] w-14 h-14 flex items-center justify-center"
-            >
-              <MessageCircleCodeIcon className="w-8 h-8" />
-            </Button>
-          )}
+          ) : ( */}
+          <Button
+            onClick={() => {
+              router.push("/admin/chat");
+            }}
+            className="rounded-full bg-[#811630] w-14 h-14 flex items-center justify-center"
+          >
+            <MessageCircleCodeIcon className="w-8 h-8" />
+          </Button>
+          {/* )} */}
         </div>
       )}
     </>
-  )
+  );
 }
-
