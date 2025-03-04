@@ -64,6 +64,18 @@ export default function Login() {
   };
   useEffect(() => {
     localStorage.clear();
+    
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker
+        .register('/firebase-messaging-sw.js')
+        .then((registration) => {
+          console.log('Service Worker registered:', registration);
+        })
+        .catch((error) => {
+          console.error('Service Worker registration failed:', error);
+        });
+    }
+
     const getToken = async () => {
       const permission = await Notification.requestPermission();
       if (permission === "granted") {
