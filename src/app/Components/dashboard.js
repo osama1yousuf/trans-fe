@@ -9,7 +9,7 @@ import logo from "../../assets/logo.png";
 import LocationModel from "./LocationModal";
 import Header from "./Header";
 import { ResetPasswordForm } from "./ResetPasswordForm";
-import ChatArea from "./Chat";
+import ChatButton from "./ChatButton";
 
 export default function Dashboard({ children }) {
   const router = useRouter();
@@ -143,13 +143,12 @@ export default function Dashboard({ children }) {
     setActiveUserType(localStorage.getItem("userType"));
   }, [pathname]);
 
-  
   return (
     <div className="flex h-screen flex-col bg-gray-100">
       {hasPasswordChange && pathname !== "/" && (
         <>
           {showModal && <LocationModel setShowModal={setShowModal} />}
-          <ChatArea />
+          {pathname !== "/chat" && <ChatButton />}
           <div className="flex h-screen">
             {/* Sidebar */}
             {isSidebarOpen && (

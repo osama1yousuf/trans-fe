@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { MessageCircleCodeIcon } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useRouter } from "next/navigation";
-export default function ChatArea() {
+export default function ChatButton() {
   const router = useRouter();
   const pathname = usePathname();
   const [chatType, setChatType] = useState({
@@ -31,7 +31,7 @@ export default function ChatArea() {
 
   return (
     <>
-      {chatType.isUser && chatType.userTpye === "SUPERADMIN" && (
+      {chatType.isUser && chatType.userTpye !== "CUSTOMER" && (
         <div className="fixed bottom-4 right-4 z-50">
           {/* {isOpen ? (
             <div className="bg-white shadow-lg rounded-lg w-80 flex flex-col h-96">
@@ -78,7 +78,7 @@ export default function ChatArea() {
           ) : ( */}
           <Button
             onClick={() => {
-              router.push("/admin/chat");
+              router.push("/chat");
             }}
             className="rounded-full bg-[#811630] w-14 h-14 flex items-center justify-center"
           >
