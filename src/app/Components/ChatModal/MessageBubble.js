@@ -1,10 +1,18 @@
-import { format } from "date-fns";
-import { Check, CheckCheck } from "lucide-react";
+// import { format } from "date-fns";
+// import { Check, CheckCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export function MessageBubble({ message }) {
+  const formatTime = (dateString) => {
+    const date = new Date(dateString);
+    let hours = date.getHours();
+    const minutes = date.getMinutes().toString().padStart(2, "0");
+    const ampm = hours >= 12 ? "PM" : "AM";
+    hours = hours % 12 || 12; // Convert 0 (midnight) to 12
+    return `${hours}:${minutes} ${ampm}`;
+  };
   const myId = JSON.parse(localStorage.getItem("user"))._id;
   const userType = localStorage.getItem("userType");
   const isMe =
@@ -48,7 +56,7 @@ export function MessageBubble({ message }) {
         <p className="text-sm">{message.body}</p>
         <div className="flex items-center justify-end gap-1 mt-1">
           <span className="text-[10px] text-gray-500">
-            {format(new Date(message.createdAt), "h:mm a")}
+            {formatTime(message.createdAt)}
           </span>
           {/* {isMe && (
             <span className="text-emerald-600">
