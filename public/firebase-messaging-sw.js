@@ -34,6 +34,7 @@ messaging.onBackgroundMessage((payload) => {
     // body: `${body} at ${new Date(time).toLocaleTimeString()} time:${time} new Date(time): ${new Date(time)}`,
     body: `${body} at ${formattedTime}`,
     icon: icon || "/icon512_rounded.png", // Fallback icon
+    tag: Date.now().toString(),
   };
   self.registration.showNotification(title, notificationOptions);
 });
