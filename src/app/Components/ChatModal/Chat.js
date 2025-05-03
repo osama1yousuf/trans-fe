@@ -44,7 +44,7 @@ export function Chat() {
     // Set up interval for polling
     const intervalId = setInterval(() => {
       getMessages();
-    }, 8000);
+    }, 2000);
 
     // Clean up interval on component unmount
     return () => clearInterval(intervalId);

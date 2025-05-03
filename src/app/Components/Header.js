@@ -4,8 +4,12 @@ import { Menu, X } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import axios from "axios";
+import { requestForToken } from "@/config/firebase";
 const Header = ({ toggleSidebar, isSidebarOpen }) => {
   const router = useRouter();
+
+  let url = process.env.BASE_URL;
 
   const [user, setUser] = useState(null);
   const [profileModal, setProfileModal] = useState(false);
@@ -26,6 +30,21 @@ const Header = ({ toggleSidebar, isSidebarOpen }) => {
   useEffect(() => {
     setUser(JSON.parse(localStorage.getItem("user")));
   }, []);
+
+  const handleLogout = async () => {
+    const fcmToken = await requestForToken();
+    const user = JSON.parse(localStorage.getItem("user"));
+    const userType = localStorage.getItem("userType");
+    const response = await axios.post(`${url}/api/logout`, {
+      _id: user?._id,
+      userType: userType,
+      fcmToken: fcmToken
+    });
+    localStorage.clear();
+    setProfileModal(!profileModal);
+    router.push("/");
+  }
+
   return (
     <header className="bg-white flex items-center sticky top-0 h-[12vh] pt-2 border-b-2 p-4 z-30">
       <div className="flex items-center w-full justify-between">
@@ -132,11 +151,7 @@ const Header = ({ toggleSidebar, isSidebarOpen }) => {
                 </button>
                 <button
                   className="w-full flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50"
-                  onClick={() => {
-                    localStorage.clear();
-                    setProfileModal(!profileModal);
-                    router.push("/");
-                  }}
+                  onClick={handleLogout}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
