@@ -47,7 +47,6 @@ export default function Login() {
       const response = await axios.post(`${url}/api/login`, payload);
       if (response.status == 201) {
         let { token, role, user } = response?.data;
-        console.log("res", user);
         localStorage.setItem("token", token);
         localStorage.setItem("userType", role);
         localStorage.setItem("user", JSON.stringify(user));

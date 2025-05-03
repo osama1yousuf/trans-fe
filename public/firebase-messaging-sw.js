@@ -23,9 +23,16 @@ const messaging = firebase.messaging();
 
 // Handle background messages
 messaging.onBackgroundMessage((payload) => {
-  const { title, body, icon, time } = payload.data;
+  const { title, body, icon } = payload.data;
+  const formattedTime = new Date().toLocaleTimeString([], {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true,
+  });
+
   const notificationOptions = {
-    body: `${body} at ${new Date(time).toLocaleTimeString()}`,
+    // body: `${body} at ${new Date(time).toLocaleTimeString()} time:${time} new Date(time): ${new Date(time)}`,
+    body: `${body} at ${formattedTime}`,
     icon: icon || "/icon512_rounded.png", // Fallback icon
   };
   self.registration.showNotification(title, notificationOptions);
@@ -35,7 +42,7 @@ messaging.onBackgroundMessage((payload) => {
 self.addEventListener("notificationclick", function (event) {
   console.log("Notification click received.");
   event.notification.close(); // Close the notification
-  const redirectUrl = "/admin/chat"; // Your desired redirect URL
+  const redirectUrl = "/chat"; // Your desired redirect URL
   event.waitUntil(
     clients
       .matchAll({ type: "window", includeUncontrolled: true })
