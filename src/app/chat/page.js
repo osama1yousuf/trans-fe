@@ -9,7 +9,6 @@ import { Chat } from "@/app/Components/ChatModal/Chat";
 export default function ChatAreaPage() {
   const [messages, setMessages] = useState([]);
   const messagesEndRef = useRef(null);
-
   // Scroll to bottom function
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
