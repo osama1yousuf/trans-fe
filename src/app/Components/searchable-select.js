@@ -7,11 +7,12 @@ export default function SearchableSelect({
   options = [],
   placeholder = "Select an option...",
   emptyMessage = "No option found.",
+  handleSelect,
+  driverIds,
 }) {
   const buttonRef = useRef(null);
   const inputRef = useRef(null);
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState("");
   const [search, setSearch] = useState("");
   const [position, setPosition] = useState("bottom");
 
@@ -26,39 +27,6 @@ export default function SearchableSelect({
     option.label.toLowerCase().includes(search.toLowerCase())
   );
 
- 
-  // useEffect(() => {
-  //   const handleClickOutside = (event) => {
-  //     if (
-  //       buttonRef.current &&
-  //       !buttonRef.current.contains(event.target) &&
-  //       inputRef.current &&
-  //       !inputRef.current.contains(event.target)
-  //     ) {
-  //       setOpen(false);
-  //     }
-  //   };
-
-  //   document.addEventListener("mousedown", handleClickOutside);
-  //   return () => {
-  //     document.removeEventListener("mousedown", handleClickOutside);
-  //   };
-  // }, []); 
-
- 
-  // useEffect(() => {
-  //   (function () {
-  //     if (open && buttonRef.current) {
-  //       const rect = buttonRef.current.getBoundingClientRect();
-  //       const spaceBelow = window.innerHeight - rect.bottom;
-  //       const spaceAbove = rect.top;
-  //       setPosition(
-  //         spaceBelow < 320 && spaceAbove > spaceBelow ? "top" : "bottom"
-  //       );
-  //     }
-  //   })();
-  // }, [open]); 
-
   return (
     <div className="relative w-[300px]">
       <button
@@ -71,9 +39,7 @@ export default function SearchableSelect({
         aria-controls={open ? "select-dropdown" : undefined}
       >
         <span className="truncate">
-          {value
-            ? options.find((option) => option.value === value)?.label
-            : placeholder}
+          {driverIds?.length > 0 ? `${driverIds.length} selected` : placeholder}
         </span>
         <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
       </button>
@@ -103,21 +69,23 @@ export default function SearchableSelect({
                 <div
                   key={option.value}
                   className={`relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 ${
-                    value === option.value
+                    driverIds?.includes(option.value)
                       ? "bg-accent text-accent-foreground"
                       : ""
                   }`}
                   role="option"
-                  aria-selected={value === option.value}
+                  aria-selected={driverIds?.includes(option.value)}
                   onClick={() => {
-                    setValue(value === option.value ? "" : option.value);
+                    handleSelect(option.value);
                     setOpen(false);
                     setSearch("");
                   }}
                 >
                   <Check
                     className={`mr-2 h-4 w-4 ${
-                      value === option.value ? "opacity-100" : "opacity-0"
+                      driverIds.includes(option.value)
+                        ? "opacity-100"
+                        : "opacity-0"
                     }`}
                   />
                   {option.label}

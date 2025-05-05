@@ -1,17 +1,6 @@
 "use client";
-import {
-  CalendarDays,
-  User,
-  Bus,
-  LayoutGrid,
-  TableIcon,
-} from "lucide-react";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { CalendarDays, User, Bus, LayoutGrid, TableIcon } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useForm } from "react-hook-form";
 import DataTable from "react-data-table-component";
 import {
@@ -43,18 +32,18 @@ export default function Attendance() {
         type: "",
         driverIds: [],
         fromDate: (function () {
-          let date = new Date(
+          const date = new Date(
             new Date().getFullYear(),
             new Date().getMonth(),
             1
           );
           date.setUTCHours(0, 0, 0, 0);
-          return date.toISOString();
+          return date.toISOString().split("T")[0]; // ✅ YYYY-MM-DD
         })(),
         toDate: (function () {
-          let date = new Date();
+          const date = new Date();
           date.setUTCHours(23, 59, 59, 59);
-          return date.toISOString();
+          return date.toISOString().split("T")[0]; // ✅ YYYY-MM-DD
         })(),
       },
     },
@@ -63,12 +52,11 @@ export default function Attendance() {
   const [data, setData] = useState([]);
   const [tableView, setTableView] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
   const [driverList, setDriverList] = useState([]);
   const [totalPages, setTotalPages] = useState(0);
-  const [dataForGrid, setDataForGrid] = useState([]);
 
   const getAttendance = async (search, page) => {
+    console.log("first", search);
     setLoading(true);
     let from_date = search?.fromDate
       ? new Date(search.fromDate).setUTCHours(0, 0, 0, 0)
@@ -84,7 +72,6 @@ export default function Attendance() {
     };
     let res = await getDriverAttendanceForAdmin(searchBody, page);
     setData(res);
-    console.log("res", res);
 
     // setDataForGrid(res.splice(0, 10));
     setTotalPages(res.length || 0);
@@ -93,10 +80,10 @@ export default function Attendance() {
 
   const fromDate = watch("search.fromDate");
   const toDate = watch("search.toDate");
-
+  const driverIds = watch("search.driverIds");
   useEffect(() => {
-    getAttendance({ fromDate, toDate }, 0);
-  }, [fromDate, toDate]);
+    getAttendance({ fromDate, toDate, driverIds }, 0);
+  }, [fromDate, toDate, driverIds]);
 
   useEffect(() => {
     setValue(
@@ -153,7 +140,7 @@ export default function Attendance() {
             value="item-1"
           >
             <AccordionTrigger className="px-2">Filters</AccordionTrigger>
-            <AccordionContent className="w-full flex rounded-2 flex-wrap">
+            <div className="w-full flex rounded-2 flex-wrap mb-2">
               <div className="w-full lg:w-1/4  px-3">
                 <Textfield2
                   label={"From Date"}
@@ -172,21 +159,29 @@ export default function Attendance() {
                   type={"date"}
                 />
               </div>
-              {/* <div className="mt-5 px-3">
-              <SearchableSelect
-                options={
-                  driverList.length > 0
-                    ? driverList.map((e) => {
-                        return {
-                          label: `${e?.firstName} ${e?.contactOne}`,
-                          value: e?._id,
-                        };
-                      })
-                    : []
-                }
-              />
-            </div> */}
-            </AccordionContent>
+              <div className="mt-5 w-full lg:w-1/4 px-3">
+                <SearchableSelect
+                  handleSelect={(val) => {
+                    const previousValue = driverIds || [];
+                    const newValue = previousValue.includes(val)
+                      ? previousValue.filter((id) => id !== val)
+                      : [...previousValue, val];
+                    setValue("search.driverIds", newValue);
+                  }}
+                  driverIds={driverIds}
+                  options={
+                    driverList.length > 0
+                      ? driverList.map((e) => {
+                          return {
+                            label: `${e?.firstName} ${e?.contactOne}`,
+                            value: e?._id,
+                          };
+                        })
+                      : []
+                  }
+                />
+              </div>
+            </div>
           </AccordionItem>
         </Accordion>
         <div className="w-full md:w-1/6 ml-3">
@@ -204,6 +199,17 @@ export default function Attendance() {
         <Loader />
       ) : tableView ? (
         <div className="max-w-[96vw] rounded-sm">
+          <span>
+            {driverIds
+              .map(
+                (id) =>
+                  driverList.find((driver) => driver._id === id)?.firstName +
+                  " " +
+                  driverList.find((driver) => driver._id === id)?.lastName
+              )
+              .filter(Boolean)
+              .join(", ")}
+          </span>
           <Suspense fallback={<Loader />} />
           <DataTable
             title={"Attendance Record"}
@@ -245,7 +251,7 @@ export default function Attendance() {
                             <div className="flex items-center gap-2">
                               <Bus className="h-4 w-4" />
                               <span className="text-sm font-medium">
-                                Trip {trip?.shift.replace("SHIFT_" , "")}
+                                Trip {trip?.shift.replace("SHIFT_", "")}
                               </span>
                             </div>
                             <div className="flex gap-2">
@@ -270,50 +276,6 @@ export default function Attendance() {
                 );
               })}
           </div>
-          {/* <div className="flex justify-center items-center space-x-2 mt-4">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setCurrentPage(1)}
-              disabled={currentPage === 1}
-            >
-              <ChevronsLeft className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                setCurrentPage((prev) => Math.max(prev - 1, 1));
-                setDataForGrid(
-                  data.splice((currentPage - 1) * 10, (currentPage + 1) * 10)
-                );
-              }}
-              disabled={currentPage === 1}
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            <span className="text-sm font-medium">
-              Page {currentPage} of {totalPages}
-            </span>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() =>
-                setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-              }
-              disabled={currentPage === totalPages}
-            >
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setCurrentPage(totalPages)}
-              disabled={currentPage === totalPages}
-            >
-              <ChevronsRight className="h-4 w-4" />
-            </Button>
-          </div> */}
         </div>
       )}
     </div>

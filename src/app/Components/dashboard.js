@@ -52,6 +52,12 @@ export default function Dashboard({ children }) {
       active: false,
     },
     {
+      name: "Attendance",
+      url: "admin/attendance",
+      type: "SUPERADMIN",
+      active: false,
+    },
+    {
       name: "Dashboard",
       url: "dashboard",
       type: "DRIVER",
