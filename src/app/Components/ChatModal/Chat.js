@@ -52,7 +52,7 @@ export function Chat() {
 
   const getMessages = async () => {
     try {
-      const { data } = await axiosInstance.get("/driver/message");
+      const { data } = await axiosInstance.get(`/driver/message?limit=50&offset=0`);
       if (data?.data) {
         setMessages((prevMessages) => {
           // Check if we have new messages to avoid unnecessary re-renders
@@ -67,7 +67,7 @@ export function Chat() {
   };
 
   return (
-    <div className="flex flex-col relative max-h-[84vh] min-h-[84vh] sm:max-h-[82vh] sm:min-h-[82vh]">
+    <div className="flex flex-col relative h-full">
       <ChatHeader />
       <MessageList messages={messages} />
       <MessageInput onSendMessage={handleSendMessage} />

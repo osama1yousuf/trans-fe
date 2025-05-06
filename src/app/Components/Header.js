@@ -46,7 +46,7 @@ const Header = ({ toggleSidebar, isSidebarOpen }) => {
   }
 
   return (
-    <header className="bg-white flex items-center sticky top-0 h-[12vh] pt-2 border-b-2 p-4 z-30">
+    <header className="bg-white flex items-center sticky top-0 h-[8vh] border-b-2 px-4 z-30">
       <div className="flex items-center w-full justify-between">
         <div className="flex items-center">
           <Button
@@ -73,7 +73,7 @@ const Header = ({ toggleSidebar, isSidebarOpen }) => {
             className="p-1"
             onClick={() => setProfileModal(!profileModal)}
           >
-            <Avatar className="h-10 w-10 sm:h-14 sm:w-14">
+            <Avatar className="md:h-10 md:w-10 sm:h-8 sm:w-8">
               <AvatarImage
                 src={`https://api.dicebear.com/6.x/initials/svg?seed=${user?.firstName}%20${user?.lastName}`}
                 alt={`${user?.firstName} ${user?.lastName}`}
@@ -92,7 +92,7 @@ const Header = ({ toggleSidebar, isSidebarOpen }) => {
             >
               <div className="p-4 bg-[#811630] text-white">
                 <div className="flex items-center space-x-4">
-                  <div className="relative h-10 w-10 sm:h-14 sm:w-14 rounded-full overflow-hidden">
+                  <div className="relative md:h-10 md:w-10 sm:h-8 sm:w-8 rounded-full overflow-hidden">
                     {user?.image ? (
                       <Image
                         src={user?.image}
@@ -101,7 +101,7 @@ const Header = ({ toggleSidebar, isSidebarOpen }) => {
                         objectFit="cover"
                       />
                     ) : (
-                      <Avatar className="h-10 w-10 sm:h-14 sm:w-14">
+                      <Avatar className="md:h-10 md:w-10 sm:h-8 sm:w-8">
                         <AvatarImage
                           src={`https://api.dicebear.com/6.x/initials/svg?seed=${user?.firstName}%20${user?.lastName}`}
                           alt={`${user?.firstName} ${user?.lastName}`}

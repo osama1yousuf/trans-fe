@@ -25,7 +25,7 @@ export function MessageBubble({ message }) {
     <div
       className={cn(
         "flex items-end gap-2 max-w-[80%]",
-        isMe ? "ml-auto" : "mr-auto"
+        isMe ? "ml-auto justify-end" : "mr-auto"
       )}
     >
       {!isMe && (

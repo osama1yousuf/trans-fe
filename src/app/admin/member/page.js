@@ -509,7 +509,7 @@ export default function ActiveMember() {
                         <CardHeader className="pb-2 mt-2">
                           <CardTitle className="text-lg font-semibold flex justify-between items-center">
                             {item?.firstName + " " + item?.lastName}
-                            <Avatar className="h-10 w-10 sm:h-14 sm:w-14">
+                            <Avatar className="md:h-10 md:w-10 sm:h-8 sm:w-8">
                               {/* <AvatarImage
                                 src={`https://api.dicebear.com/6.x/initials/svg?seed=${item?.firstName}%20${item?.lastName}`}
                                 alt={`${item?.firstName} ${item?.lastName}`}

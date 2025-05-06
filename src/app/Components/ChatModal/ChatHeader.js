@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 import logo from '../../../assets/logo.png'
 export function ChatHeader() {
   return (
-    <div className="flex items-center justify-between p-3 bg-emerald-600 text-white">
+    <div className="flex items-center justify-between px-3 bg-emerald-600 text-white">
       <div className="flex items-center gap-3">
         <Avatar className="h-14 w-14 border-1 border-white">
           <AvatarImage src={logo.src} alt="Group" />

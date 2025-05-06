@@ -10,6 +10,7 @@ import LocationModel from "./LocationModal";
 import Header from "./Header";
 import { ResetPasswordForm } from "./ResetPasswordForm";
 import ChatButton from "./ChatButton";
+import { twMerge } from "tailwind-merge";
 
 export default function Dashboard({ children }) {
   const router = useRouter();
@@ -164,11 +165,10 @@ export default function Dashboard({ children }) {
               ></div>
             )}
             <div
-              className={`${
-                isSidebarOpen
-                  ? "translate-x-0 w-64"
-                  : "-translate-x-full w-auto"
-              } fixed lg:static inset-y-0 left-0 z-50 bg-white shadow-lg lg:translate-x-0 transition-transform duration-300 ease-in-out`}
+              className={`${isSidebarOpen
+                ? "translate-x-0 w-64"
+                : "-translate-x-full w-auto"
+                } fixed lg:static inset-y-0 left-0 z-50 bg-white shadow-lg lg:translate-x-0 transition-transform duration-300 ease-in-out`}
             >
               <aside className="h-full overflow-y-auto">
                 <div className="p-4">
@@ -186,12 +186,11 @@ export default function Dashboard({ children }) {
                             if (item.Content) toggleExpand(item.name);
                             if (isMobile && !item.Content) toggleSidebar();
                           }}
-                          className={`flex items-center w-full p-2 text-base font-medium text-gray-900 rounded-lg transition-colors duration-150 ease-in-out ${
-                            pathname === `/${item.url}` &&
+                          className={`flex items-center w-full p-2 text-base font-medium text-gray-900 rounded-lg transition-colors duration-150 ease-in-out ${pathname === `/${item.url}` &&
                             item.type === activeUserType
-                              ? "bg-gray-100 text-gray-600"
-                              : "hover:bg-gray-50"
-                          }`}
+                            ? "bg-gray-100 text-gray-600"
+                            : "hover:bg-gray-50"
+                            }`}
                         >
                           <span className="flex items-center justify-center w-8 h-8 text-lg text-gray-400">
                             <svg
@@ -226,12 +225,11 @@ export default function Dashboard({ children }) {
                                   onClick={() => {
                                     if (isMobile) toggleSidebar();
                                   }}
-                                  className={`flex items-center w-full p-2 text-sm font-medium text-gray-700 transition-colors duration-150 ease-in-out rounded-md pl-11 ${
-                                    pathname === `/${subItem.endpoints}` &&
+                                  className={`flex items-center w-full p-2 text-sm font-medium text-gray-700 transition-colors duration-150 ease-in-out rounded-md pl-11 ${pathname === `/${subItem.endpoints}` &&
                                     item.type === activeUserType
-                                      ? "bg-gray-100 text-gray-600"
-                                      : "hover:bg-gray-50"
-                                  }`}
+                                    ? "bg-gray-100 text-gray-600"
+                                    : "hover:bg-gray-50"
+                                    }`}
                                 >
                                   {subItem.name}
                                 </Link>
@@ -255,8 +253,10 @@ export default function Dashboard({ children }) {
               />
 
               {/* Main content */}
-              <main className="flex-1 h-fit top-[12vh] overflow-auto bg-gray-100 px-2 pt-4 pb-12">
-                <div className="">{children}</div>
+              <main className={twMerge("flex-1 h-fit top-[12vh] overflow-auto bg-gray-100 px-2",
+                !pathname.includes('chat') && 'pt-4'
+              )}>
+                <div className="h-full">{children}</div>
               </main>
             </div>
           </div>
