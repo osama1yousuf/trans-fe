@@ -19,7 +19,6 @@ export function MessageBubble({ message }) {
     userType === "SUPERADMIN"
       ? message?.adminId === myId
       : message?.driverId === myId;
-  console.log("message", message, isMe);
 
   return (
     <div

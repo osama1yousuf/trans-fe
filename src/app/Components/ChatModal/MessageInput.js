@@ -19,7 +19,7 @@ export function MessageInput({ onSendMessage }) {
   }
 
   return (
-    <div className="p-3 bg-gray-50 border-t">
+    <div className="p-3 bg-gray-50 border-t sticky bottom-0">
       <form onSubmit={handleSubmit} className="flex items-center gap-2">
         {/* <Button type="button" variant="ghost" size="icon" className="text-gray-500 hover:text-gray-700">
           <Smile size={20} />
