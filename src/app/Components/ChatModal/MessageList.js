@@ -107,7 +107,7 @@ export function MessageList({ messages, isLoading, hasMore, onLoadMore }) {
   return (
     <div ref={containerRef} className="flex-1 overflow-y-auto p-4 bg-[#e5ddd5] bg-opacity-30 bg-repeat">
       {isLoading && (
-        <div className="flex justify-center py-2">
+        <div className="flex justify-center py-2 absolute left-[50%] z-50 top-[17%]">
           <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-gray-600"></div>
         </div>
       )}

@@ -61,7 +61,7 @@ export function Chat() {
   useEffect(() => {
     const intervalId = setInterval(() => {
       if (!isLoading) fetchMessages(0, true);
-    }, 5000);
+    }, 2000);
     return () => clearInterval(intervalId);
   }, [isLoading, fetchMessages]);
 
