@@ -28,7 +28,7 @@ export default function SearchableSelect({
   );
 
   return (
-    <div className="relative w-[300px]">
+    <div className="relative w-full">
       <button
         ref={buttonRef}
         onClick={() => setOpen(!open)}
@@ -38,7 +38,7 @@ export default function SearchableSelect({
         aria-haspopup="listbox"
         aria-controls={open ? "select-dropdown" : undefined}
       >
-        <span className="truncate">
+        <span className="truncate text-black">
           {driverIds?.length > 0 ? `${driverIds.length} selected` : placeholder}
         </span>
         <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />

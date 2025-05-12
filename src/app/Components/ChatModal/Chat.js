@@ -13,7 +13,22 @@ export function Chat() {
   const [hasMore, setHasMore] = useState(true);
   const [messages, setMessages] = useState([]);
   const [offset, setOffset] = useState(0);
-  const limit = 50;
+  const [driverList, setDriverList] = useState([]);
+  const [driverIds, setDriverIds] = useState([]);
+  const [isDriverFilterChanged, setIsDriverFilterChanged] = useState(false);
+
+  const limit = 10;
+
+  async function getDrivers(search) {
+    try {
+      let response = await axiosInstance.get(
+        `/driver?status=active&search=${search}&limit=${100000}`
+      );
+      setDriverList(response?.data?.data);
+    } catch (e) {
+      console.log(e);
+    }
+  }
 
   const fetchMessages = useCallback(async (currentOffset = 0, isPollingCall = false) => {
     if (isLoading && !isPollingCall) return;
@@ -21,7 +36,12 @@ export function Chat() {
     isPollingCall ? setIsPolling(true) : setIsLoading(true);
     try {
       const { data } = await axiosInstance.get(
-        `/driver/message?limit=${limit}&offset=${currentOffset}`
+        `/driver/message?limit=${limit}&offset=${currentOffset}`,
+        {
+          params:{
+            drivers: driverIds
+          }
+        }
       );
       
       if (data?.data) {
@@ -35,10 +55,11 @@ export function Chat() {
             setHasMore(finalMessageArray.length < data.count);
             return finalMessageArray;
           });
-        } else if (currentOffset === 0) {
+        } else if (currentOffset === 0 || isDriverFilterChanged) {
           finalMessageArray = data.data;
           setHasMore(finalMessageArray.length < data.count);
           setMessages(finalMessageArray);
+          setIsDriverFilterChanged(false);
         } else {
           setMessages(prev => {
             finalMessageArray = [...data.data, ...prev];
@@ -52,16 +73,25 @@ export function Chat() {
     } finally {
       isPollingCall ? setIsPolling(false) : setIsLoading(false);
     }
-  }, [isLoading]);
+  }, [isLoading, driverIds]);
 
+   // Handle driver filter changes
+   useEffect(() => {
+    if (driverIds.length > 0) {
+      setIsDriverFilterChanged(true);
+      fetchMessages(0);
+    }
+  }, [driverIds]);
+  
   useEffect(() => {
     fetchMessages(0);
+    getDrivers("");
   }, []);
 
   useEffect(() => {
     const intervalId = setInterval(() => {
       if (!isLoading) fetchMessages(0, true);
-    }, 2000);
+    }, 2500);
     return () => clearInterval(intervalId);
   }, [isLoading, fetchMessages]);
 
@@ -94,7 +124,10 @@ export function Chat() {
 
   return (
     <div className="flex flex-col relative justify-between h-[93vh]">
-      <ChatHeader />
+      <ChatHeader
+      driverIds={driverIds}
+      setDriverIds={setDriverIds}
+       driverList={driverList}/>
       <MessageList 
         messages={messages}
         isLoading={isLoading}
