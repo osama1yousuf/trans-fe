@@ -111,6 +111,9 @@ export default function CreateMember() {
     feeType: Yup.string()
       .oneOf(["advance", "monthEnd"], "Invalid option selected")
       .required("Please select an option"),
+    gender: Yup.string()
+      .oneOf(["male", "female", "other"], "Invalid option selected")
+      .required("Please select an option"),
     comments: Yup.string(),
   });
   useHandleNavigation("/admin/member");
@@ -162,6 +165,7 @@ export default function CreateMember() {
           timings: data.timings.length > 0 ? data.timings : [],
           fees: data.fees.fees,
           feeType: data.fees.feesType,
+          gender: data.gender,
         };
         Object.entries(currentMember).forEach(([field, value]) => {
           setValue(field, value);
@@ -195,14 +199,12 @@ export default function CreateMember() {
         dropType: values.bothSide,
       },
       timings: values.timings,
-
+      gender: values.gender,
       fees: values.fees,
       feesType: values.feeType,
     };
-    console.log("values", body);
     try {
       let response = await axiosInstance.put(`/customer/${id}`, body);
-      console.log("responne", response);
       toast.success("Member updated successfully", { autoClose: 1000 });
       router.push("/admin/member");
       reset();
@@ -226,15 +228,13 @@ export default function CreateMember() {
   };
   return (
     <>
-      {console.log("error", errors)}
       <div>
         <button
           type="submit"
           form="memberCreate"
           disabled={loading}
-          className={`my-4 text-white ${
-            loading ? "bg-gray-400" : "bg-[#811630] hover:bg-primary-700"
-          } focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center`}
+          className={`my-4 text-white ${loading ? "bg-gray-400" : "bg-[#811630] hover:bg-primary-700"
+            } focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center`}
         >
           {isSubmitting ? "Updating" : "Update"}
         </button>

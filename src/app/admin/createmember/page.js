@@ -108,6 +108,9 @@ export default function CreateMember() {
     feeType: Yup.string()
       .oneOf(["advance", "monthEnd"], "Invalid option selected")
       .required("Please select an option"),
+    gender: Yup.string()
+      .oneOf(["male", "female", "other"], "Invalid option selected")
+      .required("Please select an option"),
     comments: Yup.string(),
   });
 
@@ -158,6 +161,7 @@ export default function CreateMember() {
       timings: values.timings,
       fees: values.fees,
       feesType: values.feeType,
+      gender: values.gender,
     };
     try {
       let response = await axiosInstance.post("/customer", body);

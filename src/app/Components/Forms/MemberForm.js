@@ -42,6 +42,17 @@ let Days = [
   },
 ];
 
+const gender = [
+  {
+    value: "male",
+    label: "Male",
+  },
+  {
+    value: "female",
+    label: "Female",
+  },
+];
+
 const MemberForm = ({
   handleSubmit,
   errors,
@@ -221,13 +232,13 @@ const MemberForm = ({
             <AccordionItem
               className={
                 errors?.firstName ||
-                errors.lastName ||
-                errors.password ||
-                errors.cnicNo ||
-                errors.residentialAddress ||
-                errors?.contactOne ||
-                errors?.contactTwo ||
-                errors?.joinDate
+                  errors.lastName ||
+                  errors.password ||
+                  errors.cnicNo ||
+                  errors.residentialAddress ||
+                  errors?.contactOne ||
+                  errors?.contactTwo ||
+                  errors?.joinDate
                   ? "border-2 border-red-600 my-1"
                   : "border-2 border-gray-300 rounded-lg my-1"
               }
@@ -311,6 +322,17 @@ const MemberForm = ({
                     type={"tel"}
                   />
                 </div>
+                <div className="w-full mt-2 lg:w-1/4 px-3">
+                  <SelectInput
+                    label={"Gender"}
+                    name={"gender"}
+                    showDefaultOption={true}
+                    setFocus={setFocus}
+                    error={errors?.gender}
+                    register={register}
+                    options={gender}
+                  />
+                </div>
                 {showPassField && (
                   <div className="w-full mt-2 lg:w-1/4 px-3">
                     <Textfield2
@@ -328,14 +350,14 @@ const MemberForm = ({
             <AccordionItem
               className={
                 errors?.bothSide ||
-                errors.pickUpAddress ||
-                errors.pickUpTime ||
-                errors.satPickUpTime ||
-                errors.sunPickUpTime ||
-                errors?.dropOffAddress ||
-                errors?.dropOffTime ||
-                errors?.satDropOffTime ||
-                errors?.sunDropOffTime
+                  errors.pickUpAddress ||
+                  errors.pickUpTime ||
+                  errors.satPickUpTime ||
+                  errors.sunPickUpTime ||
+                  errors?.dropOffAddress ||
+                  errors?.dropOffTime ||
+                  errors?.satDropOffTime ||
+                  errors?.sunDropOffTime
                   ? "border-2 border-red-600 my-1"
                   : "border-2 border-gray-300 rounded-lg my-1"
               }
