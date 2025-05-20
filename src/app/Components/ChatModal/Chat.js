@@ -115,6 +115,7 @@ export function Chat() {
           : null,
         body,
         title: "",
+        notification: true
       });
       fetchMessages(0);
     } catch (error) {
