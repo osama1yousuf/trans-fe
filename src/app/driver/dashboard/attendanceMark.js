@@ -3,15 +3,24 @@ import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { Play, CirclePause, CheckCheck } from "lucide-react";
 
-const Button = ({ onClick, disabled, className, children }) => (
+const Button = ({ onClick, disabled, className, children, loading = true }) => (
   <button
     onClick={onClick}
     disabled={disabled}
-    className={`w-full font-bold py-2 px-4 rounded ${className} ${
-      disabled ? "opacity-50 cursor-not-allowed" : ""
-    }`}
+    className={`w-full font-bold py-2 px-4 rounded ${className} ${disabled ? "opacity-50 cursor-not-allowed" : ""
+      }`}
   >
-    {children}
+    {
+      loading ?
+        <svg className="animate-spin mx-auto h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg> :
+        <>
+          { children }
+        </>
+
+    }
   </button>
 );
 
@@ -61,17 +70,17 @@ export default function AttendanceMark() {
       newState[shiftIndex] = true;
       return newState;
     });
-    await postAttendanceStatus(
-      "CHECK_IN",
-      `SHIFT_${shiftIndex + 1}`,
-      shifObj?.checkInRecordId,
-      shifObj?.checkOutRecordId
-    );
-    setLoadingState((prev) => {
-      const newState = [...prev];
-      newState[shiftIndex] = false;
-      return newState;
-    });
+    // await postAttendanceStatus(
+    //   "CHECK_IN",
+    //   `SHIFT_${shiftIndex + 1}`,
+    //   shifObj?.checkInRecordId,
+    //   shifObj?.checkOutRecordId
+    // );
+    // setLoadingState((prev) => {
+    //   const newState = [...prev];
+    //   newState[shiftIndex] = false;
+    //   return newState;
+    // });
   };
 
   const handleCheckOut = async (shiftIndex, shifObj) => {
@@ -219,12 +228,12 @@ export default function AttendanceMark() {
                       onClick={() => handleShiftStart(e)}
                       className={
                         e.shiftStartTime === null &&
-                        e.checkInTime === null &&
-                        e.checkoutTime === null
+                          e.checkInTime === null &&
+                          e.checkoutTime === null
                           ? "font-bold py-2 px-4 rounded h-8 w-auto bg-green-100 text-green-700 hover:bg-green-200 hover:text-green-800 cursor-pointer"
                           : e.shiftStartTime !== null && e.checkoutTime === null
-                          ? "font-bold py-2 px-4 rounded h-8 w-auto bg-yellow-100 text-yellow-700 hover:bg-yellow-200 hover:text-yellow-800 cursor-not-allowed"
-                          : "font-bold py-2 px-4 rounded h-8 w-auto bg-gray-200 text-gray-700 cursor-not-allowed"
+                            ? "font-bold py-2 px-4 rounded h-8 w-auto bg-yellow-100 text-yellow-700 hover:bg-yellow-200 hover:text-yellow-800 cursor-not-allowed"
+                            : "font-bold py-2 px-4 rounded h-8 w-auto bg-gray-200 text-gray-700 cursor-not-allowed"
                       }
                       aria-label={`Start Trip ${index + 1}`}
                     >
@@ -247,8 +256,8 @@ export default function AttendanceMark() {
                         {e.checkInTime !== null && e.checkoutTime === null
                           ? getTimeDiff(e.checkInTime, currentTime)
                           : e.checkInTime !== null &&
-                            e.checkoutTime !== null &&
-                            getTimeDiff(e.checkInTime, e.checkoutTime)}
+                          e.checkoutTime !== null &&
+                          getTimeDiff(e.checkInTime, e.checkoutTime)}
                       </div>
 
                       <Button
@@ -259,6 +268,7 @@ export default function AttendanceMark() {
                           e.checkInTime !== null ||
                           e.checkoutTime !== null
                         }
+                        loading={loadingState[index]}
                         className="bg-green-500 hover:bg-green-600 text-white"
                       >
                         Check In -{" "}
@@ -276,6 +286,7 @@ export default function AttendanceMark() {
                             e.shiftStartTime !== null &&
                             e.checkoutTime !== null)
                         }
+                        loading={loadingState[index]}
                         className="bg-red-500 hover:bg-red-600 text-white"
                       >
                         Check Out -{" "}
