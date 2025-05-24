@@ -44,7 +44,6 @@ export default function SingleSelectCheckbox({ fakeUserData, handleMemberChange,
 
     return (
         <div ref={selectRef}>
-            {// console.log("assignMember" , assignMember)}
             <div
                 onClick={handleBlur}
                 style={{width:"120px"}}
