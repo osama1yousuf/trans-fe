@@ -13,6 +13,22 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import moment from "moment";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
+function useDebounce(value, delay) {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [value, delay]);
+
+  return debouncedValue;
+}
+
 const Collection = () => {
   useUserValidator("superadmin");
   const [filterValue, setFilterValues] = useState({
@@ -73,6 +89,15 @@ const Collection = () => {
       ),
     },
   ];
+
+  const debouncedSearchTerm = useDebounce(inputValue, 500);
+
+  useEffect(() => {
+    setFilterValue(prev => ({
+      ...prev,
+      search: debouncedSearchTerm
+    }));
+  }, [debouncedSearchTerm]);
 
   const voidChallan = async (e) => {
     try {
