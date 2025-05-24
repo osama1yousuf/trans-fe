@@ -81,7 +81,7 @@ const ChallanModal = ({ setChallanModal, handlePayNow, type, customer }) => {
       "/challan/get" +
       (type === "customer" ? `?challanType=CUSTOMER` : "?challanType=DRIVER") +
       `&challanStatus=UN_PAID` +
-      `&search=${selectedUser.name}`;
+      `&search=${selectedUser?.name}`;
     try {
       let response = await axiosInstance.get(url);
       if (response.status === 200) {

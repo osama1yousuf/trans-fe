@@ -27,6 +27,7 @@ import { useForm } from "react-hook-form";
 import Loader from "@/app/Components/Loader";
 import InactiveForm from "@/app/Components/Forms/InactiveForm";
 import ChallanModal from "@/app/Components/ChallanModal";
+import { twMerge } from "tailwind-merge";
 
 export default function ActiveMember() {
   // useUserValidator("superadmin");
@@ -55,7 +56,7 @@ export default function ActiveMember() {
   const [totalCount, setTotalCount] = useState(0);
   const [inactiveModal, setInactiveModal] = useState(false);
   const [inactiveModalUser, setInactiveModalUser] = useState(null);
-  
+
   const [modal, setModal] = useState(false);
 
   const [customer, setCustomer] = useState(null);
@@ -76,7 +77,7 @@ export default function ActiveMember() {
       selector: (row) => row.actions,
       // width:"100px",
       cell: (row) => (
-        <div className="w-full flex  gap-1 lg:w-full ">
+        <div className="w-full flex lg:w-full ">
           <span title="Edit Member">
             <button
               onClick={() => editMember(row)}
@@ -95,9 +96,7 @@ export default function ActiveMember() {
           </span>
           <span title="Collection">
             <button
-              onClick={() =>
-              {
-                console.log(row, 'row')
+              onClick={() => {
                 setModal(true);
                 setCustomer({
                   name: row.firstName,
@@ -111,21 +110,6 @@ export default function ActiveMember() {
               <DollarSign className="w-3 h-3" />
             </button>
           </span>
-          {/* <span title="Customer Challan Generate">
-            <button
-              onClick={(e) => {
-                setShowModal(true);
-                setChallanData({
-                  ...challanData,
-                  customerId: row?._id,
-                });
-              }}
-              className="bg-blue-500 hover:bg-blue-700 text-white text-xs  p-1 rounded"
-            >
-              {" "}
-              <MdOutlinePayment />
-            </button>
-          </span> */}
         </div>
       ),
     },
@@ -217,17 +201,16 @@ export default function ActiveMember() {
 
   const handleGenerateChallan = async () => {
     try {
-      let response = await axiosInstance.post("/challan/generate", {
+      await axiosInstance.post("/challan/generate", {
         ...challanData,
         challanDate: challanData.challanDate + "-01T00:09:19.733Z",
       });
-      // console.log("response", response);
       toast.success("challan generated successfully");
       setShowModal(false);
     } catch (error) {
       toast.error(error?.message);
-      // console.log("error", error);
       setShowModal(false);
+      console.log("error", error);
     }
   };
 
@@ -244,7 +227,7 @@ export default function ActiveMember() {
       setLoading(false);
     } catch (e) {
       setLoading(false);
-      // console.log(e);
+      console.log(e);
     }
   }
 
@@ -270,8 +253,6 @@ export default function ActiveMember() {
 
   /// status change to inactive user event
   const handleStatusChangetoInactive = async (values, user) => {
-    // console.log("val", values, user);
-
     let body = {
       status: "inActive",
       comments: values?.comments,
@@ -506,186 +487,31 @@ export default function ActiveMember() {
       </div>
       {/* date view table and card  */}
       <div>
-        {loading ? (
-          <Loader />
-        ) : tableView ? (
-          <div className="max-w-[96vw] rounded-sm">
-            <Suspense fallback={<Loader />} />
-            <DataTable
-              title={"Members"}
-              data={data?.data?.length > 0 ? data.data : []}
-              columns={columns}
-              progressPending={loading}
-              pagination={false}
-            />
-          </div>
-        ) : (
-          <div className="flex flex-col">
-            <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-              {data &&
-                data?.data?.map((item) => {
-                  return (
-                    <>
-                      <Card
-                        key={item.image}
-                        className="overflow-hidden relative group hover:shadow-lg transition-shadow duration-300"
-                      >
-                        <div className="absolute top-1 right-2 duration-200 flex  gap-1">
-                          <span title="Reset Password">
-                            <button
-                              onClick={() => resetPassword(item)}
-                              className="bg-yellow-500 hover:bg-gray-500 text-white ms-1 p-1 rounded"
-                            >
-                              <LockKeyholeOpen className="w-3 h-3" />
-                            </button>
-                            <span title="Edit Member From">
-                              <button
-                                onClick={() => editMember(item)}
-                                className="bg-green-500 hover:bg-gray-500 text-white ms-1 p-1 rounded"
-                              >
-                                <Edit className="w-3 h-3" />
-                              </button>
-                            </span>
-                          </span>
-                        </div>
-                        <CardHeader className="pb-2 mt-2">
-                          <CardTitle className="text-lg font-semibold flex justify-between items-center">
-                            {item?.firstName + " " + item?.lastName}
-                            <Avatar className="md:h-10 md:w-10 sm:h-8 sm:w-8">
-                              {/* <AvatarImage
-                                src={`https://api.dicebear.com/6.x/initials/svg?seed=${item?.firstName}%20${item?.lastName}`}
-                                alt={`${item?.firstName} ${item?.lastName}`}
-                              /> */}
-                              <AvatarFallback>
-                                {item?.firstName?.charAt(0).toUpperCase()}
-                                {item?.lastName?.charAt(0).toUpperCase()}
-                              </AvatarFallback>
-                            </Avatar>
-                          </CardTitle>
-                        </CardHeader>
-                        <CardContent className="p-4">
-                          <div className="flex items-start">
-                            <div className="flex-grow space-y-2">
-                              <div
-                                key={1}
-                                className="flex items-center justify-between"
-                              >
-                                <span className="text-sm text-muted-foreground capitalize">
-                                  Mobile #:
-                                </span>
-                                <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80">
-                                  {item.contactOne}
-                                </div>
-                              </div>
-                              <div
-                                key={2}
-                                className="flex items-center justify-between"
-                              >
-                                <span className="text-sm text-muted-foreground capitalize">
-                                  Residential Location:
-                                </span>
-                                <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80">
-                                  {item?.location?.residentialAddress || "N/A"}
-                                </div>
-                              </div>
-                              <div
-                                key={3}
-                                className="flex items-center justify-between"
-                              >
-                                <span className="text-sm text-muted-foreground capitalize">
-                                  Joining Date:
-                                </span>
-                                <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80">
-                                  {moment(item?.status?.joinDate).format(
-                                    "DD-MMM-YYYY"
-                                  ) || "N/A"}
-                                </div>
-                              </div>
-                              {/* <div
-                                key={3}
-                                className="flex items-center justify-between"
-                              >
-                                <span className="text-sm text-muted-foreground capitalize">
-                                  Pickup Location:
-                                </span>
-                                <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80">
-                                  {item?.location?.pickUpAddress || "N/A"}
-                                </div>
-                              </div>
-                              <div
-                                key={3}
-                                className="flex items-center justify-between"
-                              >
-                                <span className="text-sm text-muted-foreground capitalize">
-                                  DropOff Location:
-                                </span>
-                                <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80">
-                                  {item?.location?.dropOffAddress || "N/A"}
-                                </div>
-                              </div> */}
-                              <div
-                                key={3}
-                                className="flex items-center justify-between"
-                              >
-                                <span className="text-sm text-muted-foreground capitalize">
-                                  Status:
-                                </span>
-                                {/* <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80">
-                              {item.status.toUpperCase()}
-                            </div> */}
-                                <div
-                                  variant="outline"
-                                  className={`inline-flex items-center rounded-md border p-1 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 hover:bg-gray-200 cursor-pointer transition-all duration-300 ${item.currentStatus.toUpperCase() ===
-                                    "ACTIVE"
-                                    ? "border-green-800 text-green-800 bg-green-200"
-                                    : "border-red-800 text-red-800 bg-red-200"
-                                    }`}
-                                  // onClick={() =>
-                                  //   handleCustomerStatusChange(item)
-                                  // }
-                                  onClick={() => {
-                                    if (
-                                      item.currentStatus.toUpperCase() ===
-                                      "ACTIVE"
-                                    ) {
-                                      setInactiveModalUser(item);
-                                      setInactiveModal(true);
-                                    } else {
-                                      handleStatusChangetoActive(item);
-                                    }
-                                  }}
-                                >
-                                  {item.currentStatus === "active" ? (
-                                    <span className="relative">
-                                      <span
-                                        className={`
-              } transition-transform duration-300`}
-                                      >
-                                        Active
-                                      </span>
-                                    </span>
-                                  ) : (
-                                    <span className="relative">
-                                      <span
-                                        className={`
-              } transition-transform duration-300`}
-                                      >
-                                        Inactive
-                                      </span>
-                                    </span>
-                                  )}
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    </>
-                  );
-                })}
-            </div>
-          </div>
-        )}
+        <Suspense fallback={<Loader />}>
+          {
+            tableView ? (
+              <div className="max-w-[96vw] rounded-sm">
+                {/* <Suspense fallback={<Loader />} /> */}
+                <DataTable
+                  title={"Members"}
+                  data={data?.data?.length > 0 ? data.data : []}
+                  columns={columns}
+                  progressPending={loading}
+                  pagination={false}
+                />
+              </div>
+            ) : (
+              <div className="flex flex-col">
+                <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+                  {data &&
+                    data?.data?.map((item, i) => {
+                      return <RenderCard key={`card-${i}`} item={item} setModal={setModal} setCustomer={setCustomer} />
+                    })}
+                </div>
+              </div>
+            )}
+        </Suspense>
+
         {!loading && (
           <div className="flex justify-center items-center space-x-2 mt-4">
             <div className="flex items-center gap-2">
@@ -751,4 +577,139 @@ export default function ActiveMember() {
       </div>
     </div>
   );
+}
+
+const RenderCard = ({item, setModal, setCustomer}) => {
+  return (
+    <Card
+      key={item.image}
+      className="overflow-hidden relative group hover:shadow-lg transition-shadow duration-300"
+    >
+      <div className="absolute top-1 right-2 duration-200 flex">
+        <span title="Reset Password">
+          <button
+            onClick={() => resetPassword(item)}
+            className="bg-yellow-500 hover:bg-gray-500 text-white ms-1 p-1 rounded"
+          >
+            <LockKeyholeOpen className="w-3 h-3" />
+          </button>
+
+        </span>
+        <span title="Edit Member From">
+            <button
+              onClick={() => editMember(item)}
+              className="bg-green-500 hover:bg-gray-500 text-white ms-1 p-1 rounded"
+            >
+              <Edit className="w-3 h-3" />
+            </button>
+          </span>
+        <span title="Collection">
+          <button
+            onClick={() => {
+              setModal(true);
+              setCustomer({
+                name: item?.firstName,
+                label: `${item?.firstName} ${item?.lastName}`,
+                value: item._id
+              });
+            }
+            }
+            className="bg-orange-500 hover:bg-gray-500 text-white ms-1 p-1 rounded"
+          >
+            <DollarSign className="w-3 h-3" />
+          </button>
+        </span>
+      </div>
+      <CardHeader className="pb-2 mt-2">
+        <CardTitle className="text-lg font-semibold flex justify-between items-center">
+          {item?.firstName + " " + item?.lastName}
+          <Avatar className="md:h-10 md:w-10 sm:h-8 sm:w-8">
+            {/* <AvatarImage
+                                src={`https://api.dicebear.com/6.x/initials/svg?seed=${item?.firstName}%20${item?.lastName}`}
+                                alt={`${item?.firstName} ${item?.lastName}`}
+                              /> */}
+            <AvatarFallback>
+              {item?.firstName?.charAt(0).toUpperCase()}
+              {item?.lastName?.charAt(0).toUpperCase()}
+            </AvatarFallback>
+          </Avatar>
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="p-4">
+        <div className="flex items-start">
+          <div className="flex-grow space-y-2">
+            <div
+              className="flex items-center justify-between"
+            >
+              <span className="text-sm text-muted-foreground capitalize">
+                Mobile #:
+              </span>
+              <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80">
+                {item.contactOne}
+              </div>
+            </div>
+            <div
+              className="flex items-center justify-between"
+            >
+              <span className="text-sm text-muted-foreground capitalize">
+                Residential Location:
+              </span>
+              <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80">
+                {item?.location?.residentialAddress || "N/A"}
+              </div>
+            </div>
+            <div
+              className="flex items-center justify-between"
+            >
+              <span className="text-sm text-muted-foreground capitalize">
+                Joining Date:
+              </span>
+              <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80">
+                {moment(item?.status?.joinDate).format(
+                  "DD-MMM-YYYY"
+                ) || "N/A"}
+              </div>
+            </div>
+            <div
+              key={3}
+              className="flex items-center justify-between"
+            >
+              <span className="text-sm text-muted-foreground capitalize">
+                Status:
+              </span>
+              <div
+                className={twMerge(`inline-flex items-center rounded-md border p-1 text-xs font-semibold focus:outline-none 
+                  focus:ring-2 focus:ring-ring focus:ring-offset-2 hover:bg-gray-200 cursor-pointer transition-all duration-300 `, item?.currentStatus?.toUpperCase() ===
+                  "ACTIVE"
+                  ? "border-green-800 text-green-800 bg-green-200"
+                  : "border-red-800 text-red-800 bg-red-200"
+
+                )}
+              >
+                {item.currentStatus === "active" ? (
+                  <span className="relative">
+                    <span
+                      className={`
+              } transition-transform duration-300`}
+                    >
+                      Active
+                    </span>
+                  </span>
+                ) : (
+                  <span className="relative">
+                    <span
+                      className={`
+              } transition-transform duration-300`}
+                    >
+                      Inactive
+                    </span>
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  )
 }
