@@ -44,10 +44,10 @@ export default function Editdriver() {
         `https://api.cloudinary.com/v1_1/dh3d6g21h/image/upload`,
         formData
       );
-      // console.log("form", response);
+      console.log("form", response);
       return response.data;
     } catch (error) {
-      // console.log("Error while uplading image on cloudinary", error.message);
+      console.log("Error while uplading image on cloudinary", error.message);
       return null;
     }
   };
@@ -81,7 +81,7 @@ export default function Editdriver() {
       setFile(null);
       setLoading(false);
     } catch (e) {
-      // console.log("error", e?.response?.data?.message[0]);
+      console.log("error", e?.response?.data?.message[0]);
       toast.error(e?.response?.data?.message, { autoClose: 500 });
       setLoading(false);
     }
@@ -97,12 +97,6 @@ export default function Editdriver() {
           setFile(image);
           let updateval = { ...driverFormIntVal, ...data };
           reset(updateval);
-          // console.log(
-            new Date(updateval?.cnicExpiry).toISOString(),
-            new Date(updateval?.cnicExpiry).toLocaleDateString("en-US"),
-            new Date(updateval?.cnicExpiry).toISOString().split("T")[0],
-            "updateval?.cnicExpiry"
-          );
 
           setValue("salaryInfo", [
             updateval.salaryInfo[updateval.salaryInfo.length - 1],
