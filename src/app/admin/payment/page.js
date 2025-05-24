@@ -75,11 +75,11 @@ const Payment = () => {
     try {
       let response = await axiosInstance.get(url);
       if (response.status === 200) {
-        console.log(response);
+        // console.log(response);
         setData(response?.data?.data);
       }
     } catch (error) {
-      console.log("error", error);
+      // console.log("error", error);
       setData([]);
     }
   };
@@ -89,10 +89,10 @@ const Payment = () => {
   const handlePayNow = async (val , type) => {
     try {
       let response = await axiosInstance.post(`/challan/status/paid` , val)
-      console.log("response" , response)
+      // console.log("response" , response)
       toast.success(response?.data?.message)
     } catch (error) {
-      console.log("error" , error)
+      // console.log("error" , error)
       toast.error(error?.response?.data?.message)
     }
     setChallanModal(false)
@@ -170,7 +170,7 @@ const Payment = () => {
           <select
             value={filterValue.challanType}
             onChange={(e) => {
-              console.log("e.target.value", e.target.value);
+              // console.log("e.target.value", e.target.value);
               setSelectedRow(null)
               setFilterValues({ ...filterValue, challanType: e.target.value });
             }}

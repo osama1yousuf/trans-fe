@@ -56,7 +56,7 @@ export default function Attendance() {
   const [totalPages, setTotalPages] = useState(0);
 
   const getAttendance = async (search, page) => {
-    console.log("first", search);
+    // console.log("first", search);
     setLoading(true);
     let from_date = search?.fromDate
       ? new Date(search.fromDate).setUTCHours(0, 0, 0, 0)
@@ -112,7 +112,7 @@ export default function Attendance() {
       );
       setDriverList(response?.data?.data);
     } catch (e) {
-      console.log(e);
+      // console.log(e);
     }
   }
 

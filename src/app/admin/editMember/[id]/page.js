@@ -136,7 +136,7 @@ export default function CreateMember() {
       let { data } = await axiosInstance.get("/locations");
       setlocation(data);
     } catch (e) {
-      console.log(e.message);
+      // console.log(e.message);
     }
   };
   useEffect(() => {
@@ -172,7 +172,7 @@ export default function CreateMember() {
         });
         setLoading(false);
       } catch (error) {
-        console.log(error.message);
+        // console.log(error.message);
         toast.error(error.message, { autoClose: 1000 });
         setLoading(false);
       }
@@ -181,7 +181,7 @@ export default function CreateMember() {
 
   const onSubmit = async (values) => {
     setLoading(true);
-    console.log("intial Values", values);
+    // console.log("intial Values", values);
     let id = pathname.replace("/admin/editMember/", "");
     let body = {
       firstName: values.firstName,
@@ -210,7 +210,7 @@ export default function CreateMember() {
       reset();
       setLoading(false);
     } catch (e) {
-      console.log("error", e, e?.response?.data?.message);
+      // console.log("error", e, e?.response?.data?.message);
       toast.error(e?.response?.data?.message, { autoClose: 1000 });
       reset();
       setLoading(false);

@@ -54,7 +54,7 @@ export default function Login() {
         toast.success("Login successfully", { autoClose: 1000 });
       }
     } catch (e) {
-      console.log("error", e);
+      // console.log("error", e);
       toast.error(e.response?.data?.message || "Server Error", {
         autoClose: 1000,
       });
@@ -68,7 +68,7 @@ export default function Login() {
       navigator.serviceWorker
         .register('/firebase-messaging-sw.js')
         .then((registration) => {
-          console.log('Service Worker registered:', registration);
+          // console.log('Service Worker registered:', registration);
         })
         .catch((error) => {
           console.error('Service Worker registration failed:', error);

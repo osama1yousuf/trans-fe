@@ -10,7 +10,7 @@ import Textfield from "../Components/Textfield";
 export default function SignUp () {
     let url = process.env.BASE_URL
     const rounter = useRouter()
-    // console.log(url,"chec kurl")
+    // // console.log(url,"chec kurl")
     const validateSignUpSchema = Yup.object().shape({
         firstName: Yup.string().required("First name required"),
         lastName: Yup.string().required("Last name required"),
@@ -44,7 +44,7 @@ export default function SignUp () {
                 rounter.push('/admin_signin')
             }
         } catch (e) {
-            console.log("error", e.message);
+            // console.log("error", e.message);
             toast.error(e.response.data.message[0], { autoClose: 1000 })
         }
 

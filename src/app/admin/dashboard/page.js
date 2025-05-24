@@ -21,10 +21,10 @@ export default function Dashboard() {
   const getChallan = async () => {
     try {
       let response = await axiosInstance.get(`/superadmin/analytics`);
-      console.log("response", response);
+      // console.log("response", response);
       setAnalytics(response?.data);
     } catch (error) {
-      console.log("error", error);
+      // console.log("error", error);
     }
   };
   const getChallanDataByPeriod = async () => {
@@ -34,7 +34,7 @@ export default function Dashboard() {
       );
       setAnalyticsByPeriod(response?.data);
     } catch (error) {
-      console.log("error", error);
+      // console.log("error", error);
     }
   };
   useEffect(() => {

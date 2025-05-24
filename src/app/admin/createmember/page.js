@@ -133,7 +133,7 @@ export default function CreateMember() {
       let { data } = await axiosInstance.get("/locations");
       setlocation(data);
     } catch (e) {
-      console.log(e.message);
+      // console.log(e.message);
     }
   };
 
@@ -165,13 +165,13 @@ export default function CreateMember() {
     };
     try {
       let response = await axiosInstance.post("/customer", body);
-      console.log("response", response);
+      // console.log("response", response);
       toast.success("Member created successfully", { autoClose: 1000 });
       router.push("/admin/member");
       reset();
       setLoading(false);
     } catch (e) {
-      console.log("error", e, e?.response?.data?.message);
+      // console.log("error", e, e?.response?.data?.message);
       toast.error(e?.response?.data?.message, { autoClose: 1000 });
       reset();
       setLoading(false);

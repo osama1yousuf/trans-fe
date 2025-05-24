@@ -33,7 +33,6 @@ export default function ActiveMember() {
     register,
     watch,
     setFocus,
-    setValue,
     formState: { errors },
   } = useForm({
     defaultValues: {
@@ -74,7 +73,7 @@ export default function ActiveMember() {
         <div className="w-full flex  gap-1 lg:w-full ">
           <span title="Edit Member">
             <button
-              onClick={(e) => editMember(row)}
+              onClick={() => editMember(row)}
               className="bg-green-500 hover:bg-gray-500 text-white ms-1 p-1 rounded"
             >
               <Edit className="w-3 h-3" />
@@ -82,7 +81,7 @@ export default function ActiveMember() {
           </span>
           <span title="Reset Password">
             <button
-              onClick={(e) => resetPassword(row)}
+              onClick={() => resetPassword(row)}
               className="bg-yellow-500 hover:bg-gray-500 text-white ms-1 p-1 rounded"
             >
               <LockKeyholeOpen className="w-3 h-3" />
@@ -199,12 +198,12 @@ export default function ActiveMember() {
         ...challanData,
         challanDate: challanData.challanDate + "-01T00:09:19.733Z",
       });
-      console.log("response", response);
+      // console.log("response", response);
       toast.success("challan generated successfully");
       setShowModal(false);
     } catch (error) {
       toast.error(error?.message);
-      console.log("error", error);
+      // console.log("error", error);
       setShowModal(false);
     }
   };
@@ -223,7 +222,7 @@ export default function ActiveMember() {
       setLoading(false);
     } catch (e) {
       setLoading(false);
-      console.log(e);
+      // console.log(e);
     }
   }
 
@@ -249,7 +248,7 @@ export default function ActiveMember() {
 
   /// status change to inactive user event
   const handleStatusChangetoInactive = async (values, user) => {
-    console.log("val", values, user);
+    // console.log("val", values, user);
 
     let body = {
       status: "inActive",
@@ -276,16 +275,16 @@ export default function ActiveMember() {
     try {
       if (confirm("Are  you sure you want to reset password")) {
         let body = { contactOne: e?.contactOne };
-        console.log("body", body);
+        // console.log("body", body);
         let response = await axiosInstance.post(
           "/superadmin/reset-password",
           body
         );
-        console.log("response", response);
+        // console.log("response", response);
         toast.success(response.data.message);
       }
     } catch (e) {
-      console.log("e", e);
+      // console.log("e", e);
       toast.error(e?.response?.data?.message || "Server Error");
     }
   };
@@ -491,14 +490,14 @@ export default function ActiveMember() {
                         <div className="absolute top-1 right-2 duration-200 flex  gap-1">
                           <span title="Reset Password">
                             <button
-                              onClick={(e) => resetPassword(item)}
+                              onClick={() => resetPassword(item)}
                               className="bg-yellow-500 hover:bg-gray-500 text-white ms-1 p-1 rounded"
                             >
                               <LockKeyholeOpen className="w-3 h-3" />
                             </button>
                             <span title="Edit Member From">
                               <button
-                                onClick={(e) => editMember(item)}
+                                onClick={() => editMember(item)}
                                 className="bg-green-500 hover:bg-gray-500 text-white ms-1 p-1 rounded"
                               >
                                 <Edit className="w-3 h-3" />

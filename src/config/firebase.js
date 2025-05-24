@@ -16,7 +16,7 @@ export const FIREBASE_VAPID_KEY = process.env.NEXT_PUBLIC_VAPID_KEY;
 let messaging;
 if (typeof window !== "undefined" && typeof navigator !== "undefined") {
   const app = initializeApp(firebaseConfig);
-  messaging = getMessaging(app);
+  // messaging = getMessaging(app);
 }
 
 export const requestForToken = () => {
@@ -27,23 +27,23 @@ export const requestForToken = () => {
       if (currentToken) {
         return currentToken;
       } else {
-        console.log("No registration token available. Request permission to generate one.");
+        // console.log("No registration token available. Request permission to generate one.");
         return null;
       }
     })
     .catch((err) => {
-      console.log("An error occurred while retrieving token - " + err);
+      // console.log("An error occurred while retrieving token - " + err);
       return null;
     });
 };
 
 // Handle foreground messages silently
 if (typeof window !== "undefined" && typeof navigator !== "undefined") {
-  onMessage(messaging, (payload) => {
-    console.log("Foreground message received:", payload);
-    // Handle the payload silently (e.g., update UI)
-    // Do not show a notification here
-  });
+  // onMessage(messaging, (payload) => {
+  //   // console.log("Foreground message received:", payload);
+  //   // Handle the payload silently (e.g., update UI)
+  //   // Do not show a notification here
+  // });
 }
 
 export { messaging };

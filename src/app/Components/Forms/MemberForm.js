@@ -437,7 +437,7 @@ const MemberForm = ({
                     />
                   </div>
                 </div>
-                {/* {console.log("timings", timings)} */}
+                {/* {// console.log("timings", timings)} */}
                 {timings &&
                   timings.length > 0 &&
                   timings.map((el, ind) => {

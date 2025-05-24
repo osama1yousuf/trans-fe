@@ -131,7 +131,7 @@ export default function InactiveDriver() {
       setLoading(false);
     } catch (e) {
       setLoading(false);
-      console.log(e);
+      // console.log(e);
     }
   }
   const handleCustomerStatusChange = async (row) => {
@@ -144,7 +144,7 @@ export default function InactiveDriver() {
       toast.success(response.data.message);
       getDriver("", 1);
     } catch (e) {
-      console.log(e.message);
+      // console.log(e.message);
       toast.error(e.data);
     }
   };

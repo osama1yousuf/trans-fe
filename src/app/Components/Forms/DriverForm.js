@@ -79,7 +79,7 @@ const DriverForm = ({
   };
 
   const handleTripDelete = (e) => {
-    console.log("e", e);
+    // console.log("e", e);
     let noOfShifts = watch("noOfShifts");
     let shifts = watch("shifts");
     let updatedShifts = shifts.filter((el) => el?.shift !== e?.shift);
@@ -91,14 +91,14 @@ const DriverForm = ({
         checkOutTime: e?.checkOutTime,
       };
     });
-    console.log("updatedShifts", updatedShifts);
+    // console.log("updatedShifts", updatedShifts);
     setValue("noOfShifts", noOfShifts - 1);
     setValue("shifts", updatedShifts);
   };
 
   return (
     <form id={formId} onSubmit={handleSubmit}>
-      {console.log(
+      {// console.log(
         "err",
         errors,
         typeof watch("noOfShifts"),

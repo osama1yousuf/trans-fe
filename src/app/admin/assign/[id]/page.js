@@ -67,7 +67,6 @@ export default function Editassign() {
   };
 
   const handleDaysChange = (id, val) => {
-    console.log(val, id);
     if (val.active) {
       let index = intialDays.findIndex((v) => v.name == val.name);
       let setDays = [...intialDays];
@@ -105,11 +104,10 @@ export default function Editassign() {
   const getAllMembers = async () => {
     try {
       let response = await axiosInstance.get("/customer?status=active");
-      console.log("response", response.data);
       let newValue = [];
       for (let i = 0; i < response.data.length; i++) {
         const element = response.data[i];
-        console.log("ele");
+        // console.log("ele");
         newValue.push({
           id: element._id,
           name: element.firstName,
@@ -123,7 +121,7 @@ export default function Editassign() {
       }
       setfakeUserData(newValue);
     } catch (e) {
-      console.log(e);
+      // console.log(e);
     }
   };
 
@@ -132,16 +130,16 @@ export default function Editassign() {
       let response = await axiosInstance.get(`driver/${id}`);
       setDriverDetail(response.data);
     } catch (e) {
-      console.log(e);
+      // console.log(e);
     }
   };
 
   const getDrivePreviousAssign = async (id) => {
     try {
       let response = await axiosInstance.get(`assignment/driver/${id}`);
-      console.log("response previos", response);
+      // console.log("response previos", response);
     } catch (e) {
-      console.log(e);
+      // console.log(e);
     }
   };
   useEffect(() => {
@@ -152,11 +150,11 @@ export default function Editassign() {
   }, [pathname]);
 
   const handleLineItems = (e) => {
-    console.log(e);
+    // console.log(e);
     let found = fakeUserData.find((val) => val.checked == false);
-    console.log(found);
+    // console.log(found);
     if (found) {
-      // console.log()
+      // // console.log()
       let value = [...sections];
       value[e].data.push({
         name: null,
@@ -166,7 +164,7 @@ export default function Editassign() {
         checked: false,
       });
       setSections(value);
-      // console.log(sections,"check ")
+      // // console.log(sections,"check ")
     } else {
       toast.error("No member available");
     }
@@ -175,21 +173,21 @@ export default function Editassign() {
   const handleMemberChange = (pi, ci, e) => {
     let value = [...sections];
     let tempVal = [...fakeUserData];
-    console.log("e", e);
+    // console.log("e", e);
     if (e) {
       let targetValue = e;
       if (value[pi].data[ci].name === null) {
         value[pi].data[ci] = targetValue;
         targetValue.checked = true;
         let ind = tempVal.findIndex((e) => e.id == targetValue.id);
-        console.log("tempVal[ind]", tempVal[ind]);
+        // console.log("tempVal[ind]", tempVal[ind]);
         tempVal[ind].checked = true;
         setfakeUserData(tempVal);
         setSections(value);
       } else {
         let index = tempVal.findIndex((v) => v.id == value[pi].data[ci].id);
         targetValue.checked = true;
-        console.log("targetValue", index);
+        // console.log("targetValue", index);
         tempVal[index].checked = false;
         setfakeUserData(tempVal);
         value[pi].data[ci] = targetValue;
@@ -230,7 +228,7 @@ export default function Editassign() {
     let data = sections[pi].data[ci];
     if (data.name) {
       let allMembers = [...fakeUserData];
-      console.log(allMembers);
+      // console.log(allMembers);
       let index = allMembers.findIndex((e) => e.id == data.id);
 
       if (index != -1) {
@@ -292,7 +290,7 @@ export default function Editassign() {
 
   const handleTravelType = (pi, ci, e) => {
     let val = [...sections];
-    console.log("e.target.value", e.target.value, val[pi]?.data[ci]);
+    // console.log("e.target.value", e.target.value, val[pi]?.data[ci]);
     if (e.target.value && val[pi]?.data[ci]) {
       val[pi].data[ci].Type = e.target.value;
       setSections(val);
@@ -300,7 +298,6 @@ export default function Editassign() {
   };
   return (
     <div className="w-full">
-      {console.log("driverDetail", sections)}
       <div className="flex sticky flex-col">
         <div className="w-1/2">
           <h1 className="text-xl">Driver Name : {driverDetail?.firstName}</h1>

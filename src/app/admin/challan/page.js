@@ -82,7 +82,7 @@ const Challan = () => {
           ...generateBulk,
           challanDate: generateBulk.feePeriod + "-01T00:09:19.733Z",
         });
-        console.log("response", response);
+        // console.log("response", response);
         toast.dismiss();
         getChallanList();
         setGenerateBulk({
@@ -95,7 +95,7 @@ const Challan = () => {
           response?.data?.message || "Challan Generated Successfully"
         );
       } catch (error) {
-        console.log("error while generating challan", error);
+        // console.log("error while generating challan", error);
         toast.dismiss();
         toast.error(error?.response?.data?.message);
       }
@@ -127,24 +127,24 @@ const Challan = () => {
     try {
       let response = await axiosInstance.get(url);
       if (response.status === 200) {
-        console.log(response);
+        // console.log(response);
         setData(response?.data?.data);
       }
     } catch (error) {
-      console.log("error", error);
+      // console.log("error", error);
       setData([]);
     }
   };
 
   const voidChallan = async (e) => {
     try {
-      console.log("e", e);
+      // console.log("e", e);
       let response = await axiosInstance.put(`/challan/status/void/${e._id}`);
-      console.log("response", response);
+      // console.log("response", response);
       toast.success(response?.data?.message || "Challan Void Successfully");
       getChallanList();
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       toast.error(error?.message);
     }
   };
@@ -179,7 +179,7 @@ const Challan = () => {
                     <select
                       value={generateBulk.challanType}
                       onChange={(e) => {
-                        console.log("e.target.value", e.target.value);
+                        // console.log("e.target.value", e.target.value);
                         setGenerateBulk({
                           ...generateBulk,
                           challanType: e.target.value,
@@ -253,7 +253,7 @@ const Challan = () => {
             <select
               value={filterValue.challanType}
               onChange={(e) => {
-                console.log("e.target.value", e.target.value);
+                // console.log("e.target.value", e.target.value);
                 setFilterValues({
                   ...filterValue,
                   challanType: e.target.value,

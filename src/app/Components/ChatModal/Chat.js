@@ -26,7 +26,7 @@ export function Chat() {
       );
       setDriverList(response?.data?.data);
     } catch (e) {
-      console.log(e);
+      // console.log(e);
     }
   }
 
@@ -119,7 +119,7 @@ export function Chat() {
       });
       fetchMessages(0);
     } catch (error) {
-      console.log("error while sending message");
+      // console.log("error while sending message");
     }
   };
 

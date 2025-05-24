@@ -5,7 +5,7 @@
 //    if (token) {
 //     let userType = localStorage.getItem('userType')
 //     if (userType === type) {
-//       console.log('valid user')   
+//       // console.log('valid user')   
 //     }else{
 //       router.push(`/${userType}/dashboard`)
 //     }
@@ -24,12 +24,12 @@ export const useUserValidator = (type) => {
 
   // useEffect(() => {
   //   let token = localStorage.getItem('token');
-  //   console.log("token" , token)
+  //   // console.log("token" , token)
   //   if (token) {
   //     let userType = localStorage.getItem('userType');
-  //     console.log("user Type" , userType)
+  //     // console.log("user Type" , userType)
   //     if (userType === type) {
-  //       console.log('valid user');
+  //       // console.log('valid user');
   //     } else {
   //       if (userType == "superadmin") {
   //           router.push(`/admin/dashboard`);
@@ -38,7 +38,7 @@ export const useUserValidator = (type) => {
   //       }
   //     }
   //   } else {
-  //       console.log("no token")
+  //       // console.log("no token")
   //     router.push("/");
   //   }
   // }, [router, type]);

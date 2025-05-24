@@ -58,7 +58,7 @@ export default function AttendanceMark() {
       setCurrentTime(new Date());
     }, 1000);
 
-    console.log("ttt", JSON.parse(localStorage.getItem("user"))?.noOfShifts);
+    // console.log("ttt", JSON.parse(localStorage.getItem("user"))?.noOfShifts);
     return () => {
       clearInterval(timer);
     };
@@ -153,7 +153,7 @@ export default function AttendanceMark() {
         setShifts([]);
       }
     } catch (error) {
-      console.log("error :", error);
+      // console.log("error :", error);
     }
   };
 
@@ -193,7 +193,7 @@ export default function AttendanceMark() {
         toast.info(response?.data?.message);
         getCurrentAttendance();
       } catch (error) {
-        console.log("error", error);
+        // console.log("error", error);
         toast.error(response?.data?.message || "server Error");
       }
     } else {

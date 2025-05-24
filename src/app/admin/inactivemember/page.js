@@ -65,28 +65,28 @@ export default function InactiveMember() {
   async function getMemeber() {
     try {
       let response = await axiosInstance.get("/customer?status=inActive");
-      console.log(response.data);
+      // console.log(response.data);
       setData(response.data);
     } catch (e) {
-      console.log();
+      // console.log();
     }
   }
   const handleCustomerStatusChange = async (row) => {
     let body = {
       status: row.currentStatus == "active" ? "inActive" : "active",
     };
-    console.log(row);
-    console.log(body);
+    // console.log(row);
+    // console.log(body);
     try {
       let response = await axiosInstance.put(
         `/customer/status/${row._id}`,
         body
       );
-      console.log("response", response);
+      // console.log("response", response);
       await getMemeber();
       toast.success(response.message);
     } catch (e) {
-      console.log(e.message);
+      // console.log(e.message);
       toast.error(e.message);
     }
   };

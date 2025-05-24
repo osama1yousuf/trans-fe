@@ -10,7 +10,7 @@ export const getDriverAttendance = async (date) => {
       return [];
     }
   } catch (error) {
-    console.log("error", error);
+    // console.log("error", error);
     toast.error(error?.message);
   }
 };
@@ -44,7 +44,7 @@ export const getDriverAttendanceForAdmin = async (searchBody, page) => {
       return [];
     }
   } catch (error) {
-    console.log("error", error);
+    // console.log("error", error);
     toast.error(error?.message);
   }
 };

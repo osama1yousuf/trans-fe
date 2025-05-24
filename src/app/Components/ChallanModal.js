@@ -14,7 +14,7 @@ const ChallanModal = ({ setChallanModal, handlePayNow, type }) => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [paymentData, setPaymentData] = useState({
     paymentMode: "CASH",
-    paidAt: null,
+    paidAt: new Date().toISOString().split('T')[0],
     paymentType: type === "driver" ? "DRIVER" : "CUSTOMER",
     challanIds: [],
   });
@@ -23,6 +23,9 @@ const ChallanModal = ({ setChallanModal, handlePayNow, type }) => {
     {
       name: "Chalan No",
       selector: (row) => row?.challanNo,
+      style: {
+        fontSize: "12px",
+      },
     },
     {
       name: "Date",
@@ -32,10 +35,9 @@ const ChallanModal = ({ setChallanModal, handlePayNow, type }) => {
           month: "2-digit",
           year: "numeric",
         })}`,
-    },
-    {
-      name: "Amount",
-      selector: (row) => row.amount,
+        style: {
+          fontSize: "12px",
+        },
     },
     {
       name: "Month",
@@ -46,20 +48,29 @@ const ChallanModal = ({ setChallanModal, handlePayNow, type }) => {
         });
         return row?.feePeriod;
       },
+      style: {
+        fontSize: "12px",
+      },
     },
+    {
+      name: "Amount",
+      selector: (row) => row.amount,
+      style: {
+        fontSize: "12px",
+      },
+    }
   ];
   const getList = async () => {
     try {
       let response = await axiosInstance.get(`/${type}?status=active`);
-      console.log(response.data);
-      setList(response.data);
+      setList(response.data.data);
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     }
   };
 
   const getChallanList = async () => {
-    console.log("selectedUser", selectedUser);
+    // console.log("selectedUser", selectedUser);
     let url =
       "/challan/get" +
       (type === "customer" ? `?challanType=CUSTOMER` : "?challanType=DRIVER") +
@@ -68,11 +79,11 @@ const ChallanModal = ({ setChallanModal, handlePayNow, type }) => {
     try {
       let response = await axiosInstance.get(url);
       if (response.status === 200) {
-        console.log(response);
+        // console.log(response);
         setData(response?.data?.data);
       }
     } catch (error) {
-      console.log("error", error);
+      // console.log("error", error);
       setData([]);
     }
   };
@@ -116,10 +127,10 @@ const ChallanModal = ({ setChallanModal, handlePayNow, type }) => {
                   <Select
                     value={selectedUser}
                     onChange={(e) => {
-                      console.log(e);
+                      // console.log(e);
                       setSelectedUser(e);
                     }}
-                    options={list.map((e) => ({
+                    options={list?.map((e) => ({
                       value: e._id,
                       label: e.firstName + " " + e.lastName,
                       name: e.firstName,
@@ -176,6 +187,7 @@ const ChallanModal = ({ setChallanModal, handlePayNow, type }) => {
                   }}
                   columns={columns}
                   data={data}
+                  style={{fontSize: "12px"}}
                 />
               </div>
             </div>

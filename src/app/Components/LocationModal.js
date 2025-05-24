@@ -24,14 +24,14 @@
 //   });
 
 //   const onSubmit = async (values) => {
-//     console.log("work");
-//     console.log("va", values);
+//     // console.log("work");
+//     // console.log("va", values);
 //     try {
 //       let response = await axiosInstance.post("/locations", values);
 //       toast.success("locationName added sucessfully");
 //       setShowModal(false);
 //     } catch (e) {
-//       console.log(e.message);
+//       // console.log(e.message);
 //       toast.error(e.message);
 //     }
 //   };

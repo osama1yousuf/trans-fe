@@ -235,16 +235,16 @@ export default function ActiveDriver() {
     try {
       if (confirm("Are  you sure you want to reset password")) {
         let body = { contactOne: e?.contactOne };
-        console.log("body", body);
+        // console.log("body", body);
         let response = await axiosInstance.post(
           "/superadmin/reset-password",
           body
         );
-        console.log("response", response);
+        // console.log("response", response);
         toast.success(response.data.message);
       }
     } catch (e) {
-      console.log("e", e);
+      // console.log("e", e);
       toast.error(e?.response?.data?.message || "Server Error");
     }
   };
@@ -259,12 +259,12 @@ export default function ActiveDriver() {
         ...challanData,
         challanDate: challanData.challanDate + "-01T00:09:19.733Z",
       });
-      console.log("response", response);
+      // console.log("response", response);
       toast.success("challan generated successfully");
       setShowModal(false);
     } catch (error) {
       toast.error(error?.message);
-      console.log("error", error);
+      // console.log("error", error);
       setShowModal(false);
     }
   };
@@ -284,7 +284,7 @@ export default function ActiveDriver() {
       setLoading(false);
     } catch (e) {
       setLoading(false);
-      console.log(e);
+      // console.log(e);
     }
   }
   /// status change to active user event
@@ -309,7 +309,7 @@ export default function ActiveDriver() {
 
   /// status change to inactive user event
   const handleStatusChangetoInactive = async (values, user) => {
-    console.log("val", values, user);
+    // console.log("val", values, user);
 
     let body = {
       status: "inActive",

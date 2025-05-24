@@ -41,10 +41,10 @@ export default function Createdriver() {
         `https://api.cloudinary.com/v1_1/dh3d6g21h/image/upload`,
         formData
       );
-      console.log("form", response);
+      // console.log("form", response);
       return response.data;
     } catch (error) {
-      console.log("Error while uplading image on cloudinary", error.message);
+      // console.log("Error while uplading image on cloudinary", error.message);
       return null;
     }
   };
@@ -63,14 +63,14 @@ export default function Createdriver() {
     }
     try {
       const responsne = await axiosInstance.post("/driver", payload);
-      console.log("responsne", responsne);
+      // console.log("responsne", responsne);
       router.push("/admin/driver");
       toast.success("Driver created successfully", { autoClose: 1000 });
       reset();
       setFile(null);
       setLoading(false);
     } catch (e) {
-      console.log("error", e, e?.response?.data?.message);
+      // console.log("error", e, e?.response?.data?.message);
       toast.error(e?.response?.data?.message, { autoClose: 1000 });
       reset();
       setFile(null);

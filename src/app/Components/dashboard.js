@@ -80,20 +80,14 @@ export default function Dashboard({ children }) {
       url: "admin/member",
       type: "SUPERADMIN",
       active: false,
-    },
-    // {
-    //   name: "Location",
-    //   url: "admin/location",
-    //   active: false,
-    // },
-    {
-      name: "Financial",
-      url: "financial",
-      type: "SUPERADMIN",
-      active: false,
       Content: [
         {
-          name: "Challan / PaySlip",
+          name: "List",
+          endpoints: "admin/member",
+          // active: false,
+        },
+        {
+          name: "Challan",
           endpoints: "admin/challan",
           // active: false,
         },
@@ -102,13 +96,41 @@ export default function Dashboard({ children }) {
           endpoints: "admin/collection",
           // active: false,
         },
-        {
-          name: "Payment",
-          endpoints: "admin/payment",
-          // active: false,
-        },
+        // {
+        //   name: "Payment",
+        //   endpoints: "admin/payment",
+        //   // active: false,
+        // },
       ],
     },
+    // {
+    //   name: "Location",
+    //   url: "admin/location",
+    //   active: false,
+    // },
+    // {
+    //   name: "Financial",
+    //   url: "financial",
+    //   type: "SUPERADMIN",
+    //   active: false,
+    //   Content: [
+    //     {
+    //       name: "Member Challan",
+    //       endpoints: "admin/challan",
+    //       // active: false,
+    //     },
+    //     {
+    //       name: "Member Collection",
+    //       endpoints: "admin/collection",
+    //       // active: false,
+    //     },
+    //     // {
+    //     //   name: "Payment",
+    //     //   endpoints: "admin/payment",
+    //     //   // active: false,
+    //     // },
+    //   ],
+    // },
   ];
   /// for setting currentUserTypeSideBarOption
   useEffect(() => {

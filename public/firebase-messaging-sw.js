@@ -41,7 +41,6 @@ messaging.onBackgroundMessage((payload) => {
 
 // Handle notification click event
 self.addEventListener("notificationclick", function (event) {
-  console.log("Notification click received.");
   event.notification.close(); // Close the notification
   const redirectUrl = "/chat"; // Your desired redirect URL
   event.waitUntil(
@@ -50,12 +49,10 @@ self.addEventListener("notificationclick", function (event) {
       .then((clientList) => {
         for (const client of clientList) {
           if (client.url === redirectUrl && "focus" in client) {
-            console.log("Found a matching client:", client);
             return client.focus();
           }
         }
         if (clients.openWindow) {
-          console.log("Opening new window with URL:", redirectUrl);
           return clients.openWindow(redirectUrl);
         }
       })
