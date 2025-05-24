@@ -1,5 +1,5 @@
 "use client";
-import React, { Suspense, useState } from "react";
+import React, { Suspense, useCallback, useState } from "react";
 import DataTable from "react-data-table-component";
 import Loader from "@/app/Components/Loader";
 import { useEffect } from "react";
@@ -12,22 +12,7 @@ import { Edit, Eye, LayoutGrid, LockKeyholeOpen, TableIcon } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import moment from "moment";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-
-function useDebounce(value, delay) {
-  const [debouncedValue, setDebouncedValue] = useState(value);
-
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      setDebouncedValue(value);
-    }, delay);
-
-    return () => {
-      clearTimeout(handler);
-    };
-  }, [value, delay]);
-
-  return debouncedValue;
-}
+import debounce from 'lodash.debounce';
 
 const Collection = () => {
   useUserValidator("superadmin");
@@ -89,15 +74,20 @@ const Collection = () => {
       ),
     },
   ];
+  const debouncedSetFilter = useCallback(
+    debounce((value) => {
+      console.log("value")
+      setFilterValues(prev => ({
+        ...prev,
+        search: value
+      }));
+    }, 500),
+    []
+  );
 
-  const debouncedSearchTerm = useDebounce(inputValue, 500);
-
-  useEffect(() => {
-    setFilterValue(prev => ({
-      ...prev,
-      search: debouncedSearchTerm
-    }));
-  }, [debouncedSearchTerm]);
+  const handleChange = (e) => {
+    debouncedSetFilter(e.target.value);
+  };
 
   const voidChallan = async (e) => {
     try {
@@ -177,6 +167,7 @@ const Collection = () => {
     }
     setChallanModal(false);
   };
+  
   return (
     <div className="w-full">
       {challanModal && (
@@ -229,12 +220,7 @@ const Collection = () => {
                 type="text"
                 className="border border-gray-300 p-1 rounded bg-gray-50 focus:ring-3 focus:ring-primary-300 :bg-gray-700 :border-gray-600 :focus:ring-primary-600 :ring-offset-gray-800"
                 placeholder="Search Name"
-                onChange={(e) => {
-                  setFilterValues({
-                    ...filterValue,
-                    search: e.target.value,
-                  });
-                }}
+                onChange={handleChange}
               />
             </div>
             <button

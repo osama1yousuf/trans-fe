@@ -21,10 +21,12 @@ import {
   Edit,
   LayoutGrid,
   TableIcon,
+  DollarSign,
 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import Loader from "@/app/Components/Loader";
 import InactiveForm from "@/app/Components/Forms/InactiveForm";
+import ChallanModal from "@/app/Components/ChallanModal";
 
 export default function ActiveMember() {
   // useUserValidator("superadmin");
@@ -53,6 +55,10 @@ export default function ActiveMember() {
   const [totalCount, setTotalCount] = useState(0);
   const [inactiveModal, setInactiveModal] = useState(false);
   const [inactiveModalUser, setInactiveModalUser] = useState(null);
+  
+  const [modal, setModal] = useState(false);
+
+  const [customer, setCustomer] = useState(null);
   const [challanData, setChallanData] = useState({
     customerId: null,
     driverId: null,
@@ -85,6 +91,24 @@ export default function ActiveMember() {
               className="bg-yellow-500 hover:bg-gray-500 text-white ms-1 p-1 rounded"
             >
               <LockKeyholeOpen className="w-3 h-3" />
+            </button>
+          </span>
+          <span title="Collection">
+            <button
+              onClick={() =>
+              {
+                console.log(row, 'row')
+                setModal(true);
+                setCustomer({
+                  name: row.firstName,
+                  label: `${row.firstName} ${row.lastName}`,
+                  value: row._id
+                });
+              }
+              }
+              className="bg-orange-500 hover:bg-gray-500 text-white ms-1 p-1 rounded"
+            >
+              <DollarSign className="w-3 h-3" />
             </button>
           </span>
           {/* <span title="Customer Challan Generate">
@@ -148,11 +172,10 @@ export default function ActiveMember() {
       cell: (row) => (
         <div
           variant="outline"
-          className={`inline-flex items-center rounded-md border p-2 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 hover:bg-gray-200 cursor-pointer transition-all duration-300 ${
-            row.currentStatus.toUpperCase() === "ACTIVE"
-              ? "border-green-800 text-green-800 bg-green-200"
-              : "border-red-800 text-red-800 bg-red-200"
-          }`}
+          className={`inline-flex items-center rounded-md border p-2 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 hover:bg-gray-200 cursor-pointer transition-all duration-300 ${row.currentStatus.toUpperCase() === "ACTIVE"
+            ? "border-green-800 text-green-800 bg-green-200"
+            : "border-red-800 text-red-800 bg-red-200"
+            }`}
           // onClick={() => handleCustomerStatusChange(row)}
           onClick={() => {
             if (row.currentStatus.toUpperCase() === "ACTIVE") {
@@ -212,8 +235,7 @@ export default function ActiveMember() {
     try {
       setLoading(true);
       let response = await axiosInstance.get(
-        `/customer?status=${status}&search=${search}&limit=${limit}&offset=${
-          currentPage > 1 ? (currentPage - 1) * limit : 0
+        `/customer?status=${status}&search=${search}&limit=${limit}&offset=${currentPage > 1 ? (currentPage - 1) * limit : 0
         }`
       );
       setData(response.data);
@@ -336,6 +358,18 @@ export default function ActiveMember() {
     isMounted.current = true;
   }, []);
 
+  const handlePayNow = async (val, type) => {
+    try {
+      let response = await axiosInstance.post(`/challan/status/paid`, val);
+      // console.log("response", response);
+      toast.success(response?.data?.message);
+    } catch (error) {
+      // console.log("error", error);
+      toast.error(error?.response?.data?.message);
+    }
+    setModal(false);
+  };
+
   return (
     <div>
       {/* challan generate model  */}
@@ -400,6 +434,15 @@ export default function ActiveMember() {
           handleStatusChangetoInactive={handleStatusChangetoInactive}
         />
       )}
+      {
+        modal &&
+        <ChallanModal
+          type={"customer"}
+          setChallanModal={setModal}
+          handlePayNow={handlePayNow}
+          customer={customer}
+        />
+      }
       {/* filter area */}
       <div className="flex bg-white p-2 rounded-md gap-2 mb-2 md:gap-0 md:flex-row flex-col md:items-center items-end justify-between">
         <div className="w-full md:w-1/4">
@@ -592,12 +635,11 @@ export default function ActiveMember() {
                             </div> */}
                                 <div
                                   variant="outline"
-                                  className={`inline-flex items-center rounded-md border p-1 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 hover:bg-gray-200 cursor-pointer transition-all duration-300 ${
-                                    item.currentStatus.toUpperCase() ===
+                                  className={`inline-flex items-center rounded-md border p-1 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 hover:bg-gray-200 cursor-pointer transition-all duration-300 ${item.currentStatus.toUpperCase() ===
                                     "ACTIVE"
-                                      ? "border-green-800 text-green-800 bg-green-200"
-                                      : "border-red-800 text-red-800 bg-red-200"
-                                  }`}
+                                    ? "border-green-800 text-green-800 bg-green-200"
+                                    : "border-red-800 text-red-800 bg-red-200"
+                                    }`}
                                   // onClick={() =>
                                   //   handleCustomerStatusChange(item)
                                   // }
@@ -667,7 +709,7 @@ export default function ActiveMember() {
               </Button>
 
               <span className="text-xs sm:text-sm  text-muted-foreground">
-                Page {currentPage} of {totalPages} | {totalCount} {}
+                Page {currentPage} of {totalPages} | {totalCount} { }
                 records
               </span>
               <div className="relative inline-block">

@@ -8,7 +8,7 @@ import Select from "react-select";
 import axiosInstance from "@/interceptor/axios_inteceptor";
 import { useEffect } from "react";
 
-const ChallanModal = ({ setChallanModal, handlePayNow, type }) => {
+const ChallanModal = ({ setChallanModal, handlePayNow, type, customer }) => {
   const [list, setList] = useState([]);
   const [data, setData] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
@@ -64,13 +64,19 @@ const ChallanModal = ({ setChallanModal, handlePayNow, type }) => {
     try {
       let response = await axiosInstance.get(`/${type}?status=active`);
       setList(response.data.data);
+      if (customer) {
+        setSelectedUser({
+          name: customer.name,
+          label: customer.label,
+          value: customer.value
+        });
+      }
     } catch (error) {
-      // console.log(error);
+      console.log(error);
     }
   };
 
   const getChallanList = async () => {
-    // console.log("selectedUser", selectedUser);
     let url =
       "/challan/get" +
       (type === "customer" ? `?challanType=CUSTOMER` : "?challanType=DRIVER") +
@@ -79,17 +85,16 @@ const ChallanModal = ({ setChallanModal, handlePayNow, type }) => {
     try {
       let response = await axiosInstance.get(url);
       if (response.status === 200) {
-        // console.log(response);
         setData(response?.data?.data);
       }
     } catch (error) {
-      // console.log("error", error);
+      console.log("error", error);
       setData([]);
     }
   };
 
   useEffect(() => {
-    if (selectedUser) {
+    if (customer || selectedUser) {
       getChallanList();
     }
   }, [selectedUser]);
@@ -105,10 +110,10 @@ const ChallanModal = ({ setChallanModal, handlePayNow, type }) => {
           <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
             {/*header*/}
             <div className="flex items-start justify-between p-5 border-b border-solid border-slate-200 rounded-t">
-              <h3 className="text-3xl font-semibold">
+              <h3 className="text-2xl font-semibold">
                 {type === "driver"
-                  ? "Unpaid Pay Slip List"
-                  : "Unpaid Challan List"}
+                  ? "Payment"
+                  : "Collection"}
               </h3>
               <button
                 className="p-1 ml-auto bg-transparent border-0 text-black opacity-5 float-right text-3xl leading-none font-semibold outline-none focus:outline-none"
@@ -127,7 +132,6 @@ const ChallanModal = ({ setChallanModal, handlePayNow, type }) => {
                   <Select
                     value={selectedUser}
                     onChange={(e) => {
-                      // console.log(e);
                       setSelectedUser(e);
                     }}
                     options={list?.map((e) => ({
@@ -172,8 +176,9 @@ const ChallanModal = ({ setChallanModal, handlePayNow, type }) => {
                   </div>
                 </div>
               </div>
-              <div className="z-0">
+              <div className="z-0 mt-2">
                 <Suspense fallback={<Loader />} />
+                <p className="text-md ml-3 font-medium">{type === "driver" ? "Unpaid Payslips" : "Unpaid Challans"}</p>
                 <DataTable
                   pagination
                   paginationPerPage={10}
