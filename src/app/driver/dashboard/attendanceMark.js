@@ -17,7 +17,7 @@ const Button = ({ onClick, disabled, className, children, loading = true }) => (
           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
         </svg> :
         <>
-          { children }
+          {children}
         </>
 
     }
@@ -47,6 +47,7 @@ export default function AttendanceMark() {
   const [noOfShifts, setNoOfShifts] = useState(0);
   const [loadingState, setLoadingState] = useState([false, false, false]);
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [shiftInfo, setShiftInfo] = useState()
 
   useEffect(() => {
     getCurrentAttendance();
@@ -147,8 +148,11 @@ export default function AttendanceMark() {
         ).toISOString()}`
       );
       if (data?.data[0]?.attendance) {
+        console.log(data, 'data.data')
         let sortedShifts = sortShifts(data.data[0].attendance);
+        console.log(sortedShifts, 'sortedShifts')
         setShifts(sortedShifts);
+        setShiftInfo(data.driverShifts)
       } else {
         setShifts([]);
       }
@@ -217,38 +221,55 @@ export default function AttendanceMark() {
             shifts.map((e, index) => {
               return (
                 <Card key={index}>
-                  <div className="px-6 py-4 flex justify-between bg-white border-b border-gray-300">
+                  <div className="px-6 py-4 flex justify-between bg-white border-b border-gray-300 items-center">
                     <div className="text-lg font-semibold text-gray-800">
                       Trip {index + 1}
+                      <div class="inline-flex ml-3 items-center px-3 py-1 rounded-full text-sm font-medium bg-green-800 text-white">
+                        {shiftInfo[index].shiftWay}
+                      </div>
                     </div>
-                    <button
-                      size="icon"
-                      variant="ghost"
-                      disabled={e.shiftStartTime !== null}
-                      onClick={() => handleShiftStart(e)}
-                      className={
-                        e.shiftStartTime === null &&
+                    
+                    <div className="flex gap-4">
+                      <div className="flex items-center gap-2">
+                        <div class="inline-flex w-[62px] h-[28px] items-center px-3 py-1 rounded-full text-sm font-medium bg-green-800 text-white">
+                          {shiftInfo[index].checkInTime}
+                        </div>
+                        {/* &nbsp;
+                        -
+                        &nbsp; */}
+                        <div class="inline-flex items-center w-[62px] h-[28px] px-3 py-1 rounded-full text-sm font-medium bg-red-600 text-white">
+                          {shiftInfo[index].checkOutTime}
+                        </div>
+                      </div>
+                      <button
+                        size="icon"
+                        variant="ghost"
+                        disabled={e.shiftStartTime !== null}
+                        onClick={() => handleShiftStart(e)}
+                        className={
+                          e.shiftStartTime === null &&
+                            e.checkInTime === null &&
+                            e.checkoutTime === null
+                            ? "font-bold py-2 px-4 rounded h-8 w-auto bg-green-100 text-green-700 hover:bg-green-200 hover:text-green-800 cursor-pointer"
+                            : e.shiftStartTime !== null && e.checkoutTime === null
+                              ? "font-bold py-2 px-4 rounded h-8 w-auto bg-yellow-100 text-yellow-700 hover:bg-yellow-200 hover:text-yellow-800 cursor-not-allowed"
+                              : "font-bold py-2 px-4 rounded h-8 w-auto bg-gray-200 text-gray-700 cursor-not-allowed"
+                        }
+                        aria-label={`Start Trip ${index + 1}`}
+                      >
+                        {e.shiftStartTime === null &&
                           e.checkInTime === null &&
-                          e.checkoutTime === null
-                          ? "font-bold py-2 px-4 rounded h-8 w-auto bg-green-100 text-green-700 hover:bg-green-200 hover:text-green-800 cursor-pointer"
-                          : e.shiftStartTime !== null && e.checkoutTime === null
-                            ? "font-bold py-2 px-4 rounded h-8 w-auto bg-yellow-100 text-yellow-700 hover:bg-yellow-200 hover:text-yellow-800 cursor-not-allowed"
-                            : "font-bold py-2 px-4 rounded h-8 w-auto bg-gray-200 text-gray-700 cursor-not-allowed"
-                      }
-                      aria-label={`Start Trip ${index + 1}`}
-                    >
-                      {e.shiftStartTime === null &&
-                        e.checkInTime === null &&
-                        e.checkoutTime === null && <Play className="h-4 w-4" />}
-                      {e.shiftStartTime !== null && e.checkoutTime === null && (
-                        <CirclePause className="h-4 w-4" />
-                      )}
-                      {e.shiftStartTime !== null &&
-                        e.checkoutTime !== null &&
-                        e.checkInTime !== null && (
-                          <CheckCheck className="h-4 w-4" />
+                          e.checkoutTime === null && <Play className="h-4 w-4" />}
+                        {e.shiftStartTime !== null && e.checkoutTime === null && (
+                          <CirclePause className="h-4 w-4" />
                         )}
-                    </button>
+                        {e.shiftStartTime !== null &&
+                          e.checkoutTime !== null &&
+                          e.checkInTime !== null && (
+                            <CheckCheck className="h-4 w-4" />
+                          )}
+                      </button>
+                    </div>
                   </div>
                   <CardContent>
                     <div className="space-y-4">

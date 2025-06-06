@@ -149,7 +149,8 @@ export default function Dashboard({ children }) {
   ]
 
   const memberTab= [
-    { name: "Dashboard", url: "member/dashboard", active: false },
+    { name: "Dashboard", url: "dashboard", active: false },
+    // { name: "Fees", url: "fees", active: false },
   ]
 
   const driverTab = [

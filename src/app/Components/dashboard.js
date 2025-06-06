@@ -48,7 +48,13 @@ export default function Dashboard({ children }) {
     },
     {
       name: "Dashboard",
-      url: "member/dashboard",
+      url: "dashboard",
+      type: "CUSTOMER",
+      active: false,
+    },
+    {
+      name: "Fees",
+      url: "member/fees",
       type: "CUSTOMER",
       active: false,
     },
