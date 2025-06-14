@@ -17,9 +17,6 @@ export const validateDriverSchema = Yup.object().shape({
       // Check if the value is provided and has a length of 11
       return value === "" || value.length === 11;
     }),
-  password: Yup.string()
-    .min(8, "Password should be at least 8 characters")
-    .required("Password is required"),
   address: Yup.string().required("Address is required"),
   joiningDate: Yup.date().required("Joining date is required"),
 
