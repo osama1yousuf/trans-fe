@@ -64,12 +64,13 @@ const ChallanModal = ({ setChallanModal, handlePayNow, type, customer }) => {
     },
     {
       name: "Amount",
-      selector: (row) => row.amount,
+      selector: (row) => Number(row.amount).toLocaleString(),
       style: {
         fontSize: "10px",
         paddingInline: "1px",
         maxWidth: "50px",
-        minWidth: "50px"
+        minWidth: "50px",
+        textAlign: "right"
       },
     }
   ];

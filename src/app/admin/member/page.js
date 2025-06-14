@@ -505,7 +505,7 @@ export default function ActiveMember() {
                 <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
                   {data &&
                     data?.data?.map((item, i) => {
-                      return <RenderCard key={`card-${i}`} item={item} setModal={setModal} setCustomer={setCustomer} />
+                      return <RenderCard key={`card-${i}`} item={item} setModal={setModal} setCustomer={setCustomer} editMember={editMember} resetPassword={resetPassword} />
                     })}
                 </div>
               </div>
@@ -579,7 +579,7 @@ export default function ActiveMember() {
   );
 }
 
-const RenderCard = ({item, setModal, setCustomer}) => {
+const RenderCard = ({ item, setModal, setCustomer, editMember, resetPassword }) => {
   return (
     <Card
       key={item.image}
@@ -596,13 +596,13 @@ const RenderCard = ({item, setModal, setCustomer}) => {
 
         </span>
         <span title="Edit Member From">
-            <button
-              onClick={() => editMember(item)}
-              className="bg-green-500 hover:bg-gray-500 text-white ms-1 p-1 rounded"
-            >
-              <Edit className="w-3 h-3" />
-            </button>
-          </span>
+          <button
+            onClick={() => editMember(item)}
+            className="bg-green-500 hover:bg-gray-500 text-white ms-1 p-1 rounded"
+          >
+            <Edit className="w-3 h-3" />
+          </button>
+        </span>
         <span title="Collection">
           <button
             onClick={() => {

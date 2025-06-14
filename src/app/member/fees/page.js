@@ -29,16 +29,17 @@ const Fees = () => {
   const toggleView = () => {
     setTableView(!tableView);
   };
+
   const columns = [
     {
       name: "Challan No",
-      selector: (row) => row?.challanData?.challanNo,
+      selector: (row) => row?.challanNo,
     },
-    {
-      name: "Name",
-      selector: (row) =>
-        `${row?.challanData?.customerData?.firstName} ${row?.challanData?.customerData?.lastName}`,
-    },
+    // {
+    //   name: "Name",
+    //   selector: (row) =>
+    //     `${row?.challanData?.customerData?.firstName} ${row?.challanData?.customerData?.lastName}`,
+    // },
 
     {
       name: "Fee Period",
@@ -46,17 +47,25 @@ const Fees = () => {
     },
     {
       name: "Amount",
-      selector: (row) => row?.amount,
+      selector: (row) => Number(row?.amount).toLocaleString(),
     },
 
     {
       name: "Mode",
-      selector: (row) => row?.paymentMode,
+      selector: (row) => row?.paymentData[0]?.paymentMode || '-',
     },
     {
       name: "Paid at",
-      selector: (row) => row?.paidAt,
+      selector: (row) => row?.paymentData[0]?.paidAt || '-',
     },
+    {
+      name: "Status",
+      selector: (row) => {row?.challanStatus},
+      cell : (row) =>(
+        <span className= {row?.challanStatus === "UN_PAID" ? "bg-red-500 uppercase text-white font-semibold text-xs rounded-md p-2" : row?.challanStatus === "PAID" ? "bg-green-500 uppercase text-white font-semibold text-xs rounded-md p-2" : "bg-gray-500 uppercase text-white font-semibold text-xs rounded-md p-2" } >{row?.challanStatus === "UN_PAID" ?  "Unpaid" : row?.challanStatus}</span>
+      )
+    },
+    
     // {
     //   name: "Acion",
     //   selector: (row) => row.action,
@@ -76,7 +85,6 @@ const Fees = () => {
   ];
   const debouncedSetFilter = useCallback(
     debounce((value) => {
-      console.log("value")
       setFilterValues(prev => ({
         ...prev,
         search: value
@@ -111,7 +119,6 @@ const Fees = () => {
 
       getChallanList();
     } catch (error) {
-      // console.log(error);
       toast.error(error?.message);
     }
   };
@@ -127,12 +134,11 @@ const Fees = () => {
   }
 
   const getChallanList = async () => {
-    // console.log(filterValue.startDate, 'filterValue.startDate')
     const userId = JSON.parse(localStorage.getItem("user"))._id
     let url =
-      "/payment/get" +
+      "/challan/get" +
       (filterValue.challanType !== null && filterValue.challanType !== "All"
-        ? `?paymentType=${filterValue.challanType}&userId=${userId}`
+        ? `?challanType=${filterValue.challanType}&userId=${userId}`
         : "") +
       (filterValue.search !== null ? `&search=${filterValue.search}` : "")
     if (filterValue.startDate) {
@@ -143,11 +149,9 @@ const Fees = () => {
     try {
       let response = await axiosInstance.get(url);
       if (response.status === 200) {
-        // console.log(response?.data?.data, 'response?.data?.data');
         setData(response?.data?.data);
       }
     } catch (error) {
-      // console.log("error", error);
       setData([]);
     }
   };
@@ -157,10 +161,8 @@ const Fees = () => {
   const handlePayNow = async (val, type) => {
     try {
       let response = await axiosInstance.post(`/challan/status/paid`, val);
-      // console.log("response", response);
       toast.success(response?.data?.message);
     } catch (error) {
-      // console.log("error", error);
       toast.error(error?.response?.data?.message);
     }
     setChallanModal(false);
@@ -177,7 +179,7 @@ const Fees = () => {
       )}
       <div className="w-full flex justify-between lg:w-full  px-1">
         <h2 className="mb-1 text-md font-bold leading-tight tracking-tight py-1 px-2 m-2 text-gray-900 md:text-2xl dark:text-white">
-          Collection
+          Fee History
         </h2>
         <div>
           {/* <button
@@ -243,7 +245,6 @@ const Fees = () => {
               fixedHeader
               // selectableRows
               // onSelectedRowsChange={(e) => {
-              //   // console.log(e)
               //   setSelectedRow(e.selectedRows);
               // }}
               columns={columns}
@@ -254,7 +255,6 @@ const Fees = () => {
               <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
                 {data &&
                   data?.map((item) => {
-                    // console.log(item, 'ccheck ites')
                     return (
                       <>
                         <Card
@@ -263,17 +263,8 @@ const Fees = () => {
                         >
                           <CardHeader className="pb-2 mt-2">
                             <CardTitle className="text-lg font-semibold flex justify-between items-center">
-                              {item?.challanData.customerData.firstName + " " + item?.challanData.customerData.lastName}
-                              <Avatar className="md:h-10 md:w-10 sm:h-8 sm:w-8">
-                                {/* <AvatarImage
-                                src={`https://api.dicebear.com/6.x/initials/svg?seed=${item?.challanData.customerData.firstName}%20${item?.challanData.customerData.lastName}`}
-                                alt={`${item?.firstName} ${item?.lastName}`}
-                              /> */}
-                                <AvatarFallback>
-                                  {item?.challanData.customerData.firstName?.charAt(0).toUpperCase()}
-                                  {item?.challanData.customerData.lastName?.charAt(0).toUpperCase()}
-                                </AvatarFallback>
-                              </Avatar>
+                              {item?.challanNo}
+                              <span className= {item?.challanStatus === "UN_PAID" ? "bg-red-500 uppercase text-white font-semibold text-xs rounded-md p-2" : item?.challanStatus === "PAID" ? "bg-green-500 uppercase text-white font-semibold text-xs rounded-md p-2" : "bg-gray-500 uppercase text-white font-semibold text-xs rounded-md p-2" } >{item?.challanStatus === "UN_PAID" ?  "Unpaid" : item?.challanStatus}</span>
                             </CardTitle>
                           </CardHeader>
 
@@ -285,10 +276,10 @@ const Fees = () => {
                                   className="flex items-center justify-between"
                                 >
                                   <span className="text-sm text-muted-foreground capitalize">
-                                    Challan #:
+                                    Fee Period #:
                                   </span>
                                   <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80">
-                                    {item.challanData.challanNo}
+                                    {item?.feePeriod}
                                   </div>
                                 </div>
                                 <div
@@ -307,12 +298,12 @@ const Fees = () => {
                                   className="flex items-center justify-between"
                                 >
                                   <span className="text-sm text-muted-foreground capitalize">
-                                    Collection Date:
+                                    Paid at:
                                   </span>
                                   <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80">
-                                    {moment(item?.paidAt).format(
+                                    {item?.paidAt ? moment(item?.paymentData[0]?.paidAt).format(
                                       "DD-MMM-YYYY"
-                                    ) || "N/A"}
+                                    ) : "N/A"}
                                   </div>
                                 </div>
                                 <div
@@ -323,7 +314,8 @@ const Fees = () => {
                                     Mode:
                                   </span>
                                   <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80">
-                                    {item?.paymentMode}
+                                    {item?.paymentData[0]?.paymentMode}
+                                    N/A
                                   </div>
 
                                 </div>

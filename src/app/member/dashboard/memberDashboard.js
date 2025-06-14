@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 
 export default function MemberDashboard() {
   const [user, setUser] = useState(null);
-  const [expandedCard, setExpandedCard] = useState(null);
+  const [expandedCard, setExpandedCard] = useState('personal');
 
   useEffect(() => {
     const userData = localStorage.getItem("user");
@@ -72,12 +72,15 @@ export default function MemberDashboard() {
             <div className="p-4 pt-0 space-y-3 mt-2">
               <div className="flex items-center">
                 <span className="text-sm font-medium text-gray-500 w-32">Contact:</span>
-                {/* <a href={`tel:${user.contactOne}`} className="text-blue-600 hover:underline">{user.contactOne}</a> */}
                 <span className="text-gray-800">{user.contactOne}</span>
               </div>
               <div className="flex items-center">
                 <span className="text-sm font-medium text-gray-500 w-32">CNIC:</span>
                 <span className="text-gray-800">{user.cnicNo}</span>
+              </div>
+              <div className="flex items-center">
+                <span className="text-sm font-medium text-gray-500 w-32">Gender:</span>
+                <span className="text-gray-800">{user?.gender || 'N/A'}</span>
               </div>
               <div className="flex items-center">
                 <span className="text-sm font-medium text-gray-500 w-32">Member Since:</span>
