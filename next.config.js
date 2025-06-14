@@ -13,8 +13,8 @@ const nextConfig = {
   env: {
     // BASE_URL:'http://192.168.1.108:3000'
     //  BASE_URL: "https://13.60.168.95.nip.io",
-   BASE_URL: "http://localhost:3000",
-    // BASE_URL: "https://tranpsort-be.vercel.app",
+  // BASE_URL: "http://localhost:3000",
+    BASE_URL: "https://tranpsort-be.vercel.app",
     API_KEY: "AIzaSyDkjJ1mFIgDgUg-j2sT41VHOs-Mn2JyxKc",
     AUTH_DOMAIN: "transport-ease-a2183.firebaseapp.com",
     PROJECT_ID: "transport-ease-a2183",
