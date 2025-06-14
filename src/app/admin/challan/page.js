@@ -139,12 +139,13 @@ const Challan = () => {
   const voidChallan = async (e) => {
     try {
       // console.log("e", e);
-      let response = await axiosInstance.put(`/challan/status/void/${e._id}`);
-      // console.log("response", response);
-      toast.success(response?.data?.message || "Challan Void Successfully");
-      getChallanList();
+      const value = window.confirm('Are you sure you want to void challan?')
+      if(value) {
+        let response = await axiosInstance.put(`/challan/status/void/${e._id}`);
+        toast.success(response?.data?.message || "Challan Void Successfully");
+        getChallanList();
+      }
     } catch (error) {
-      // console.log(error);
       toast.error(error?.message);
     }
   };

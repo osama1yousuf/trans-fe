@@ -7,6 +7,7 @@ import DataTable from "react-data-table-component";
 import Select from "react-select";
 import axiosInstance from "@/interceptor/axios_inteceptor";
 import { useEffect } from "react";
+import { Loader2 } from "lucide-react";
 
 const ChallanModal = ({ setChallanModal, handlePayNow, type, customer }) => {
   const [list, setList] = useState([]);
@@ -21,10 +22,13 @@ const ChallanModal = ({ setChallanModal, handlePayNow, type, customer }) => {
 
   const columns = [
     {
-      name: "Chalan No",
+      name: "Challan No",
       selector: (row) => row?.challanNo,
       style: {
-        fontSize: "12px",
+        fontSize: "10px",
+        paddingInline: "1px",
+        maxWidth: "35px",
+        minWidth: "35px"
       },
     },
     {
@@ -36,7 +40,10 @@ const ChallanModal = ({ setChallanModal, handlePayNow, type, customer }) => {
           year: "numeric",
         })}`,
         style: {
-          fontSize: "12px",
+          fontSize: "10px",
+          paddingInline: "1px",
+          maxWidth: "50px",
+          minWidth: "50px"
         },
     },
     {
@@ -49,14 +56,20 @@ const ChallanModal = ({ setChallanModal, handlePayNow, type, customer }) => {
         return row?.feePeriod;
       },
       style: {
-        fontSize: "12px",
+        fontSize: "10px",
+        paddingInline: "1px",
+        maxWidth: "50px",
+        minWidth: "50px"
       },
     },
     {
       name: "Amount",
       selector: (row) => row.amount,
       style: {
-        fontSize: "12px",
+        fontSize: "10px",
+        paddingInline: "1px",
+        maxWidth: "50px",
+        minWidth: "50px"
       },
     }
   ];
@@ -105,7 +118,7 @@ const ChallanModal = ({ setChallanModal, handlePayNow, type, customer }) => {
   return (
     <>
       <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
-        <div className="relative w-auto my-6 mx-auto md:max-w-6xl max-sm:max-w-[93vw]">
+        <div className="relative w-auto my-6 mx-auto md:max-w-6xl max-sm:max-w-[95vw]">
           {/*content*/}
           <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
             {/*header*/}
@@ -115,17 +128,11 @@ const ChallanModal = ({ setChallanModal, handlePayNow, type, customer }) => {
                   ? "Payment"
                   : "Collection"}
               </h3>
-              <button
-                className="p-1 ml-auto bg-transparent border-0 text-black opacity-5 float-right text-3xl leading-none font-semibold outline-none focus:outline-none"
-                onClick={() => setChallanModal(false)}
-              >
-                <span className="bg-transparent text-black opacity-5 h-6 w-6 text-2xl block outline-none focus:outline-none">
-                  ×
-                </span>
-              </button>
             </div>
             {/*body*/}
-            <div className="relative px-6 py-2 flex-auto">
+            {
+              selectedUser && data?.length ?
+            <div className="relative px-2 py-2 flex-auto">
               <div className="flex flex-col justify-between items-center gap-3">
                 <div className="w-full">
                   <label className="text-xs capitalize px-2">{type}</label>
@@ -192,10 +199,47 @@ const ChallanModal = ({ setChallanModal, handlePayNow, type, customer }) => {
                   }}
                   columns={columns}
                   data={data}
+                  customStyles={{
+                    headRow: {
+                      style: {
+                        fontSize: "10px",
+                        paddingLeft: "1px",
+                        paddingRight: "1px"
+                      }
+                    },
+                    headCells: {
+                      style: {
+                        paddingInline: "0px",
+                        width: "65px",
+                        minWidth: "65px !important",
+                        maxWidth: "65px !important"
+                      }
+                    },
+                    cells: {
+                      style: {
+                        paddingInline: "0px",
+                        width: "65px",
+                        minWidth: "65px !important",
+                        maxWidth: "65px !important"
+                      }
+                    },
+                    selectableRowsCell: {
+                      style: {
+                        width: "35px",
+                        minWidth: "35px !important",
+                        maxWidth: "35px !important"
+                      }
+                    }
+                  }}
                   style={{fontSize: "12px"}}
                 />
               </div>
             </div>
+              :
+              <div className="my-32">
+                <Loader/>
+              </div>
+            }
             {/*footer*/}
             <div className="flex items-center justify-end p-6 border-t border-solid border-slate-200 rounded-b">
               <button

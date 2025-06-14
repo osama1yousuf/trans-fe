@@ -31,7 +31,7 @@ const Fees = () => {
   };
   const columns = [
     {
-      name: "Chalan No",
+      name: "Challan No",
       selector: (row) => row?.challanData?.challanNo,
     },
     {

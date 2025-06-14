@@ -20,7 +20,7 @@ const Payment = () => {
   const [data, setData] = useState([]);
   const columns = [
     {
-      name: "Chalan Id",
+      name: "Challan Id",
       selector: (row) => row.challanNo,
     },
     {
