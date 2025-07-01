@@ -9,13 +9,19 @@ import axiosInstance from "@/interceptor/axios_inteceptor";
 import { useEffect } from "react";
 import { Loader2 } from "lucide-react";
 
-const ChallanModal = ({ setChallanModal, handlePayNow, type, customer }) => {
+const ChallanModal = ({
+  setChallanModal,
+  handlePayNow,
+  type,
+  customer,
+  isCustomerExists,
+}) => {
   const [list, setList] = useState([]);
   const [data, setData] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
   const [paymentData, setPaymentData] = useState({
     paymentMode: "CASH",
-    paidAt: new Date().toISOString().split('T')[0],
+    paidAt: new Date().toISOString().split("T")[0],
     paymentType: type === "driver" ? "DRIVER" : "CUSTOMER",
     challanIds: [],
   });
@@ -28,7 +34,7 @@ const ChallanModal = ({ setChallanModal, handlePayNow, type, customer }) => {
         fontSize: "10px",
         paddingInline: "1px",
         maxWidth: "35px",
-        minWidth: "35px"
+        minWidth: "35px",
       },
     },
     {
@@ -39,12 +45,12 @@ const ChallanModal = ({ setChallanModal, handlePayNow, type, customer }) => {
           month: "2-digit",
           year: "numeric",
         })}`,
-        style: {
-          fontSize: "10px",
-          paddingInline: "1px",
-          maxWidth: "50px",
-          minWidth: "50px"
-        },
+      style: {
+        fontSize: "10px",
+        paddingInline: "1px",
+        maxWidth: "50px",
+        minWidth: "50px",
+      },
     },
     {
       name: "Month",
@@ -59,7 +65,7 @@ const ChallanModal = ({ setChallanModal, handlePayNow, type, customer }) => {
         fontSize: "10px",
         paddingInline: "1px",
         maxWidth: "50px",
-        minWidth: "50px"
+        minWidth: "50px",
       },
     },
     {
@@ -70,23 +76,23 @@ const ChallanModal = ({ setChallanModal, handlePayNow, type, customer }) => {
         paddingInline: "1px",
         maxWidth: "50px",
         minWidth: "50px",
-        textAlign: "right"
+        textAlign: "right",
       },
-    }
+    },
   ];
   const getList = async () => {
     try {
       let response = await axiosInstance.get(`/${type}?status=active`);
-      setList(response.data.data);
+      setList(response?.data?.data);
       if (customer) {
         setSelectedUser({
           name: customer.name,
           label: customer.label,
-          value: customer.value
+          value: customer.value,
         });
       }
     } catch (error) {
-      console.log(error);
+      console.log("error", error);
     }
   };
 
@@ -125,122 +131,121 @@ const ChallanModal = ({ setChallanModal, handlePayNow, type, customer }) => {
             {/*header*/}
             <div className="flex items-start justify-between p-5 border-b border-solid border-slate-200 rounded-t">
               <h3 className="text-2xl font-semibold">
-                {type === "driver"
-                  ? "Payment"
-                  : "Collection"}
+                {type === "driver" ? "Payment" : "Collection"}
               </h3>
             </div>
             {/*body*/}
-            {
-              selectedUser && data?.length ?
-            <div className="relative px-2 py-2 flex-auto">
-              <div className="flex flex-col justify-between items-center gap-3">
-                <div className="w-full">
-                  <label className="text-xs capitalize px-2">{type}</label>
-                  <Select
-                    value={selectedUser}
-                    onChange={(e) => {
-                      setSelectedUser(e);
-                    }}
-                    options={list?.map((e) => ({
-                      value: e._id,
-                      label: e.firstName + " " + e.lastName,
-                      name: e.firstName,
-                    }))}
-                  />
-                </div>
-                <div className="flex gap-2 w-full">
-                  <div className="w-1/2">
-                    <label className="text-xs px-2">Mode</label>
-                    <select
-                      value={paymentData.paymentMode}
+            {(isCustomerExists && selectedUser && data) || (!isCustomerExists && data) ? (
+              <div className="relative px-2 py-2 flex-auto">
+                <div className="flex flex-col justify-between items-center gap-3">
+                  <div className="w-full">
+                    <label className="text-xs capitalize px-2">{type}</label>
+                    <Select
+                      value={selectedUser}
                       onChange={(e) => {
-                        setPaymentData({
-                          ...paymentData,
-                          paymentMode: e.target.value,
-                        });
+                        setSelectedUser(e);
                       }}
-                      className="appearance-none block w-full  border border-gray-200 rounded  leading-tight focus:outline-none py-2 px-2 focus:bg-white focus:border-gray-500"
-                    >
-                      <option value="CASH">Cash</option>
-                      <option value="ONLINE">Online</option>
-                    </select>
-                  </div>
-                  <div className="w-1/2">
-                    <label className="text-xs px-2">
-                      {type === "driver" ? "Paid Date" : "Collect Date"}
-                    </label>
-                    <input
-                      type="date"
-                      value={paymentData.paidAt}
-                      className="appearance-none block w-full  border border-gray-200 rounded  leading-tight focus:outline-none py-2 px-2 focus:bg-white focus:border-gray-500"
-                      onChange={(e) => {
-                        setPaymentData({
-                          ...paymentData,
-                          paidAt: e.target.value,
-                        });
-                      }}
+                      options={list?.map((e) => ({
+                        value: e._id,
+                        label: e.firstName + " " + e.lastName,
+                        name: e.firstName,
+                      }))}
                     />
                   </div>
+                  <div className="flex gap-2 w-full">
+                    <div className="w-1/2">
+                      <label className="text-xs px-2">Mode</label>
+                      <select
+                        value={paymentData.paymentMode}
+                        onChange={(e) => {
+                          setPaymentData({
+                            ...paymentData,
+                            paymentMode: e.target.value,
+                          });
+                        }}
+                        className="appearance-none block w-full  border border-gray-200 rounded  leading-tight focus:outline-none py-2 px-2 focus:bg-white focus:border-gray-500"
+                      >
+                        <option value="CASH">Cash</option>
+                        <option value="ONLINE">Online</option>
+                      </select>
+                    </div>
+                    <div className="w-1/2">
+                      <label className="text-xs px-2">
+                        {type === "driver" ? "Paid Date" : "Collect Date"}
+                      </label>
+                      <input
+                        type="date"
+                        value={paymentData.paidAt}
+                        className="appearance-none block w-full  border border-gray-200 rounded  leading-tight focus:outline-none py-2 px-2 focus:bg-white focus:border-gray-500"
+                        onChange={(e) => {
+                          setPaymentData({
+                            ...paymentData,
+                            paidAt: e.target.value,
+                          });
+                        }}
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div className="z-0 mt-2">
+                  <Suspense fallback={<Loader />} />
+                  <p className="text-md ml-3 font-medium">
+                    {type === "driver" ? "Unpaid Payslips" : "Unpaid Challans"}
+                  </p>
+                  <DataTable
+                    pagination
+                    paginationPerPage={10}
+                    fixedHeader
+                    selectableRows
+                    onSelectedRowsChange={(e) => {
+                      setPaymentData({
+                        ...paymentData,
+                        challanIds: e.selectedRows.map((v) => v._id),
+                      });
+                    }}
+                    columns={columns}
+                    data={data}
+                    customStyles={{
+                      headRow: {
+                        style: {
+                          fontSize: "10px",
+                          paddingLeft: "1px",
+                          paddingRight: "1px",
+                        },
+                      },
+                      headCells: {
+                        style: {
+                          paddingInline: "0px",
+                          width: "65px",
+                          minWidth: "65px !important",
+                          maxWidth: "65px !important",
+                        },
+                      },
+                      cells: {
+                        style: {
+                          paddingInline: "0px",
+                          width: "65px",
+                          minWidth: "65px !important",
+                          maxWidth: "65px !important",
+                        },
+                      },
+                      selectableRowsCell: {
+                        style: {
+                          width: "35px",
+                          minWidth: "35px !important",
+                          maxWidth: "35px !important",
+                        },
+                      },
+                    }}
+                    style={{ fontSize: "12px" }}
+                  />
                 </div>
               </div>
-              <div className="z-0 mt-2">
-                <Suspense fallback={<Loader />} />
-                <p className="text-md ml-3 font-medium">{type === "driver" ? "Unpaid Payslips" : "Unpaid Challans"}</p>
-                <DataTable
-                  pagination
-                  paginationPerPage={10}
-                  fixedHeader
-                  selectableRows
-                  onSelectedRowsChange={(e) => {
-                    setPaymentData({
-                      ...paymentData,
-                      challanIds: e.selectedRows.map((v) => v._id),
-                    });
-                  }}
-                  columns={columns}
-                  data={data}
-                  customStyles={{
-                    headRow: {
-                      style: {
-                        fontSize: "10px",
-                        paddingLeft: "1px",
-                        paddingRight: "1px"
-                      }
-                    },
-                    headCells: {
-                      style: {
-                        paddingInline: "0px",
-                        width: "65px",
-                        minWidth: "65px !important",
-                        maxWidth: "65px !important"
-                      }
-                    },
-                    cells: {
-                      style: {
-                        paddingInline: "0px",
-                        width: "65px",
-                        minWidth: "65px !important",
-                        maxWidth: "65px !important"
-                      }
-                    },
-                    selectableRowsCell: {
-                      style: {
-                        width: "35px",
-                        minWidth: "35px !important",
-                        maxWidth: "35px !important"
-                      }
-                    }
-                  }}
-                  style={{fontSize: "12px"}}
-                />
-              </div>
-            </div>
-              :
+            ) : (
               <div className="my-32">
-                <Loader/>
+                <Loader />
               </div>
-            }
+            )}
             {/*footer*/}
             <div className="flex items-center justify-end p-6 border-t border-solid border-slate-200 rounded-b">
               <button

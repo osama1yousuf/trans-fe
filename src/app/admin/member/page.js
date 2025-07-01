@@ -97,12 +97,12 @@ export default function ActiveMember() {
           <span title="Collection">
             <button
               onClick={() => {
-                setModal(true);
                 setCustomer({
                   name: row.firstName,
                   label: `${row.firstName} ${row.lastName}`,
                   value: row._id
                 });
+                setModal(true);
               }
               }
               className="bg-orange-500 hover:bg-gray-500 text-white ms-1 p-1 rounded"
@@ -419,6 +419,7 @@ export default function ActiveMember() {
         modal &&
         <ChallanModal
           type={"customer"}
+          isCustomerExists={true}
           setChallanModal={setModal}
           handlePayNow={handlePayNow}
           customer={customer}
