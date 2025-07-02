@@ -506,7 +506,7 @@ export default function ActiveMember() {
                 <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
                   {data &&
                     data?.data?.map((item, i) => {
-                      return <RenderCard key={`card-${i}`} item={item} setModal={setModal} setCustomer={setCustomer} editMember={editMember} resetPassword={resetPassword} />
+                      return <RenderCard key={`card-${i}`} item={item} setModal={setModal} setCustomer={setCustomer} editMember={editMember} resetPassword={resetPassword} router={router} />
                     })}
                 </div>
               </div>
@@ -580,11 +580,12 @@ export default function ActiveMember() {
   );
 }
 
-const RenderCard = ({ item, setModal, setCustomer, editMember, resetPassword }) => {
+const RenderCard = ({ item, setModal, setCustomer, editMember, resetPassword, router }) => {
   return (
     <Card
       key={item.image}
-      className="overflow-hidden relative group hover:shadow-lg transition-shadow duration-300"
+      className="overflow-hidden relative group hover:shadow-lg transition-shadow duration-300 cursor-pointer"
+      onClick={() => router.push(`/admin/member/info/${item._id}`)}
     >
       <div className="absolute top-1 right-2 duration-200 flex">
         <span title="Reset Password">
