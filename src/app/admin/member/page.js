@@ -532,6 +532,7 @@ export default function ActiveMember() {
                         setCustomer={setCustomer}
                         editMember={editMember}
                         resetPassword={resetPassword}
+                        router={router}
                       />
                     );
                   })}
@@ -613,11 +614,13 @@ const RenderCard = ({
   setCustomer,
   editMember,
   resetPassword,
+  router,
 }) => {
   return (
     <Card
       key={item.image}
-      className="overflow-hidden relative group hover:shadow-lg transition-shadow duration-300"
+      className="overflow-hidden relative group hover:shadow-lg transition-shadow duration-300 cursor-pointer"
+      onClick={() => router.push(`/admin/member/info/${item._id}`)}
     >
       <div className="absolute top-1 right-2 duration-200 flex">
         <span title="Reset Password">
