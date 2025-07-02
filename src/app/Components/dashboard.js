@@ -109,11 +109,12 @@ export default function Dashboard({ children }) {
         // },
       ],
     },
-    // {
-    //   name: "Location",
-    //   url: "admin/location",
-    //   active: false,
-    // },
+    {
+      name: "Locations",
+      url: "admin/location",
+      type: "SUPERADMIN",
+      active: false,
+    },
     // {
     //   name: "Financial",
     //   url: "financial",
