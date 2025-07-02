@@ -14,6 +14,61 @@ import moment from "moment";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import debounce from 'lodash.debounce';
 
+const RenderCard = ({ item }) => {
+  return (
+    <Card
+      key={item._id}
+      className="overflow-hidden relative group hover:shadow-lg transition-shadow duration-300"
+    >
+      <CardHeader className="pb-2 mt-2">
+        <CardTitle className="text-lg font-semibold flex justify-between items-center">
+          {item?.challanNo}
+          <span className={
+            item?.challanStatus === "UN_PAID"
+              ? "bg-red-500 uppercase text-white font-semibold text-xs rounded-md p-2"
+              : item?.challanStatus === "PAID"
+              ? "bg-green-500 uppercase text-white font-semibold text-xs rounded-md p-2"
+              : "bg-gray-500 uppercase text-white font-semibold text-xs rounded-md p-2"
+          }>
+            {item?.challanStatus === "UN_PAID" ? "Unpaid" : item?.challanStatus}
+          </span>
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="p-4">
+        <div className="flex items-start">
+          <div className="flex-grow space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-muted-foreground capitalize">Fee Period:</span>
+              <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold bg-secondary text-secondary-foreground">
+                {item?.feePeriod}
+              </div>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-muted-foreground capitalize">Amount:</span>
+              <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold bg-secondary text-secondary-foreground">
+                {Number(item?.amount).toLocaleString()}
+              </div>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-muted-foreground capitalize">Paid at:</span>
+              <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold bg-secondary text-secondary-foreground">
+                {item?.paymentData && item?.paymentData[0]?.paidAt ?
+                  moment(item?.paymentData[0]?.paidAt).format("DD-MMM-YYYY") : "N/A"}
+              </div>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-muted-foreground capitalize">Mode:</span>
+              <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold bg-secondary text-secondary-foreground">
+                {item?.paymentData && item?.paymentData[0]?.paymentMode ? item?.paymentData[0]?.paymentMode : "N/A"}
+              </div>
+            </div>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
+
 const Fees = () => {
   useUserValidator("member");
   const [filterValue, setFilterValues] = useState({
@@ -243,10 +298,6 @@ const Fees = () => {
               pagination
               paginationPerPage={10}
               fixedHeader
-              // selectableRows
-              // onSelectedRowsChange={(e) => {
-              //   setSelectedRow(e.selectedRows);
-              // }}
               columns={columns}
               data={data}
             />
@@ -254,78 +305,9 @@ const Fees = () => {
             <div className="flex flex-col">
               <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
                 {data &&
-                  data?.map((item) => {
-                    return (
-                      <>
-                        <Card
-                          key={item.image}
-                          className="overflow-hidden relative group hover:shadow-lg transition-shadow duration-300"
-                        >
-                          <CardHeader className="pb-2 mt-2">
-                            <CardTitle className="text-lg font-semibold flex justify-between items-center">
-                              {item?.challanNo}
-                              <span className= {item?.challanStatus === "UN_PAID" ? "bg-red-500 uppercase text-white font-semibold text-xs rounded-md p-2" : item?.challanStatus === "PAID" ? "bg-green-500 uppercase text-white font-semibold text-xs rounded-md p-2" : "bg-gray-500 uppercase text-white font-semibold text-xs rounded-md p-2" } >{item?.challanStatus === "UN_PAID" ?  "Unpaid" : item?.challanStatus}</span>
-                            </CardTitle>
-                          </CardHeader>
-
-                          <CardContent className="p-4">
-                            <div className="flex items-start">
-                              <div className="flex-grow space-y-2">
-                                <div
-                                  key={1}
-                                  className="flex items-center justify-between"
-                                >
-                                  <span className="text-sm text-muted-foreground capitalize">
-                                    Fee Period #:
-                                  </span>
-                                  <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80">
-                                    {item?.feePeriod}
-                                  </div>
-                                </div>
-                                <div
-                                  key={2}
-                                  className="flex items-center justify-between"
-                                >
-                                  <span className="text-sm text-muted-foreground capitalize">
-                                    Amount:
-                                  </span>
-                                  <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80">
-                                    {item?.amount?.toLocaleString()}
-                                  </div>
-                                </div>
-                                <div
-                                  key={3}
-                                  className="flex items-center justify-between"
-                                >
-                                  <span className="text-sm text-muted-foreground capitalize">
-                                    Paid at:
-                                  </span>
-                                  <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80">
-                                    {item?.paidAt ? moment(item?.paymentData[0]?.paidAt).format(
-                                      "DD-MMM-YYYY"
-                                    ) : "N/A"}
-                                  </div>
-                                </div>
-                                <div
-                                  key={3}
-                                  className="flex items-center justify-between"
-                                >
-                                  <span className="text-sm text-muted-foreground capitalize">
-                                    Mode:
-                                  </span>
-                                  <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80">
-                                    {item?.paymentData[0]?.paymentMode}
-                                    N/A
-                                  </div>
-
-                                </div>
-                              </div>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      </>
-                    );
-                  })}
+                  data?.map((item) => (
+                    <RenderCard key={item._id} item={item} />
+                  ))}
               </div>
             </div>
         }

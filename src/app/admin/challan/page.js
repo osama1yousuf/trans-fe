@@ -7,6 +7,76 @@ import { FcCancel } from "react-icons/fc";
 import { useEffect } from "react";
 import axiosInstance from "@/interceptor/axios_inteceptor";
 import { useUserValidator } from "@/interceptor/userValidate";
+import { LayoutGrid, TableIcon } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import moment from "moment";
+import { Button } from "@/components/ui/button";
+import {
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
+} from "lucide-react";
+
+const RenderCard = ({ item, voidChallan }) => (
+  <Card key={item._id} className="overflow-hidden relative group hover:shadow-lg transition-shadow duration-300">
+    <CardHeader className="pb-2 mt-2">
+      <CardTitle className="text-lg font-semibold flex justify-between items-center">
+        <span className="flex-1">
+          {item?.customerData ? `${item?.customerData?.firstName} ${item?.customerData?.lastName}` : "-"}
+        </span>
+        <span className={
+          item?.challanStatus === "UN_PAID"
+            ? "bg-red-500 uppercase text-white font-semibold text-xs rounded-md p-2 ml-2"
+            : item?.challanStatus === "PAID"
+            ? "bg-green-500 uppercase text-white font-semibold text-xs rounded-md p-2 ml-2"
+            : "bg-gray-500 uppercase text-white font-semibold text-xs rounded-md p-2 ml-2"
+        }>
+          {item?.challanStatus === "UN_PAID" ? "Unpaid" : item?.challanStatus}
+        </span>
+        {item?.challanStatus === "UN_PAID" && (
+          <button
+            title="Void Challan"
+            onClick={() => voidChallan(item)}
+            className="ml-2 bg-gray-100 hover:bg-blue-700 text-white p-1 rounded"
+          >
+            <FcCancel size={20} />
+          </button>
+        )}
+      </CardTitle>
+    </CardHeader>
+    <CardContent className="p-4">
+      <div className="flex items-start">
+        <div className="flex-grow space-y-2">
+        <div className="flex items-center justify-between">
+            <span className="text-sm text-muted-foreground capitalize">Challan no:</span>
+            <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold bg-secondary text-secondary-foreground">
+              {item?.challanNo}
+            </div>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-muted-foreground capitalize">Period:</span>
+            <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold bg-secondary text-secondary-foreground">
+              {item?.feePeriod}
+            </div>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-muted-foreground capitalize">Amount:</span>
+            <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold bg-secondary text-secondary-foreground">
+              {Number(item?.amount).toLocaleString()}
+            </div>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-muted-foreground capitalize">Date:</span>
+            <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold bg-secondary text-secondary-foreground">
+              {item?.challanDate ? moment(item?.challanDate).format("DD-MMM-YYYY") : "N/A"}
+            </div>
+          </div>
+        </div>
+      </div>
+    </CardContent>
+  </Card>
+);
 
 const Challan = () => {
   useUserValidator("superadmin")
@@ -23,6 +93,12 @@ const Challan = () => {
   });
   const [generateModal, setGenerateModal] = useState(false);
   const [data, setData] = useState([]);
+  const [tableView, setTableView] = useState(true);
+  const toggleView = () => setTableView((v) => !v);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [limit, setLimit] = useState(10);
+  const [totalPages, setTotalPages] = useState(0);
+  const [totalCount, setTotalCount] = useState(0);
   const columns = [
     {
       name: filterValue.challanType === "CUSTOMER" ?  "Challan No": "PaySlip No",
@@ -123,16 +199,21 @@ const Challan = () => {
       (filterValue.startDate !== null
         ?  `&toDate=${endDate.toISOString().split('T')[0]}T00:00:00.000Z`
         : "") +
-      (filterValue.search !== null ? `&search=${filterValue.search}` : "");
+      (filterValue.search !== null ? `&search=${filterValue.search}` : "") +
+      `&limit=${limit}&offset=${currentPage > 1 ? (currentPage - 1) * limit : 0}`;
     try {
       let response = await axiosInstance.get(url);
       if (response.status === 200) {
         // console.log(response);
         setData(response?.data?.data);
+        setTotalCount(response?.data?.count || 0);
+        setTotalPages(Math.ceil((response?.data?.count || 0) / limit));
       }
     } catch (error) {
       // console.log("error", error);
       setData([]);
+      setTotalCount(0);
+      setTotalPages(0);
     }
   };
 
@@ -152,7 +233,7 @@ const Challan = () => {
 
   useEffect(() => {
     getChallanList();
-  }, [filterValue]);
+  }, [filterValue, currentPage, limit]);
   return (
     <div className="w-full">
       {generateModal ? (
@@ -300,33 +381,116 @@ const Challan = () => {
           </div>
         </div>
       </div>
-      {/* table section */}
+      {/* table/card toggle and search */}
       <div className="z-0">
         <Suspense fallback={<Loader />} />
-        <div className="flex flex-wrap justify-between">
-        <h2 className="text-sm font-semibold leading-tight tracking-tight  text-gray-900 md:text-2xl dark:text-white">
+        <div className="flex flex-wrap justify-between items-center mb-2">
+          <h2 className="text-sm font-semibold leading-tight tracking-tight  text-gray-900 md:text-2xl dark:text-white">
             {filterValue.challanType === "DRIVER"
               ? "PaySlip List"
               : "Challan List"}
           </h2>
-          <input
-            id="remember"
-            aria-describedby="remember"
-            type="text"
-            className="border  p-1 rounded  focus:ring-3 focus:ring-primary-300 :bg-gray-700 :border-gray-600 :focus:ring-primary-600 :ring-offset-gray-800"
-            placeholder="Search Name"
-            onChange={(e) => {
-              setFilterValues({
-                ...filterValue,
-                search: e.target.value,
-              });
-            }}
-          />
+          <div className="flex gap-2 items-center">
+            <input
+              id="remember"
+              aria-describedby="remember"
+              type="text"
+              className="border  p-1 rounded  focus:ring-3 focus:ring-primary-300 :bg-gray-700 :border-gray-600 :focus:ring-primary-600 :ring-offset-gray-800"
+              placeholder="Search Name"
+              onChange={(e) => {
+                setFilterValues({
+                  ...filterValue,
+                  search: e.target.value,
+                });
+              }}
+            />
+            <button
+              className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-xs rounded-md focus:ring-primary-600 focus:border-primary-600 p-2.5"
+              onClick={toggleView}
+              variant="outline"
+            >
+              {tableView ? (
+                <LayoutGrid className="h-4 w-4" />
+              ) : (
+                <TableIcon className="h-4 w-4" />
+              )}
+            </button>
+          </div>
         </div>
-        <DataTable
- pagination
- paginationPerPage={10} 
-fixedHeader columns={columns} data={data} />
+        {tableView ? (
+          <DataTable
+            pagination={false}
+            fixedHeader
+            columns={columns}
+            data={data}
+          />
+        ) : (
+          <div className="flex flex-col">
+            <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+              {data &&
+                data.map((item) => (
+                  <RenderCard key={item._id} item={item} voidChallan={voidChallan} />
+                ))}
+            </div>
+          </div>
+        )}
+        {/* Pagination controls */}
+        <div className="flex justify-center items-center space-x-2 mt-4">
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-8 w-8"
+              onClick={() => setCurrentPage(1)}
+              disabled={currentPage === 1}
+            >
+              <ChevronsLeft className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-8 w-8"
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            <span className="text-xs sm:text-sm  text-muted-foreground">
+              Page {currentPage} of {totalPages} | {totalCount} records
+            </span>
+            <div className="relative inline-block">
+              <select
+                value={limit.toString()}
+                onChange={(e) => setLimit(Number(e.target.value))}
+                className="w-full rounded-md border border-input bg-background px-2 py-1 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+              >
+                {[10, 20, 50, 100].map((option) => (
+                  <option key={option} value={option.toString()}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-8 w-8"
+              onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+              disabled={currentPage === totalPages || limit >= totalCount}
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-8 w-8"
+              onClick={() => setCurrentPage(totalPages)}
+              disabled={currentPage === totalPages || limit >= totalCount}
+            >
+              <ChevronsRight className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
       </div>
     </div>
   );
