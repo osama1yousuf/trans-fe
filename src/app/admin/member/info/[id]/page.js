@@ -68,21 +68,19 @@ export default function MemberInfoPage() {
             className="hover:opacity-80"
             title="Chat on WhatsApp"
           >
-            {/* <img  /> */}
             <Image width={48} height={48} src="/whatsapp.webp" alt="WhatsApp" className="object-contain"/>
           </a>
-          {/* Edit icon */}
-          <button
-            onClick={() => router.push(`/admin/editMember/${id}`)}
-            className="text-gray-700 hover:text-blue-600"
-            title="Edit Member"
-          >
-            <Edit2 className="w-6 h-6 sm:w-7 sm:h-7" />
-          </button>
         </div>
       </div>
-      <div className="bg-white rounded-lg shadow p-4 sm:p-6 mb-8">
+      <div className="bg-white rounded-lg shadow p-4 sm:p-6 mb-8 relative">
         <h2 className="text-xl sm:text-2xl font-bold mb-4">Member Details</h2>
+        <button
+          onClick={() => router.push(`/admin/editMember/${id}`)}
+          className="absolute top-4 right-4 text-gray-700 hover:text-blue-600"
+          title="Edit Member"
+        >
+          <Edit2 className="w-6 h-6 sm:w-7 sm:h-7" />
+        </button>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm sm:text-base">
           <div><span className="font-semibold">Name:</span> {member.firstName} {member.lastName}</div>
           <div><span className="font-semibold">Contact 1:</span> {member.contactOne}</div>
