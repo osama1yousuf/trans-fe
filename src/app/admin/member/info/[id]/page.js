@@ -6,6 +6,7 @@ import DataTable from "react-data-table-component";
 import Loader from "@/app/Components/Loader";
 import moment from "moment";
 import { Edit2, MessageCircle } from "lucide-react";
+import Image from "next/image";
 
 export default function MemberInfoPage() {
   const { id } = useParams();
@@ -58,16 +59,17 @@ export default function MemberInfoPage() {
     <div className="max-w-[95vw] mx-auto p-2 sm:p-4">
       <div className="flex items-center justify-between mb-4 gap-2 flex-wrap">
         <button className="text-blue-600 hover:underline text-sm sm:text-base" onClick={() => router.back()}>&larr; Back</button>
-        <div className="flex gap-3 items-center">
-          {/* WhatsApp icon */}
+        <div className="flex items-center">
+          {/* WhatsApp image */}
           <a
             href={`https://wa.me/${member.contactOne?.replace(/[^0-9]/g, "")}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-green-600 hover:text-green-800"
+            className="hover:opacity-80"
             title="Chat on WhatsApp"
           >
-            <MessageCircle className="w-6 h-6 sm:w-7 sm:h-7" />
+            {/* <img  /> */}
+            <Image width={48} height={48} src="/whatsapp.webp" alt="WhatsApp" className="object-contain"/>
           </a>
           {/* Edit icon */}
           <button
