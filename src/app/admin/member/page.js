@@ -22,6 +22,7 @@ import {
   LayoutGrid,
   TableIcon,
   DollarSign,
+  FileText,
 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import Loader from "@/app/Components/Loader";
@@ -73,7 +74,7 @@ export default function ActiveMember() {
   const columns = [
     {
       name: "Actions",
-      width: "90px",
+      width: "120px",
       selector: (row) => row.actions,
       // width:"100px",
       cell: (row) => (
@@ -100,15 +101,21 @@ export default function ActiveMember() {
                 setCustomer({
                   name: row.firstName,
                   label: `${row.firstName} ${row.lastName}`,
-                  value: row._id
+                  value: row._id,
                 });
                 setModal(true);
-              }
-              }
+              }}
               className="bg-orange-500 hover:bg-gray-500 text-white ms-1 p-1 rounded"
             >
               <DollarSign className="w-3 h-3" />
             </button>
+          </span>
+          <span title="Challan">
+            <Link href={`/admin/member/challan/${row._id}`}>
+              <button className="bg-blue-500 hover:bg-gray-500 text-white ms-1 p-1 rounded">
+                <FileText className="w-3 h-3" />
+              </button>
+            </Link>
           </span>
         </div>
       ),
@@ -150,16 +157,27 @@ export default function ActiveMember() {
       ),
     },
     {
+      name: "Challan Paid/Unpaid",
+      width: "150px",
+      selector: (row) => row.challan,
+      cell: (row) => (
+        <div>
+          {row.unPaidChallans} / {row.paidChallans}
+        </div>
+      ),
+    },
+    {
       name: "Status",
       width: "140px",
       selector: (row) => row.currentStatus,
       cell: (row) => (
         <div
           variant="outline"
-          className={`inline-flex items-center rounded-md border p-2 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 hover:bg-gray-200 cursor-pointer transition-all duration-300 ${row.currentStatus.toUpperCase() === "ACTIVE"
-            ? "border-green-800 text-green-800 bg-green-200"
-            : "border-red-800 text-red-800 bg-red-200"
-            }`}
+          className={`inline-flex items-center rounded-md border p-2 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 hover:bg-gray-200 cursor-pointer transition-all duration-300 ${
+            row.currentStatus.toUpperCase() === "ACTIVE"
+              ? "border-green-800 text-green-800 bg-green-200"
+              : "border-red-800 text-red-800 bg-red-200"
+          }`}
           // onClick={() => handleCustomerStatusChange(row)}
           onClick={() => {
             if (row.currentStatus.toUpperCase() === "ACTIVE") {
@@ -192,6 +210,7 @@ export default function ActiveMember() {
         </div>
       ),
     },
+
     ,
   ];
 
@@ -218,7 +237,8 @@ export default function ActiveMember() {
     try {
       setLoading(true);
       let response = await axiosInstance.get(
-        `/customer?status=${status}&search=${search}&limit=${limit}&offset=${currentPage > 1 ? (currentPage - 1) * limit : 0
+        `/customer?status=${status}&search=${search}&limit=${limit}&offset=${
+          currentPage > 1 ? (currentPage - 1) * limit : 0
         }`
       );
       setData(response.data);
@@ -415,8 +435,7 @@ export default function ActiveMember() {
           handleStatusChangetoInactive={handleStatusChangetoInactive}
         />
       )}
-      {
-        modal &&
+      {modal && (
         <ChallanModal
           type={"customer"}
           isCustomerExists={true}
@@ -424,7 +443,7 @@ export default function ActiveMember() {
           handlePayNow={handlePayNow}
           customer={customer}
         />
-      }
+      )}
       {/* filter area */}
       <div className="flex bg-white p-2 rounded-md gap-2 mb-2 md:gap-0 md:flex-row flex-col md:items-center items-end justify-between">
         <div className="w-full md:w-1/4">
@@ -489,28 +508,36 @@ export default function ActiveMember() {
       {/* date view table and card  */}
       <div>
         <Suspense fallback={<Loader />}>
-          {
-            tableView ? (
-              <div className="max-w-[96vw] rounded-sm">
-                {/* <Suspense fallback={<Loader />} /> */}
-                <DataTable
-                  title={"Members"}
-                  data={data?.data?.length > 0 ? data.data : []}
-                  columns={columns}
-                  progressPending={loading}
-                  pagination={false}
-                />
+          {tableView ? (
+            <div className="max-w-[96vw] rounded-sm">
+              {/* <Suspense fallback={<Loader />} /> */}
+              <DataTable
+                title={"Members"}
+                data={data?.data?.length > 0 ? data.data : []}
+                columns={columns}
+                progressPending={loading}
+                pagination={false}
+              />
+            </div>
+          ) : (
+            <div className="flex flex-col">
+              <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+                {data &&
+                  data?.data?.map((item, i) => {
+                    return (
+                      <RenderCard
+                        key={`card-${i}`}
+                        item={item}
+                        setModal={setModal}
+                        setCustomer={setCustomer}
+                        editMember={editMember}
+                        resetPassword={resetPassword}
+                      />
+                    );
+                  })}
               </div>
-            ) : (
-              <div className="flex flex-col">
-                <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-                  {data &&
-                    data?.data?.map((item, i) => {
-                      return <RenderCard key={`card-${i}`} item={item} setModal={setModal} setCustomer={setCustomer} editMember={editMember} resetPassword={resetPassword} />
-                    })}
-                </div>
-              </div>
-            )}
+            </div>
+          )}
         </Suspense>
 
         {!loading && (
@@ -536,7 +563,7 @@ export default function ActiveMember() {
               </Button>
 
               <span className="text-xs sm:text-sm  text-muted-foreground">
-                Page {currentPage} of {totalPages} | {totalCount} { }
+                Page {currentPage} of {totalPages} | {totalCount} {}
                 records
               </span>
               <div className="relative inline-block">
@@ -580,7 +607,13 @@ export default function ActiveMember() {
   );
 }
 
-const RenderCard = ({ item, setModal, setCustomer, editMember, resetPassword }) => {
+const RenderCard = ({
+  item,
+  setModal,
+  setCustomer,
+  editMember,
+  resetPassword,
+}) => {
   return (
     <Card
       key={item.image}
@@ -594,7 +627,6 @@ const RenderCard = ({ item, setModal, setCustomer, editMember, resetPassword }) 
           >
             <LockKeyholeOpen className="w-3 h-3" />
           </button>
-
         </span>
         <span title="Edit Member From">
           <button
@@ -611,14 +643,20 @@ const RenderCard = ({ item, setModal, setCustomer, editMember, resetPassword }) 
               setCustomer({
                 name: item?.firstName,
                 label: `${item?.firstName} ${item?.lastName}`,
-                value: item._id
+                value: item._id,
               });
-            }
-            }
+            }}
             className="bg-orange-500 hover:bg-gray-500 text-white ms-1 p-1 rounded"
           >
             <DollarSign className="w-3 h-3" />
           </button>
+        </span>
+        <span title="Challan">
+          <Link href={`/admin/member/challan/${item._id}`}>
+            <button className="bg-blue-500 hover:bg-gray-500 text-white ms-1 p-1 rounded">
+              <FileText className="w-3 h-3" />
+            </button>
+          </Link>
         </span>
       </div>
       <CardHeader className="pb-2 mt-2">
@@ -639,9 +677,7 @@ const RenderCard = ({ item, setModal, setCustomer, editMember, resetPassword }) 
       <CardContent className="p-4">
         <div className="flex items-start">
           <div className="flex-grow space-y-2">
-            <div
-              className="flex items-center justify-between"
-            >
+            <div className="flex items-center justify-between">
               <span className="text-sm text-muted-foreground capitalize">
                 Mobile #:
               </span>
@@ -649,9 +685,7 @@ const RenderCard = ({ item, setModal, setCustomer, editMember, resetPassword }) 
                 {item.contactOne}
               </div>
             </div>
-            <div
-              className="flex items-center justify-between"
-            >
+            <div className="flex items-center justify-between">
               <span className="text-sm text-muted-foreground capitalize">
                 Residential Location:
               </span>
@@ -659,32 +693,25 @@ const RenderCard = ({ item, setModal, setCustomer, editMember, resetPassword }) 
                 {item?.location?.residentialAddress || "N/A"}
               </div>
             </div>
-            <div
-              className="flex items-center justify-between"
-            >
+            <div className="flex items-center justify-between">
               <span className="text-sm text-muted-foreground capitalize">
                 Joining Date:
               </span>
               <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80">
-                {moment(item?.status?.joinDate).format(
-                  "DD-MMM-YYYY"
-                ) || "N/A"}
+                {moment(item?.status?.joinDate).format("DD-MMM-YYYY") || "N/A"}
               </div>
             </div>
-            <div
-              key={3}
-              className="flex items-center justify-between"
-            >
+            <div key={3} className="flex items-center justify-between">
               <span className="text-sm text-muted-foreground capitalize">
                 Status:
               </span>
               <div
-                className={twMerge(`inline-flex items-center rounded-md border p-1 text-xs font-semibold focus:outline-none 
-                  focus:ring-2 focus:ring-ring focus:ring-offset-2 hover:bg-gray-200 cursor-pointer transition-all duration-300 `, item?.currentStatus?.toUpperCase() ===
-                  "ACTIVE"
-                  ? "border-green-800 text-green-800 bg-green-200"
-                  : "border-red-800 text-red-800 bg-red-200"
-
+                className={twMerge(
+                  `inline-flex items-center rounded-md border p-1 text-xs font-semibold focus:outline-none 
+                  focus:ring-2 focus:ring-ring focus:ring-offset-2 hover:bg-gray-200 cursor-pointer transition-all duration-300 `,
+                  item?.currentStatus?.toUpperCase() === "ACTIVE"
+                    ? "border-green-800 text-green-800 bg-green-200"
+                    : "border-red-800 text-red-800 bg-red-200"
                 )}
               >
                 {item.currentStatus === "active" ? (
@@ -708,9 +735,17 @@ const RenderCard = ({ item, setModal, setCustomer, editMember, resetPassword }) 
                 )}
               </div>
             </div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-muted-foreground capitalize">
+                Challan Paid/Unpaid:
+              </span>
+              <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80">
+                {item.unPaidChallans} / {item.paidChallans}
+              </div>
+            </div>
           </div>
         </div>
       </CardContent>
     </Card>
-  )
-}
+  );
+};

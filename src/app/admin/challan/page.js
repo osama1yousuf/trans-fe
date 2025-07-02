@@ -1,13 +1,12 @@
 "use client";
-import React, { Suspense, useState } from "react";
+import React, { Suspense, useState, useEffect } from "react";
 import DataTable from "react-data-table-component";
 import Loader from "@/app/Components/Loader";
 import { toast } from "react-toastify";
 import { FcCancel } from "react-icons/fc";
-import { useEffect } from "react";
 import axiosInstance from "@/interceptor/axios_inteceptor";
 import { useUserValidator } from "@/interceptor/userValidate";
-import { LayoutGrid, TableIcon } from "lucide-react";
+import { FileText, LayoutGrid, TableIcon } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import moment from "moment";
 import { Button } from "@/components/ui/button";
@@ -17,59 +16,84 @@ import {
   ChevronsLeft,
   ChevronsRight,
 } from "lucide-react";
+import Link from "next/link";
 
 const RenderCard = ({ item, voidChallan }) => (
-  <Card key={item._id} className="overflow-hidden relative group hover:shadow-lg transition-shadow duration-300">
+  <Card
+    key={item._id}
+    className="overflow-hidden relative group hover:shadow-lg transition-shadow duration-300"
+  >
     <CardHeader className="pb-2 mt-2">
       <CardTitle className="text-lg font-semibold flex justify-between items-center">
         <span className="flex-1">
-          {item?.customerData ? `${item?.customerData?.firstName} ${item?.customerData?.lastName}` : "-"}
+          {item?.customerData
+            ? `${item?.customerData?.firstName} ${item?.customerData?.lastName}`
+            : "-"}
         </span>
-        <span className={
-          item?.challanStatus === "UN_PAID"
-            ? "bg-red-500 uppercase text-white font-semibold text-xs rounded-md p-2 ml-2"
-            : item?.challanStatus === "PAID"
-            ? "bg-green-500 uppercase text-white font-semibold text-xs rounded-md p-2 ml-2"
-            : "bg-gray-500 uppercase text-white font-semibold text-xs rounded-md p-2 ml-2"
-        }>
+        <span
+          className={
+            item?.challanStatus === "UN_PAID"
+              ? "bg-red-500 uppercase text-white font-semibold text-xs rounded-md p-2 ml-2"
+              : item?.challanStatus === "PAID"
+              ? "bg-green-500 uppercase text-white font-semibold text-xs rounded-md p-2 ml-2"
+              : "bg-gray-500 uppercase text-white font-semibold text-xs rounded-md p-2 ml-2"
+          }
+        >
           {item?.challanStatus === "UN_PAID" ? "Unpaid" : item?.challanStatus}
         </span>
-        {item?.challanStatus === "UN_PAID" && (
-          <button
-            title="Void Challan"
-            onClick={() => voidChallan(item)}
-            className="ml-2 bg-gray-100 hover:bg-blue-700 text-white p-1 rounded"
-          >
-            <FcCancel size={20} />
-          </button>
-        )}
+        <div className="flex items-center ml-2 gap-1">
+          {item?.challanStatus === "UN_PAID" && (
+            <button
+              title="Void Challan"
+              onClick={() => voidChallan(item)}
+              className="bg-gray-100 hover:bg-blue-700 text-white p-1 rounded"
+            >
+              <FcCancel size={20} />
+            </button>
+          )}
+          <Link href={`/admin/member/challan/${item?.customerId}`} title="Challan">
+            <button className="bg-blue-500 hover:bg-gray-500 text-white ms-1 p-1 rounded">
+              <FileText className="w-3 h-3" />
+            </button>
+          </Link>
+        </div>
       </CardTitle>
     </CardHeader>
     <CardContent className="p-4">
       <div className="flex items-start">
         <div className="flex-grow space-y-2">
-        <div className="flex items-center justify-between">
-            <span className="text-sm text-muted-foreground capitalize">Challan no:</span>
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-muted-foreground capitalize">
+              Challan no:
+            </span>
             <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold bg-secondary text-secondary-foreground">
               {item?.challanNo}
             </div>
           </div>
           <div className="flex items-center justify-between">
-            <span className="text-sm text-muted-foreground capitalize">Period:</span>
+            <span className="text-sm text-muted-foreground capitalize">
+              Period:
+            </span>
             <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold bg-secondary text-secondary-foreground">
               {item?.feePeriod}
             </div>
           </div>
           <div className="flex items-center justify-between">
-            <span className="text-sm text-muted-foreground capitalize">Amount:</span>
+            <span className="text-sm text-muted-foreground capitalize">
+              Amount:
+            </span>
             <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold bg-secondary text-secondary-foreground">
               {Number(item?.amount).toLocaleString()}
             </div>
           </div>
           <div className="flex items-center justify-between">
-            <span className="text-sm text-muted-foreground capitalize">Date:</span>
+            <span className="text-sm text-muted-foreground capitalize">
+              Date:
+            </span>
             <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold bg-secondary text-secondary-foreground">
-              {item?.challanDate ? moment(item?.challanDate).format("DD-MMM-YYYY") : "N/A"}
+              {item?.challanDate
+                ? moment(item?.challanDate).format("DD-MMM-YYYY")
+                : "N/A"}
             </div>
           </div>
         </div>
@@ -79,9 +103,13 @@ const RenderCard = ({ item, voidChallan }) => (
 );
 
 const Challan = () => {
-  useUserValidator("superadmin")
+  useUserValidator("superadmin");
+  const getCurrentMonth = () => {
+    const now = new Date();
+    return now.toISOString().slice(0, 7); // YYYY-MM
+  };
   const [filterValue, setFilterValues] = useState({
-    startDate: null,
+    startDate: getCurrentMonth(),
     endDate: null,
     paymentStatus: null,
     challanType: "CUSTOMER",
@@ -101,15 +129,20 @@ const Challan = () => {
   const [totalCount, setTotalCount] = useState(0);
   const columns = [
     {
-      name: filterValue.challanType === "CUSTOMER" ?  "Challan No": "PaySlip No",
+      name:
+        filterValue.challanType === "CUSTOMER" ? "Challan No" : "PaySlip No",
       selector: (row) => row?.challanNo,
     },
     {
-      name: filterValue.challanType === "CUSTOMER" ?  "Challan Date": "PaySlip Date",
+      name:
+        filterValue.challanType === "CUSTOMER"
+          ? "Challan Date"
+          : "PaySlip Date",
       selector: (row) => new Date(row?.challanDate).toDateString(),
     },
     {
-      name: filterValue.challanType === "CUSTOMER" ?  "Member Name": "Driver Name",
+      name:
+        filterValue.challanType === "CUSTOMER" ? "Member Name" : "Driver Name",
       selector: (row) =>
         `${row?.customerData?.firstName} ${row?.customerData?.lastName}`,
     },
@@ -119,41 +152,63 @@ const Challan = () => {
     },
     {
       name: "Amount",
-      selector: (row) =>  row?.amount.toLocaleString('en-US', { minimumFractionDigits: 0 }),
+      selector: (row) =>
+        row?.amount.toLocaleString("en-US", { minimumFractionDigits: 0 }),
     },
     {
       name: "Status",
-      selector: (row) => {row?.challanStatus},
-      cell : (row) =>(
-        <span className= {row?.challanStatus === "UN_PAID" ? "bg-red-500 uppercase text-white font-semibold text-xs rounded-md p-2" : row?.challanStatus === "PAID" ? "bg-green-500 uppercase text-white font-semibold text-xs rounded-md p-2" : "bg-gray-500 uppercase text-white font-semibold text-xs rounded-md p-2" } >{row?.challanStatus === "UN_PAID" ?  "Unpaid" : row?.challanStatus}</span>
-      )
-
-      
+      selector: (row) => {
+        row?.challanStatus;
+      },
+      cell: (row) => (
+        <span
+          className={
+            row?.challanStatus === "UN_PAID"
+              ? "bg-red-500 uppercase text-white font-semibold text-xs rounded-md p-2"
+              : row?.challanStatus === "PAID"
+              ? "bg-green-500 uppercase text-white font-semibold text-xs rounded-md p-2"
+              : "bg-gray-500 uppercase text-white font-semibold text-xs rounded-md p-2"
+          }
+        >
+          {row?.challanStatus === "UN_PAID" ? "Unpaid" : row?.challanStatus}
+        </span>
+      ),
     },
     {
       name: "Acion",
       selector: (row) => row.action,
       cell: (row) => (
-        <>
+        <div className="w-full flex lg:w-full ">
           {row.challanStatus === "UN_PAID" && (
             <span title="Void Challan">
               <button
                 onClick={(e) => voidChallan(row)}
                 className="bg-gray-100 hover:bg-blue-700 text-white  p-1 rounded"
               >
-                <FcCancel size={"22px"} />
+                <FcCancel className="w-4 h-4" />
               </button>
               {/* <button className="bg-green-500 hover:bg-blue-700 text-white ms-1 p-1 rounded" type="submit">Edit driver</button> */}
             </span>
           )}
-        </>
+          <span title="Challan">
+            <Link href={`/admin/member/challan/${row?.customerId}`}>
+              <button className="bg-blue-500 hover:bg-gray-500 text-white ms-1 p-1 rounded">
+                <FileText className="w-4 h-4" />
+              </button>
+            </Link>
+          </span>
+        </div>
       ),
     },
   ];
   const generateChallan = async () => {
     if (generateBulk.feePeriod && generateBulk.challanType) {
       try {
-        toast.loading(`Generating ${generateBulk.challanType === "CUSTOMER" ? "Challan" : "Payslip"}`);
+        toast.loading(
+          `Generating ${
+            generateBulk.challanType === "CUSTOMER" ? "Challan" : "Payslip"
+          }`
+        );
         let response = await axiosInstance.post("/challan/all/generate", {
           ...generateBulk,
           challanDate: generateBulk.feePeriod + "-01T00:09:19.733Z",
@@ -181,7 +236,12 @@ const Challan = () => {
   };
 
   const getChallanList = async () => {
-    let endDate = new Date(filterValue.startDate)
+    console.log("API called for challan list", {
+      filterValue,
+      currentPage,
+      limit,
+    }); // Debug
+    let endDate = new Date(filterValue.startDate);
     if (filterValue.startDate !== null) {
       endDate.setMonth(endDate.getMonth() + 1);
     }
@@ -197,10 +257,12 @@ const Challan = () => {
         ? `&fromDate=${filterValue.startDate}-01T00:00:00.000Z`
         : "") +
       (filterValue.startDate !== null
-        ?  `&toDate=${endDate.toISOString().split('T')[0]}T00:00:00.000Z`
+        ? `&toDate=${endDate.toISOString().split("T")[0]}T00:00:00.000Z`
         : "") +
       (filterValue.search !== null ? `&search=${filterValue.search}` : "") +
-      `&limit=${limit}&offset=${currentPage > 1 ? (currentPage - 1) * limit : 0}`;
+      `&limit=${limit}&offset=${
+        currentPage > 1 ? (currentPage - 1) * limit : 0
+      }`;
     try {
       let response = await axiosInstance.get(url);
       if (response.status === 200) {
@@ -220,8 +282,8 @@ const Challan = () => {
   const voidChallan = async (e) => {
     try {
       // console.log("e", e);
-      const value = window.confirm('Are you sure you want to void challan?')
-      if(value) {
+      const value = window.confirm("Are you sure you want to void challan?");
+      if (value) {
         let response = await axiosInstance.put(`/challan/status/void/${e._id}`);
         toast.success(response?.data?.message || "Challan Void Successfully");
         getChallanList();
@@ -234,6 +296,18 @@ const Challan = () => {
   useEffect(() => {
     getChallanList();
   }, [filterValue, currentPage, limit]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 768) {
+        setTableView(false);
+      }
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   return (
     <div className="w-full">
       {generateModal ? (
@@ -314,7 +388,7 @@ const Challan = () => {
       <div className="w-full align-bottom lg:w-full">
         {/* filter and generate button */}
         <div className="flex flex-wrap justify-between">
-          <h2 className="text-sm font-semibold leading-tight tracking-tight  text-gray-900 md:text-2xl dark:text-white">
+          <h2 className="text-md font-semibold leading-tight tracking-tight  text-gray-900 md:text-2xl dark:text-white">
             Filters
           </h2>
           <div>
@@ -322,20 +396,19 @@ const Challan = () => {
               onClick={() => {
                 setGenerateModal(true);
               }}
-              className="bg-green-500 m-2 hover:bg-green-700 text-white font-bold py-1 px-3 rounded"
+              className="bg-green-500 m-2 hover:bg-green-700 text-white text-sm font-bold py-1 px-3 rounded"
             >
               Generate Bulk
             </button>
           </div>
         </div>
         {/* filters */}
-        <div className="flex justify-between items-center ">
-          <div className="w-full sm:w-1/3 p-2">
+        <div className="flex flex-col md:flex-row justify-between items-center gap-2 md:gap-0">
+          <div className="w-full md:w-1/3 sm:p-2">
             <label className="text-xs px-2">Transaction Type</label>
             <select
               value={filterValue.challanType}
               onChange={(e) => {
-                // console.log("e.target.value", e.target.value);
                 setFilterValues({
                   ...filterValue,
                   challanType: e.target.value,
@@ -347,11 +420,11 @@ const Challan = () => {
               <option value="CUSTOMER">Challan</option>
             </select>
           </div>
-          <div className="w-full sm:w-1/3 p-2">
+          <div className="w-full md:w-1/3 sm:p-2">
             <label className="text-xs px-2">Period</label>
             <input
               type="month"
-              value={filterValue.startDate}
+              value={filterValue.startDate || getCurrentMonth()}
               className="appearance-none block w-full  border border-gray-200 rounded  leading-tight focus:outline-none py-1 px-2 p-2 focus:bg-white focus:border-gray-500"
               onChange={(e) => {
                 setFilterValues({
@@ -361,7 +434,7 @@ const Challan = () => {
               }}
             />
           </div>
-          <div className="w-full sm:w-1/3 m-2">
+          <div className="w-full md:w-1/3 m-2">
             <label className="text-xs px-2">Payment Status</label>
             <select
               value={filterValue.paymentStatus}
@@ -418,24 +491,30 @@ const Challan = () => {
           </div>
         </div>
         {tableView ? (
-          <DataTable
-            pagination={false}
-            fixedHeader
-            columns={columns}
-            data={data}
-          />
+          <div className="w-full overflow-x-auto">
+            <DataTable
+              pagination={false}
+              fixedHeader
+              columns={columns}
+              data={data}
+            />
+          </div>
         ) : (
           <div className="flex flex-col">
             <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
               {data &&
                 data.map((item) => (
-                  <RenderCard key={item._id} item={item} voidChallan={voidChallan} />
+                  <RenderCard
+                    key={item._id}
+                    item={item}
+                    voidChallan={voidChallan}
+                  />
                 ))}
             </div>
           </div>
         )}
         {/* Pagination controls */}
-        <div className="flex justify-center items-center space-x-2 mt-4">
+        <div className="flex justify-center items-center space-x-2 py-8">
           <div className="flex items-center gap-2">
             <Button
               variant="outline"
@@ -475,7 +554,9 @@ const Challan = () => {
               variant="outline"
               size="icon"
               className="h-8 w-8"
-              onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+              onClick={() =>
+                setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+              }
               disabled={currentPage === totalPages || limit >= totalCount}
             >
               <ChevronRight className="h-4 w-4" />
