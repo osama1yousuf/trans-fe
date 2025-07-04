@@ -241,28 +241,41 @@ const Challan = () => {
       currentPage,
       limit,
     }); // Debug
-    let endDate = new Date(filterValue.startDate);
-    if (filterValue.startDate !== null) {
-      endDate.setMonth(endDate.getMonth() + 1);
+    
+    let url = "/challan/get";
+    let queryParams = [];
+    
+    // Add challanType parameter
+    if (filterValue.challanType !== null && filterValue.challanType !== "All") {
+      queryParams.push(`challanType=${filterValue.challanType}`);
     }
-    let url =
-      "/challan/get" +
-      (filterValue.challanType !== null && filterValue.challanType !== "All"
-        ? `?challanType=${filterValue.challanType}`
-        : "") +
-      (filterValue.paymentStatus !== null && filterValue.paymentStatus !== "All"
-        ? `&challanStatus=${filterValue.paymentStatus}`
-        : "") +
-      (filterValue.startDate !== null
-        ? `&fromDate=${filterValue.startDate}-01T00:00:00.000Z`
-        : "") +
-      (filterValue.startDate !== null
-        ? `&toDate=${endDate.toISOString().split("T")[0]}T00:00:00.000Z`
-        : "") +
-      (filterValue.search !== null ? `&search=${filterValue.search}` : "") +
-      `&limit=${limit}&offset=${
-        currentPage > 1 ? (currentPage - 1) * limit : 0
-      }`;
+    
+    // Add payment status parameter
+    if (filterValue.paymentStatus !== null && filterValue.paymentStatus !== "All") {
+      queryParams.push(`challanStatus=${filterValue.paymentStatus}`);
+    }
+    
+    // Add date range parameters only if startDate is provided
+    if (filterValue.startDate && filterValue.startDate.trim() !== "") {
+      let endDate = new Date(filterValue.startDate);
+      endDate.setMonth(endDate.getMonth() + 1);
+      queryParams.push(`fromDate=${filterValue.startDate}-01T00:00:00.000Z`);
+      queryParams.push(`toDate=${endDate.toISOString().split("T")[0]}T00:00:00.000Z`);
+    }
+    
+    // Add search parameter
+    if (filterValue.search && filterValue.search.trim() !== "") {
+      queryParams.push(`search=${filterValue.search}`);
+    }
+    
+    // Add pagination parameters
+    queryParams.push(`limit=${limit}`);
+    queryParams.push(`offset=${currentPage > 1 ? (currentPage - 1) * limit : 0}`);
+    
+    // Construct final URL
+    if (queryParams.length > 0) {
+      url += "?" + queryParams.join("&");
+    }
     try {
       let response = await axiosInstance.get(url);
       if (response.status === 200) {
@@ -422,17 +435,34 @@ const Challan = () => {
           </div>
           <div className="w-full md:w-1/3 sm:p-2">
             <label className="text-xs px-2">Period</label>
-            <input
-              type="month"
-              value={filterValue.startDate || getCurrentMonth()}
-              className="appearance-none block w-full  border border-gray-200 rounded  leading-tight focus:outline-none py-1 px-2 p-2 focus:bg-white focus:border-gray-500"
-              onChange={(e) => {
-                setFilterValues({
-                  ...filterValue,
-                  startDate: e.target.value,
-                });
-              }}
-            />
+            <div className="relative">
+              <input
+                type="month"
+                value={filterValue.startDate || ""}
+                className="appearance-none block w-full border border-gray-200 rounded leading-tight focus:outline-none py-1 px-2 p-2 focus:bg-white focus:border-gray-500 pr-8"
+                onChange={(e) => {
+                  setFilterValues({
+                    ...filterValue,
+                    startDate: e.target.value,
+                  });
+                }}
+              />
+              {filterValue.startDate && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setFilterValues({
+                      ...filterValue,
+                      startDate: null,
+                    });
+                  }}
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  title="Clear period"
+                >
+                  ×
+                </button>
+              )}
+            </div>
           </div>
           <div className="w-full md:w-1/3 m-2">
             <label className="text-xs px-2">Payment Status</label>
