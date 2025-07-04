@@ -283,7 +283,7 @@ export default function Dashboard({ children }) {
 
               {/* Main content */}
               <main className={twMerge("flex-1 h-fit top-[12vh] overflow-auto bg-gray-100 px-2",
-                !pathname.includes('chat') && 'pt-4'
+                !pathname.includes('chat') && 'pt-4 mb-4'
               )}>
                 <div className="h-full">{children}</div>
               </main>
