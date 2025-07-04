@@ -103,7 +103,7 @@ export default function MemberInfoPage() {
         <DataTable
           columns={challanColumns}
           data={challans}
-          pagination
+          pagination={false}
           paginationPerPage={10}
           highlightOnHover
           striped
