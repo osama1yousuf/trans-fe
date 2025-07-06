@@ -9,6 +9,8 @@ import axiosInstance from "@/interceptor/axios_inteceptor";
 import { useEffect } from "react";
 import { Loader2 } from "lucide-react";
 import debounce from 'lodash.debounce';
+import { components } from "react-select";
+
 
 const ChallanModal = ({
   setChallanModal,
@@ -22,6 +24,7 @@ const ChallanModal = ({
   const [selectedUser, setSelectedUser] = useState(null);
   const [driverList, setDriverList] = useState([]);
   const [driverSearch, setDriverSearch] = useState("");
+  const [customerSearch, setCustomerSearch] = useState("");
   const [paymentData, setPaymentData] = useState({
     paymentMode: "CASH",
     paidAt: new Date().toISOString().split("T")[0],
@@ -86,6 +89,23 @@ const ChallanModal = ({
     },
   ];
 
+  // Debounced search function for customers
+  const debouncedCustomerSearch = useCallback(
+    debounce((searchValue) => {
+      getList(searchValue);
+    }, 500),
+    []
+  );
+
+  const handleCustomerSearchChange = (inputValue, { action }) => {
+    // Only trigger search on input change, not on menu open/close
+    if (action === 'input-change') {
+      setCustomerSearch(inputValue);
+      debouncedCustomerSearch(inputValue);
+    }
+  };
+
+  // Debounced search function for drivers
   const debouncedDriverSearch = useCallback(
     debounce((searchValue) => {
       getDriverList(searchValue);
@@ -94,15 +114,20 @@ const ChallanModal = ({
   );
 
   const handleDriverSearchChange = (inputValue, { action }) => {
+    // Only trigger search on input change, not on menu open/close
     if (action === 'input-change') {
       setDriverSearch(inputValue);
       debouncedDriverSearch(inputValue);
     }
   };
 
-  const getList = async () => {
+  const getList = async (search = "") => {
     try {
-      let response = await axiosInstance.get(`/${type}?status=active`);
+      let url = `/${type}?status=active`;
+      if (search) {
+        url += `&search=${search}`;
+      }
+      let response = await axiosInstance.get(url);
       setList(response?.data?.data);
       if (customer) {
         setSelectedUser({
@@ -179,12 +204,36 @@ const ChallanModal = ({
                       value={selectedUser}
                       onChange={(e) => {
                         setSelectedUser(e);
+                        // Reset DataTable selection when new user is selected
+                        setPaymentData(prev => ({
+                          ...prev,
+                          challanIds: []
+                        }));
+                        // If user clears the selection, also clear challan data
+                        if (!e) {
+                          setData([]);
+                        }
                       }}
+                      onInputChange={handleCustomerSearchChange}
+                      isClearable
+                      isSearchable
+                      placeholder={`Search ${type}...`}
                       options={list?.map((e) => ({
                         value: e._id,
                         label: e.firstName + " " + e.lastName,
                         name: e.firstName,
                       }))}
+                      styles={{
+                        menu: (provided) => ({
+                          ...provided,
+                          zIndex: 9999, // Higher z-index to appear above table
+                        }),
+                        menuPortal: (provided) => ({
+                          ...provided,
+                          zIndex: 9999, // Higher z-index for portal
+                        }),
+                      }}
+                      menuPortalTarget={document.body} // Render menu in body to avoid z-index issues
                     />
                   </div>
                   <div className="flex gap-2 w-full">

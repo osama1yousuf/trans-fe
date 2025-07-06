@@ -51,11 +51,11 @@ const RenderCard = ({ item, voidChallan }) => (
               <FcCancel size={20} />
             </button>
           )}
-          <Link href={`/admin/member/challan/${item?.customerId}`} title="Challan">
+          {/* <Link href={`/admin/member/challan/${item?.customerId}`} title="Challan">
             <button className="bg-blue-500 hover:bg-gray-500 text-white ms-1 p-1 rounded">
               <FileText className="w-3 h-3" />
             </button>
-          </Link>
+          </Link> */}
         </div>
       </CardTitle>
     </CardHeader>
@@ -190,13 +190,13 @@ const Challan = () => {
               {/* <button className="bg-green-500 hover:bg-blue-700 text-white ms-1 p-1 rounded" type="submit">Edit driver</button> */}
             </span>
           )}
-          <span title="Challan">
+          {/* <span title="Challan">
             <Link href={`/admin/member/challan/${row?.customerId}`}>
               <button className="bg-blue-500 hover:bg-gray-500 text-white ms-1 p-1 rounded">
                 <FileText className="w-4 h-4" />
               </button>
             </Link>
-          </span>
+          </span> */}
         </div>
       ),
     },

@@ -306,7 +306,7 @@ const MemberForm = ({
                     setFocus={setFocus}
                     error={errors?.contactOne}
                     name={"contactOne"}
-                    label={"Mobile # 1"}
+                    label={"Mobile # 1 (WA)"}
                     maxLength={11}
                     type={"tel"}
                   />
@@ -320,6 +320,28 @@ const MemberForm = ({
                     name={"contactTwo"}
                     label={"Mobile # 2"}
                     type={"tel"}
+                  />
+                </div>
+                <div className="w-full mt-2 lg:w-1/4 px-3">
+                  <Textfield2
+                    register={register}
+                    setFocus={setFocus}
+                    error={errors?.whatsAppNo}
+                    maxLength={11}
+                    name={"emergencyNo"}
+                    label={"Emergency #"}
+                    type={"tel"}
+                  />
+                </div>
+                <div className="w-full mt-2 lg:w-1/4 px-3">
+                  <Textfield2
+                    register={register}
+                    setFocus={setFocus}
+                    error={errors?.email}
+                    // maxLength={11}
+                    name={"email"}
+                    label={"Email"}
+                    type={"email"}
                   />
                 </div>
                 <div className="w-full mt-2 lg:w-1/4 px-3">
