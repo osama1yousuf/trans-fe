@@ -72,6 +72,12 @@ export default function CreateMember() {
       .test("length", "Phone Number Invalid", (value) => {
         return value === "" || value.length === 11;
       }),
+    emergencyNo: Yup.string()
+      .nullable()
+      .test("length", "Phone Number Invalid", (value) => {
+        return value === "" || value.length === 11;
+      }),
+      email: Yup.string().email('Invalid email format').required('Email is required'),
     bothSide: Yup.string()
       .oneOf(["bothSide", "pickUp", "dropOff"], "Invalid option selected")
       .required("Please select an option"),
@@ -151,6 +157,8 @@ export default function CreateMember() {
           lastName: data.lastName,
           contactOne: data.contactOne,
           contactTwo: data.contactTwo,
+          emergencyNo: data?.whatsAppNo,
+          email: data?.email,
           cnicNo: data.cnicNo,
           // password: "",
           comments: data.comments,
@@ -189,6 +197,8 @@ export default function CreateMember() {
       contactOne: values.contactOne,
       contactTwo: values.contactTwo,
       cnicNo: values.cnicNo,
+      whatsAppNo: values?.whatsAppNo,
+      email: values?.email,
       // password: values.password,
       comments: values.comments,
       joinDate: new Date(values.joinDate).toISOString(),
@@ -233,8 +243,9 @@ export default function CreateMember() {
           type="submit"
           form="memberCreate"
           disabled={loading}
-          className={`my-4 text-white ${loading ? "bg-gray-400" : "bg-[#811630] hover:bg-primary-700"
-            } focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center`}
+          className={`my-4 text-white ${
+            loading ? "bg-gray-400" : "bg-[#811630] hover:bg-primary-700"
+          } focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center`}
         >
           {isSubmitting ? "Updating" : "Update"}
         </button>

@@ -69,6 +69,14 @@ export default function CreateMember() {
       .test("length", "Phone Number Invalid", (value) => {
         return value === "" || value.length === 11;
       }),
+    emergencyNo: Yup.string()
+      .nullable()
+      .test("length", "Phone Number Invalid", (value) => {
+        return value === "" || value.length === 11;
+      }),
+    email: Yup.string()
+      .email("Invalid email format")
+      .required("Email is required"),
     bothSide: Yup.string()
       .oneOf(["bothSide", "pickUp", "dropOff"], "Invalid option selected")
       .required("Please select an option"),
@@ -144,16 +152,18 @@ export default function CreateMember() {
   const onSubmit = async (values) => {
     setLoading(true);
     let body = {
-      firstName: values.firstName,
-      lastName: values.lastName,
-      contactOne: values.contactOne,
-      contactTwo: values.contactTwo,
-      cnicNo: values.cnicNo,
-      password: values.password,
-      comments: values.comments,
-      joinDate: new Date(values.joinDate).toISOString(),
+      firstName: values?.firstName,
+      lastName: values?.lastName,
+      contactOne: values?.contactOne,
+      contactTwo: values?.contactTwo,
+      emergencyNo: values?.emergencyNo,
+      email: values?.email,
+      cnicNo: values?.cnicNo,
+      password: values?.password,
+      comments: values?.comments,
+      joinDate: new Date(values?.joinDate).toISOString(),
       location: {
-        residentialAddress: values.residentialAddress,
+        residentialAddress: values?.residentialAddress,
         pickUpAddress: values.pickUpAddress,
         dropOffAddress: values.dropOffAddress,
         dropType: values.bothSide,
