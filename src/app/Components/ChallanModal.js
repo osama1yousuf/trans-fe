@@ -1,6 +1,6 @@
 "use client";
 
-import React, { Suspense, useState } from "react";
+import React, { Suspense, useState, useCallback } from "react";
 import Loader from "./Loader";
 import { toast } from "react-toastify";
 import DataTable from "react-data-table-component";
@@ -8,6 +8,7 @@ import Select from "react-select";
 import axiosInstance from "@/interceptor/axios_inteceptor";
 import { useEffect } from "react";
 import { Loader2 } from "lucide-react";
+import debounce from 'lodash.debounce';
 
 const ChallanModal = ({
   setChallanModal,
@@ -19,11 +20,15 @@ const ChallanModal = ({
   const [list, setList] = useState([]);
   const [data, setData] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
+  const [driverList, setDriverList] = useState([]);
+  const [driverSearch, setDriverSearch] = useState("");
   const [paymentData, setPaymentData] = useState({
     paymentMode: "CASH",
     paidAt: new Date().toISOString().split("T")[0],
     paymentType: type === "driver" ? "DRIVER" : "CUSTOMER",
     challanIds: [],
+    comments: "",
+    receivedByDriverId: null,
   });
 
   const columns = [
@@ -80,6 +85,21 @@ const ChallanModal = ({
       },
     },
   ];
+
+  const debouncedDriverSearch = useCallback(
+    debounce((searchValue) => {
+      getDriverList(searchValue);
+    }, 500),
+    []
+  );
+
+  const handleDriverSearchChange = (inputValue, { action }) => {
+    if (action === 'input-change') {
+      setDriverSearch(inputValue);
+      debouncedDriverSearch(inputValue);
+    }
+  };
+
   const getList = async () => {
     try {
       let response = await axiosInstance.get(`/${type}?status=active`);
@@ -91,6 +111,19 @@ const ChallanModal = ({
           value: customer.value,
         });
       }
+    } catch (error) {
+      console.log("error", error);
+    }
+  };
+
+  const getDriverList = async (search = "") => {
+    try {
+      let url = `/driver?status=active`;
+      if (search) {
+        url += `&search=${search}`;
+      }
+      let response = await axiosInstance.get(url);
+      setDriverList(response?.data?.data);
     } catch (error) {
       console.log("error", error);
     }
@@ -121,7 +154,9 @@ const ChallanModal = ({
 
   useEffect(() => {
     getList();
+    getDriverList();
   }, []);
+
   return (
     <>
       <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
@@ -166,7 +201,12 @@ const ChallanModal = ({
                         className="appearance-none block w-full  border border-gray-200 rounded  leading-tight focus:outline-none py-2 px-2 focus:bg-white focus:border-gray-500"
                       >
                         <option value="CASH">Cash</option>
-                        <option value="ONLINE">Online</option>
+                        <option value="EasyPaisa">Easy Paisa</option>
+                        <option value="DubaiIslamic">Dubai Islamic</option>
+                        <option value="Allied">Allied</option>
+                        <option value="Silk">Silk</option>
+                        <option value="AlHabib">AlHabib</option>
+                        <option value="Meezan">Meezan</option>
                       </select>
                     </div>
                     <div className="w-1/2">
@@ -185,6 +225,53 @@ const ChallanModal = ({
                         }}
                       />
                     </div>
+                  </div>
+                  <div className="w-full">
+                    <label className="text-xs px-2">Driver (Optional)</label>
+                    <Select
+                      value={paymentData.receivedByDriverId ? {
+                        value: paymentData.receivedByDriverId,
+                        label: driverList.find(d => d._id === paymentData.receivedByDriverId)?.firstName + " " + driverList.find(d => d._id === paymentData.receivedByDriverId)?.lastName
+                      } : null}
+                      onChange={(e) => {
+                        setPaymentData({
+                          ...paymentData,
+                          receivedByDriverId: e ? e.value : null,
+                        });
+                      }}
+                      onInputChange={handleDriverSearchChange}
+                      isClearable
+                      isSearchable
+                      placeholder="Select driver (optional)"
+                      options={driverList?.map((e) => ({
+                        value: e._id,
+                        label: e.firstName + " " + e.lastName,
+                      }))}
+                      styles={{
+                        menu: (provided) => ({
+                          ...provided,
+                          zIndex: 9999,
+                        }),
+                        menuPortal: (provided) => ({
+                          ...provided,
+                          zIndex: 9999,
+                        }),
+                      }}
+                      menuPortalTarget={document.body}
+                    />
+                  </div>
+                  <div className="w-full">
+                    <label className="text-xs px-2">Comments</label>
+                    <input
+                      type="text"
+                      value={paymentData.comments}
+                      onChange={e => setPaymentData({
+                        ...paymentData,
+                        comments: e.target.value
+                      })}
+                      className="appearance-none block w-full border border-gray-200 rounded leading-tight focus:outline-none py-2 px-2 focus:bg-white focus:border-gray-500"
+                      placeholder="Enter comments (optional)"
+                    />
                   </div>
                 </div>
                 <div className="z-0 mt-2">
