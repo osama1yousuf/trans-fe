@@ -62,7 +62,8 @@ export default function MemberInfoPage() {
         <div className="flex items-center">
           {/* WhatsApp image */}
           <a
-            href={`https://wa.me/${member.contactOne?.replace(/[^0-9]/g, "")}`}
+          href={`intent://send/?phone=${member.contactOne?.replace(/[^0-9]/g, "")}#Intent;scheme=smsto;package=com.whatsapp.w4b;end;`}
+            // href={`https://wa.me/${member.contactOne?.replace(/[^0-9]/g, "")}`}
             target="_blank"
             rel="noopener noreferrer"
             className="hover:opacity-80"
