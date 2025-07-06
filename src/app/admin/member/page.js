@@ -79,7 +79,6 @@ export default function ActiveMember() {
       // width:"100px",
       cell: (row) => (
         <div className="w-full flex lg:w-full ">
-          
           <span title="Reset Password">
             <button
               onClick={() => resetPassword(row)}
@@ -526,6 +525,10 @@ export default function ActiveMember() {
                         editMember={editMember}
                         resetPassword={resetPassword}
                         router={router}
+                        setInactiveModalUser={setInactiveModalUser}
+                        setInactiveModal={setInactiveModal}
+                        handleStatusChangetoActive={handleStatusChangetoActive}
+                      
                       />
                     );
                   })}
@@ -608,6 +611,9 @@ const RenderCard = ({
   editMember,
   resetPassword,
   router,
+  setInactiveModalUser,
+  setInactiveModal,
+  handleStatusChangetoActive
 }) => {
   return (
     <Card
@@ -615,7 +621,10 @@ const RenderCard = ({
       className="overflow-hidden relative group hover:shadow-lg transition-shadow duration-300 cursor-pointer"
       onClick={() => router.push(`/admin/member/info/${item._id}`)}
     >
-      <div className="absolute top-1 right-2 duration-200 flex" onClick={(e) => e.stopPropagation()}>
+      <div
+        className="absolute top-1 right-2 duration-200 flex"
+        onClick={(e) => e.stopPropagation()}
+      >
         <span title="Reset Password">
           <button
             onClick={() => resetPassword(item)}
@@ -709,6 +718,15 @@ const RenderCard = ({
                     ? "border-green-800 text-green-800 bg-green-200"
                     : "border-red-800 text-red-800 bg-red-200"
                 )}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  if (item.currentStatus.toUpperCase() === "ACTIVE") {
+                    setInactiveModal(true);
+                    setInactiveModalUser(item);
+                  } else {
+                    handleStatusChangetoActive(item);
+                  }
+                }}
               >
                 {item.currentStatus === "active" ? (
                   <span className="relative">
@@ -736,7 +754,7 @@ const RenderCard = ({
                 Challan Paid/Unpaid:
               </span>
               <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80">
-                {item.paidChallans} / {item.unPaidChallans} 
+                {item.paidChallans} / {item.unPaidChallans}
               </div>
             </div>
           </div>

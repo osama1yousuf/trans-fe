@@ -186,7 +186,7 @@ const Collection = () => {
             onClick={() => {
               setChallanModal(true);
             }}
-            className="bg-green-500 m-2 hover:bg-green-700 text-white font-bold py-1 px-3 rounded"
+            className={` text-white bg-[#811630] hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-md text-xs px-5 py-2.5 text-center`}
           >
             {filterValue.challanType === "CUSTOMER" ? "New Collection" : "Payment"}
           </button>

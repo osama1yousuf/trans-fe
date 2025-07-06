@@ -5,9 +5,20 @@ import Loader from "./Loader";
 import { toast } from "react-toastify";
 import DataTable from "react-data-table-component";
 import Select from "react-select";
+import AsyncSelect from "react-select/async";
 import axiosInstance from "@/interceptor/axios_inteceptor";
 import { useEffect } from "react";
 import { Loader2 } from "lucide-react";
+import { components } from "react-select";
+
+// Debounce utility (if lodash.debounce not installed)
+function debounce(func, wait) {
+  let timeout;
+  return function (...args) {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func.apply(this, args), wait);
+  };
+}
 
 const ChallanModal = ({
   setChallanModal,
@@ -25,6 +36,70 @@ const ChallanModal = ({
     paymentType: type === "driver" ? "DRIVER" : "CUSTOMER",
     challanIds: [],
   });
+
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [inputValue, setInputValue] = useState("");
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [optionsCache, setOptionsCache] = useState({}); // {search: [options]}
+
+  const LIMIT = 30;
+
+  const fetchOptions = async (input, loadedOptions = [], pageNum = 1) => {
+    let url = `/${type}?status=active&limit=${LIMIT}&search=${encodeURIComponent(input || "")}&page=${pageNum}`;
+    const response = await axiosInstance.get(url);
+    const data = response?.data?.data || [];
+    const newOptions = data.map((e) => ({
+      value: e._id,
+      label: e.firstName + " " + e.lastName,
+      name: e.firstName,
+    }));
+    const allOptions = [...loadedOptions, ...newOptions];
+    setHasMore(newOptions.length === LIMIT);
+    setOptionsCache((prev) => ({ ...prev, [input]: allOptions }));
+    return allOptions;
+  };
+
+  const debouncedFetchOptions = debounce((input, callback) => {
+    fetchOptions(input, [], 1).then((opts) => callback(opts));
+    setPage(1);
+  }, 400);
+
+  const loadOptions = (input, callback) => {
+    setInputValue(input);
+    if (optionsCache[input]) {
+      callback(optionsCache[input]);
+    } else {
+      debouncedFetchOptions(input, callback);
+    }
+  };
+
+  // Infinite scroll: custom MenuList
+  const MenuList = (props) => {
+    const { children } = props;
+    const handleScroll = (e) => {
+      const target = e.target;
+      if (
+        !loadingMore &&
+        hasMore &&
+        target.scrollHeight - target.scrollTop === target.clientHeight
+      ) {
+        setLoadingMore(true);
+        fetchOptions(inputValue, optionsCache[inputValue] || [], page + 1).then((opts) => {
+          setPage((p) => p + 1);
+          setLoadingMore(false);
+          props.setValue(opts, "select-option");
+        });
+      }
+    };
+    return (
+      <div onScroll={handleScroll} style={{ maxHeight: 200, overflowY: "auto" }}>
+        {children}
+        {loadingMore && <div style={{ padding: 8, textAlign: "center" }}>Loading more...</div>}
+        {!loadingMore && hasMore && <div style={{ padding: 8, textAlign: "center", color: "#888" }}>Scroll to load more...</div>}
+      </div>
+    );
+  };
 
   const columns = [
     {
@@ -82,7 +157,7 @@ const ChallanModal = ({
   ];
   const getList = async () => {
     try {
-      let response = await axiosInstance.get(`/${type}?status=active`);
+      let response = await axiosInstance.get(`/${type}?status=active&limit=300`);
       setList(response?.data?.data);
       if (customer) {
         setSelectedUser({
@@ -140,16 +215,29 @@ const ChallanModal = ({
                 <div className="flex flex-col justify-between items-center gap-3">
                   <div className="w-full">
                     <label className="text-xs capitalize px-2">{type}</label>
-                    <Select
+                    <AsyncSelect
+                      cacheOptions
+                      defaultOptions
                       value={selectedUser}
                       onChange={(e) => {
                         setSelectedUser(e);
+                        // Reset DataTable selection when new user is selected
+                        setPaymentData(prev => ({
+                          ...prev,
+                          challanIds: []
+                        }));
+                        // If user clears the selection, also clear challan data
+                        if (!e) {
+                          setData([]);
+                        }
                       }}
-                      options={list?.map((e) => ({
-                        value: e._id,
-                        label: e.firstName + " " + e.lastName,
-                        name: e.firstName,
-                      }))}
+                      loadOptions={loadOptions}
+                      components={{ MenuList }}
+                      placeholder={`Search ${type}...`}
+                      isClearable
+                      isSearchable
+                      className="react-select-container z-20"
+                      classNamePrefix="react-select"
                     />
                   </div>
                   <div className="flex gap-2 w-full">
